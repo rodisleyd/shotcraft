@@ -147,6 +147,7 @@ export const STYLES: Option[] = [
 export const DETAILS: Option[] = [
   { id: 'rough', label: 'Rough (Bruto)', prompt: 'rough unpolished look', category: 'detail' },
   { id: 'detailed', label: 'Altamente Detalhado', prompt: 'highly detailed, intricate textures', category: 'detail' },
+  { id: 'anatomy', label: 'Anatomia Perfeita', prompt: 'perfect anatomy, clear fingers, anatomically correct hands, well-defined limbs', category: 'detail' },
   { id: 'minimalist', label: 'Minimalista', prompt: 'minimalist composition, clean simple details', category: 'detail' },
 ];
 
