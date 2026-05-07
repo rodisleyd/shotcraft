@@ -27,7 +27,7 @@ export interface SelectionState {
   lighting: string;
   environment: string;
   style: Record<string, string>; // subCategory -> id
-  detail: string;
+  detail: string[];
 }
 
 export interface UserPreset {

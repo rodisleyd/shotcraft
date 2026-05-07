@@ -70,7 +70,7 @@ export default function App() {
     lighting: 'soft',
     environment: 'urban',
     style: { '5. Estilo Artístico': 'realista' },
-    detail: 'detailed'
+    detail: ['detailed']
   });
   const [customAspect, setCustomAspect] = useState('2:1');
   const [copied, setCopied] = useState(false);
@@ -154,6 +154,13 @@ export default function App() {
         } else {
           nextSelections.style = { ...prev.style, [subCat]: id };
         }
+      } else if (category === 'detail') {
+        if (prev.detail.includes(id)) {
+          nextSelections.detail = prev.detail.filter(d => d !== id);
+        } else {
+          nextSelections.detail = [...prev.detail, id];
+        }
+        return nextSelections;
       } else {
         nextSelections[category as keyof SelectionState] = id as any;
       }
@@ -209,7 +216,7 @@ export default function App() {
       lighting: 'soft',
       environment: 'urban',
       style: { '5. Estilo Artístico': 'realista' },
-      detail: 'detailed'
+      detail: ['detailed']
     });
     setActiveStep(0);
     addToast('Todas as configurações foram resetadas.', 'info');
@@ -257,8 +264,10 @@ export default function App() {
     else if (mode === 'cinematic') parts.push("cinematic color grading, professional cinematography, technical realism");
     else if (mode === 'illustration') parts.push("artistic hand-crafted illustration, distinct aesthetic");
 
-    const detail = DETAILS.find(o => o.id === selections.detail)?.prompt;
-    if (detail) parts.push(detail);
+    selections.detail.forEach(detailId => {
+      const detailPrompt = DETAILS.find(o => o.id === detailId)?.prompt;
+      if (detailPrompt) parts.push(detailPrompt);
+    });
 
     const aspect = selections.aspect === 'custom' 
       ? `--ar ${customAspect}` 

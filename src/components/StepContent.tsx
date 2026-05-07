@@ -165,39 +165,45 @@ export function StepContent({
               ) : (
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {getCurrentOptions(activeStep).map((option) => (
-                      <button
-                        key={option.id}
-                        onMouseEnter={() => setHoveredOption(option.id)}
-                        onMouseLeave={() => setHoveredOption(null)}
-                        onClick={() => handleSelect(option.category, option.id)}
-                        className={`group relative p-4 rounded-2xl border text-left transition-all overflow-hidden ${
-                          selections[option.category] === option.id
-                            ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/10'
-                            : themeClasses.option + ' hover:border-[#8b5a2b]/40'
-                        }`}
-                      >
-                        <div className="font-bold text-sm mb-1">{option.label}</div>
-                        <div className={`text-[10px] leading-tight opacity-60 ${selections[option.category] === option.id ? 'text-white/80' : themeClasses.textMuted}`}>
-                          {option.prompt}
-                        </div>
-                        {selections[option.category] === option.id && (
-                          <div className="absolute top-2 right-2">
-                            <Check size={14} className="text-white" />
-                          </div>
-                        )}
-                        {/* Preview Image on Hover */}
-                        {hoveredOption === option.id && option.image && (
-                          <motion.div 
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="absolute inset-0 z-10 pointer-events-none"
+                      {getCurrentOptions(activeStep).map((option) => {
+                        const isSelected = option.category === 'detail' 
+                          ? selections.detail.includes(option.id)
+                          : selections[option.category] === option.id;
+
+                        return (
+                          <button
+                            key={option.id}
+                            onMouseEnter={() => setHoveredOption(option.id)}
+                            onMouseLeave={() => setHoveredOption(null)}
+                            onClick={() => handleSelect(option.category, option.id)}
+                            className={`group relative p-4 rounded-2xl border text-left transition-all overflow-hidden ${
+                              isSelected
+                                ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/10'
+                                : themeClasses.option + ' hover:border-[#8b5a2b]/40'
+                            }`}
                           >
-                            <img src={option.image} alt={option.label} className="w-full h-full object-cover brightness-50" />
-                          </motion.div>
-                        )}
-                      </button>
-                    ))}
+                            <div className="font-bold text-sm mb-1">{option.label}</div>
+                            <div className={`text-[10px] leading-tight opacity-60 ${isSelected ? 'text-white/80' : themeClasses.textMuted}`}>
+                              {option.prompt}
+                            </div>
+                            {isSelected && (
+                              <div className="absolute top-2 right-2">
+                                <Check size={14} className="text-white" />
+                              </div>
+                            )}
+                            {/* Preview Image on Hover */}
+                            {hoveredOption === option.id && option.image && (
+                              <motion.div 
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="absolute inset-0 z-10 pointer-events-none"
+                              >
+                                <img src={option.image} alt={option.label} className="w-full h-full object-cover brightness-50" />
+                              </motion.div>
+                            )}
+                          </button>
+                        );
+                      })}
                   </div>
 
                   {/* Custom Aspect Ratio Input */}
