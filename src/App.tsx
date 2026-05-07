@@ -197,6 +197,24 @@ export default function App() {
     addToast('Preset salvo com sucesso!', 'success');
   };
 
+  const handleReset = () => {
+    setSubject('A mysterious detective standing in the rain');
+    setNegativePrompt('');
+    setSelections({
+      framing: 'medium',
+      angle: 'eye-level',
+      perspective: 'normal',
+      aspect: '16:9',
+      lens: '50mm',
+      lighting: 'soft',
+      environment: 'urban',
+      style: { '5. Estilo Artístico': 'realista' },
+      detail: 'detailed'
+    });
+    setActiveStep(0);
+    addToast('Todas as configurações foram resetadas.', 'info');
+  };
+
   const addToHistory = (prompt: string) => {
     const item: HistoryItem = {
       id: Date.now().toString(),
@@ -287,6 +305,7 @@ export default function App() {
         mode={mode} setMode={setMode} 
         theme={theme} setTheme={setTheme} 
         copyToClipboard={copyToClipboard} copied={copied}
+        handleReset={handleReset}
         themeClasses={themeClasses}
       />
 

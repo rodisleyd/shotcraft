@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Film, Lightbulb, Zap, Check, Copy, Monitor, Layout, Sparkles } from 'lucide-react';
+import { Film, Lightbulb, Zap, Check, Copy, Monitor, Layout, Sparkles, RotateCcw } from 'lucide-react';
 import { ShotMode, Theme } from '../types';
 
 interface HeaderProps {
@@ -12,6 +12,7 @@ interface HeaderProps {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   copyToClipboard: () => void;
+  handleReset: () => void;
   copied: boolean;
   themeClasses: any;
 }
@@ -22,6 +23,7 @@ export function Header({
   theme, 
   setTheme, 
   copyToClipboard, 
+  handleReset,
   copied, 
   themeClasses 
 }: HeaderProps) {
@@ -53,6 +55,13 @@ export function Header({
         </div>
 
         <div className="flex items-center gap-2">
+           <button 
+              onClick={handleReset}
+              className={`p-2 rounded-lg border transition-all hover:bg-red-500/10 hover:border-red-500/50 hover:text-red-500 ${themeClasses.card} ${themeClasses.textMuted}`}
+              title="Resetar Tudo"
+           >
+              <RotateCcw size={20} />
+           </button>
            <button 
               onClick={() => setTheme(theme === 'dark' ? 'sepia' : 'dark')}
               className={`p-2 rounded-lg border transition-all ${themeClasses.card} ${themeClasses.textMuted}`}

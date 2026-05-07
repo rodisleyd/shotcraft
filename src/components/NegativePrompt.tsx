@@ -14,9 +14,19 @@ interface NegativePromptProps {
 export function NegativePrompt({ negativePrompt, setNegativePrompt, themeClasses }: NegativePromptProps) {
   return (
     <div className={`p-6 rounded-2xl border transition-all ${themeClasses.card}`}>
-      <div className="flex items-center gap-2 mb-4">
-        <XCircle size={18} className="text-rose-500" />
-        <h3 className="font-bold text-sm">Prompt Negativo (O que evitar)</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <XCircle size={18} className="text-rose-500" />
+          <h3 className="font-bold text-sm">Prompt Negativo (O que evitar)</h3>
+        </div>
+        {negativePrompt && (
+          <button 
+            onClick={() => setNegativePrompt('')}
+            className="text-[10px] uppercase tracking-wider font-bold text-rose-500 hover:opacity-80 transition-opacity"
+          >
+            Limpar
+          </button>
+        )}
       </div>
       <textarea
         value={negativePrompt}
