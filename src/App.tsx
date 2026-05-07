@@ -62,15 +62,15 @@ export default function App() {
   const [mode, setMode] = useState<ShotMode>('cinematic');
   const [theme, setTheme] = useState<Theme>('dark');
   const [selections, setSelections] = useState<SelectionState>({
-    framing: 'medium',
-    angle: 'eye-level',
-    perspective: 'normal',
-    aspect: '16:9',
-    lens: '50mm',
-    lighting: 'soft',
-    environment: 'urban',
-    style: { '5. Estilo Artístico': 'realista' },
-    detail: ['detailed']
+    framing: '',
+    angle: '',
+    perspective: '',
+    aspect: '',
+    lens: '',
+    lighting: '',
+    environment: '',
+    style: {},
+    detail: []
   });
   const [customAspect, setCustomAspect] = useState('2:1');
   const [copied, setCopied] = useState(false);
@@ -162,7 +162,11 @@ export default function App() {
         }
         return nextSelections;
       } else {
-        nextSelections[category as keyof SelectionState] = id as any;
+        if (prev[category as keyof SelectionState] === id) {
+          nextSelections[category as keyof SelectionState] = '' as any;
+        } else {
+          nextSelections[category as keyof SelectionState] = id as any;
+        }
       }
       
       if (AUTO_COMBINATIONS[id]) {
@@ -208,15 +212,15 @@ export default function App() {
     setSubject('A mysterious detective standing in the rain');
     setNegativePrompt('');
     setSelections({
-      framing: 'medium',
-      angle: 'eye-level',
-      perspective: 'normal',
-      aspect: '16:9',
-      lens: '50mm',
-      lighting: 'soft',
-      environment: 'urban',
-      style: { '5. Estilo Artístico': 'realista' },
-      detail: ['detailed']
+      framing: '',
+      angle: '',
+      perspective: '',
+      aspect: '',
+      lens: '',
+      lighting: '',
+      environment: '',
+      style: {},
+      detail: []
     });
     setActiveStep(0);
     addToast('Todas as configurações foram resetadas.', 'info');
