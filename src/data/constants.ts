@@ -127,7 +127,7 @@ export const STYLES: Option[] = [
   { id: 'concept-art', label: 'Concept art', prompt: 'production concept art, loose but professional polish', category: 'style', subCategory: '6. Digital' },
 
   // 7. Produção / Processo
-  { id: 'pencil', label: 'Esboço a lápis', prompt: 'pencil sketch illustration, hand drawn sketchbook style', category: 'style', subCategory: '7. Produção / Processo' },
+  { id: 'pencil', label: 'Esboço a lápis', prompt: 'semi-realistic cartoon style, expressive character design, pencil sketch illustration, loose graphite lines, hand drawn sketchbook style, visible construction lines, soft graphite texture, light cross-hatching shading, detailed linework, whimsical concept art, children's book illustration style, monochrome pencil drawing, natural proportions, realistic details, rough artistic sketch on white paper', category: 'style', subCategory: '7. Produção / Processo' },
   { id: 'storyboard', label: 'Storyboard', prompt: 'professional storyboard sketch, sequential art style', category: 'style', subCategory: '7. Produção / Processo' },
 
   // 8. Cor e Finalização
