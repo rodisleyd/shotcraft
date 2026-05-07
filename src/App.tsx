@@ -62,14 +62,14 @@ export default function App() {
   const [mode, setMode] = useState<ShotMode>('cinematic');
   const [theme, setTheme] = useState<Theme>('dark');
   const [selections, setSelections] = useState<SelectionState>({
-    framing: '',
-    angle: '',
-    perspective: '',
-    aspect: '',
-    lens: '',
-    lighting: '',
-    environment: '',
-    style: {},
+    framing: [],
+    angle: [],
+    perspective: [],
+    aspect: [],
+    lens: [],
+    lighting: [],
+    environment: [],
+    style: [],
     detail: []
   });
   const [customAspect, setCustomAspect] = useState('2:1');
@@ -140,41 +140,32 @@ export default function App() {
 
   const handleSelect = (category: string, id: string) => {
     setSelections(prev => {
-      let nextSelections = { ...prev };
+      const key = category as keyof SelectionState;
+      const current = prev[key] as string[];
+      let next: string[];
 
-      if (category === 'style') {
-        const option = STYLES.find(s => s.id === id);
-        const subCat = option?.subCategory || 'Outros';
-        
-        if (prev.style[subCat] === id) {
-          const newStyle = { ...prev.style };
-          delete newStyle[subCat];
-          nextSelections.style = newStyle;
-          return nextSelections;
-        } else {
-          nextSelections.style = { ...prev.style, [subCat]: id };
-        }
-      } else if (category === 'detail') {
-        if (prev.detail.includes(id)) {
-          nextSelections.detail = prev.detail.filter(d => d !== id);
-        } else {
-          nextSelections.detail = [...prev.detail, id];
-        }
-        return nextSelections;
+      if (current.includes(id)) {
+        next = current.filter(item => item !== id);
       } else {
-        if (prev[category as keyof SelectionState] === id) {
-          nextSelections[category as keyof SelectionState] = '' as any;
-        } else {
-          nextSelections[category as keyof SelectionState] = id as any;
-        }
+        next = [...current, id];
       }
-      
+
+      const nextSelections = { ...prev, [key]: next };
+
+      // Auto-combinations still apply
       if (AUTO_COMBINATIONS[id]) {
         const combo = AUTO_COMBINATIONS[id];
-        if (combo.style) {
-          nextSelections.style = { ...nextSelections.style, ...combo.style };
-        }
-        return { ...nextSelections, ...combo } as any;
+        Object.entries(combo).forEach(([cat, val]) => {
+          if (cat === 'style') {
+            // style in AUTO_COMBINATIONS is an object subCat -> id, 
+            // but we now use string[]. Let's convert values to array.
+            const styleIds = Object.values(val as Record<string, string>);
+            nextSelections.style = Array.from(new Set([...nextSelections.style, ...styleIds]));
+          } else {
+            const cKey = cat as keyof SelectionState;
+            nextSelections[cKey] = Array.from(new Set([...(nextSelections[cKey] as string[]), val as string]));
+          }
+        });
       }
       
       return nextSelections;
@@ -212,14 +203,14 @@ export default function App() {
     setSubject('A mysterious detective standing in the rain');
     setNegativePrompt('');
     setSelections({
-      framing: '',
-      angle: '',
-      perspective: '',
-      aspect: '',
-      lens: '',
-      lighting: '',
-      environment: '',
-      style: {},
+      framing: [],
+      angle: [],
+      perspective: [],
+      aspect: [],
+      lens: [],
+      lighting: [],
+      environment: [],
+      style: [],
       detail: []
     });
     setActiveStep(0);
@@ -241,42 +232,36 @@ export default function App() {
     const parts = [];
     if (subject) parts.push(subject);
 
-    const framing = SHOT_TYPES.find(o => o.id === selections.framing)?.prompt;
-    if (framing) parts.push(framing);
+    const categories: { key: keyof SelectionState; options: Option[] }[] = [
+      { key: 'framing', options: SHOT_TYPES },
+      { key: 'angle', options: ANGLES },
+      { key: 'perspective', options: PERSPECTIVES },
+      { key: 'lens', options: LENSES },
+      { key: 'lighting', options: LIGHTING },
+      { key: 'environment', options: ENVIRONMENTS },
+      { key: 'style', options: STYLES },
+      { key: 'detail', options: DETAILS }
+    ];
 
-    const angle = ANGLES.find(o => o.id === selections.angle)?.prompt;
-    if (angle) parts.push(angle);
-
-    const perspective = PERSPECTIVES.find(o => o.id === selections.perspective)?.prompt;
-    if (perspective) parts.push(perspective);
-
-    const lens = LENSES.find(o => o.id === selections.lens)?.prompt;
-    if (lens) parts.push(lens);
-
-    const lighting = LIGHTING.find(o => o.id === selections.lighting)?.prompt;
-    if (lighting) parts.push(lighting);
-
-    const env = ENVIRONMENTS.find(o => o.id === selections.environment)?.prompt;
-    if (env) parts.push(env);
-
-    Object.values(selections.style).forEach(styleId => {
-      const stylePrompt = STYLES.find(o => o.id === styleId)?.prompt;
-      if (stylePrompt) parts.push(stylePrompt);
+    categories.forEach(({ key, options }) => {
+      selections[key].forEach(id => {
+        const prompt = options.find(o => o.id === id)?.prompt;
+        if (prompt) parts.push(prompt);
+      });
     });
     
     if (mode === 'storyboard') parts.push("professional storyboard sketch, black and white pencil lines, compositional notes, rough sketches");
     else if (mode === 'cinematic') parts.push("cinematic color grading, professional cinematography, technical realism");
     else if (mode === 'illustration') parts.push("artistic hand-crafted illustration, distinct aesthetic");
 
-    selections.detail.forEach(detailId => {
-      const detailPrompt = DETAILS.find(o => o.id === detailId)?.prompt;
-      if (detailPrompt) parts.push(detailPrompt);
+    selections.aspect.forEach(id => {
+      if (id === 'custom') {
+        parts.push(`--ar ${customAspect}`);
+      } else {
+        const prompt = ASPECT_RATIOS.find(o => o.id === id)?.prompt;
+        if (prompt) parts.push(prompt);
+      }
     });
-
-    const aspect = selections.aspect === 'custom' 
-      ? `--ar ${customAspect}` 
-      : ASPECT_RATIOS.find(o => o.id === selections.aspect)?.prompt;
-    if (aspect) parts.push(aspect);
 
     if (negativePrompt) {
       parts.push(`--no ${negativePrompt}`);

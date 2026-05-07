@@ -19,14 +19,14 @@ export interface Option {
 }
 
 export interface SelectionState {
-  framing: string;
-  angle: string;
-  perspective: string;
-  aspect: string;
-  lens: string;
-  lighting: string;
-  environment: string;
-  style: Record<string, string>; // subCategory -> id
+  framing: string[];
+  angle: string[];
+  perspective: string[];
+  aspect: string[];
+  lens: string[];
+  lighting: string[];
+  environment: string[];
+  style: string[];
   detail: string[];
 }
 
