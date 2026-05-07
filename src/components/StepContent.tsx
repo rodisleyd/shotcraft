@@ -164,9 +164,10 @@ export function StepContent({
                 </div>
               ) : (
                 <div className="space-y-6">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       {getCurrentOptions(activeStep).map((option) => {
-                        const isSelected = selections[option.category as keyof SelectionState].includes(option.id);
+                        const isSelected = (option.category === 'style' || option.category === 'detail')
+                          ? (selections[option.category as keyof SelectionState] as string[]).includes(option.id)
+                          : selections[option.category as keyof SelectionState] === option.id;
 
                         return (
                           <button

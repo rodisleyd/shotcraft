@@ -62,13 +62,13 @@ export default function App() {
   const [mode, setMode] = useState<ShotMode>('cinematic');
   const [theme, setTheme] = useState<Theme>('dark');
   const [selections, setSelections] = useState<SelectionState>({
-    framing: [],
-    angle: [],
-    perspective: [],
-    aspect: [],
-    lens: [],
-    lighting: [],
-    environment: [],
+    framing: '',
+    angle: '',
+    perspective: '',
+    aspect: '',
+    lens: '',
+    lighting: '',
+    environment: '',
     style: [],
     detail: []
   });
@@ -141,29 +141,32 @@ export default function App() {
   const handleSelect = (category: string, id: string) => {
     setSelections(prev => {
       const key = category as keyof SelectionState;
-      const current = prev[key] as string[];
-      let next: string[];
+      let nextSelections = { ...prev };
 
-      if (current.includes(id)) {
-        next = current.filter(item => item !== id);
+      if (category === 'style' || category === 'detail') {
+        const current = prev[key] as string[];
+        if (current.includes(id)) {
+          (nextSelections[key] as string[]) = current.filter(item => item !== id);
+        } else {
+          (nextSelections[key] as string[]) = [...current, id];
+        }
       } else {
-        next = [...current, id];
+        if (prev[key] === id) {
+          (nextSelections[key] as string) = '';
+        } else {
+          (nextSelections[key] as string) = id;
+        }
       }
 
-      const nextSelections = { ...prev, [key]: next };
-
-      // Auto-combinations still apply
+      // Auto-combinations
       if (AUTO_COMBINATIONS[id]) {
         const combo = AUTO_COMBINATIONS[id];
         Object.entries(combo).forEach(([cat, val]) => {
-          if (cat === 'style') {
-            // style in AUTO_COMBINATIONS is an object subCat -> id, 
-            // but we now use string[]. Let's convert values to array.
-            const styleIds = Object.values(val as Record<string, string>);
-            nextSelections.style = Array.from(new Set([...nextSelections.style, ...styleIds]));
+          if (cat === 'style' || cat === 'detail') {
+            const styleIds = cat === 'style' ? Object.values(val as Record<string, string>) : [val as string];
+            (nextSelections[cat as keyof SelectionState] as string[]) = Array.from(new Set([...(nextSelections[cat as keyof SelectionState] as string[]), ...styleIds]));
           } else {
-            const cKey = cat as keyof SelectionState;
-            nextSelections[cKey] = Array.from(new Set([...(nextSelections[cKey] as string[]), val as string]));
+            (nextSelections[cat as keyof SelectionState] as string) = val as string;
           }
         });
       }
@@ -203,13 +206,13 @@ export default function App() {
     setSubject('A mysterious detective standing in the rain');
     setNegativePrompt('');
     setSelections({
-      framing: [],
-      angle: [],
-      perspective: [],
-      aspect: [],
-      lens: [],
-      lighting: [],
-      environment: [],
+      framing: '',
+      angle: '',
+      perspective: '',
+      aspect: '',
+      lens: '',
+      lighting: '',
+      environment: '',
       style: [],
       detail: []
     });
@@ -232,36 +235,44 @@ export default function App() {
     const parts = [];
     if (subject) parts.push(subject);
 
-    const categories: { key: keyof SelectionState; options: Option[] }[] = [
-      { key: 'framing', options: SHOT_TYPES },
-      { key: 'angle', options: ANGLES },
-      { key: 'perspective', options: PERSPECTIVES },
-      { key: 'lens', options: LENSES },
-      { key: 'lighting', options: LIGHTING },
-      { key: 'environment', options: ENVIRONMENTS },
-      { key: 'style', options: STYLES },
-      { key: 'detail', options: DETAILS }
-    ];
+    const framing = SHOT_TYPES.find(o => o.id === selections.framing)?.prompt;
+    if (framing) parts.push(framing);
 
-    categories.forEach(({ key, options }) => {
-      selections[key].forEach(id => {
-        const prompt = options.find(o => o.id === id)?.prompt;
-        if (prompt) parts.push(prompt);
-      });
+    const angle = ANGLES.find(o => o.id === selections.angle)?.prompt;
+    if (angle) parts.push(angle);
+
+    const perspective = PERSPECTIVES.find(o => o.id === selections.perspective)?.prompt;
+    if (perspective) parts.push(perspective);
+
+    const lens = LENSES.find(o => o.id === selections.lens)?.prompt;
+    if (lens) parts.push(lens);
+
+    const lighting = LIGHTING.find(o => o.id === selections.lighting)?.prompt;
+    if (lighting) parts.push(lighting);
+
+    const env = ENVIRONMENTS.find(o => o.id === selections.environment)?.prompt;
+    if (env) parts.push(env);
+
+    selections.style.forEach(id => {
+      const prompt = STYLES.find(o => o.id === id)?.prompt;
+      if (prompt) parts.push(prompt);
     });
     
     if (mode === 'storyboard') parts.push("professional storyboard sketch, black and white pencil lines, compositional notes, rough sketches");
     else if (mode === 'cinematic') parts.push("cinematic color grading, professional cinematography, technical realism");
     else if (mode === 'illustration') parts.push("artistic hand-crafted illustration, distinct aesthetic");
 
-    selections.aspect.forEach(id => {
-      if (id === 'custom') {
-        parts.push(`--ar ${customAspect}`);
-      } else {
-        const prompt = ASPECT_RATIOS.find(o => o.id === id)?.prompt;
-        if (prompt) parts.push(prompt);
-      }
+    selections.detail.forEach(id => {
+      const prompt = DETAILS.find(o => o.id === id)?.prompt;
+      if (prompt) parts.push(prompt);
     });
+
+    if (selections.aspect === 'custom') {
+      parts.push(`--ar ${customAspect}`);
+    } else {
+      const aspect = ASPECT_RATIOS.find(o => o.id === selections.aspect)?.prompt;
+      if (aspect) parts.push(aspect);
+    }
 
     if (negativePrompt) {
       parts.push(`--no ${negativePrompt}`);
