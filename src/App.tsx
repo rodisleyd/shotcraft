@@ -14,7 +14,10 @@ import {
   Film, 
   Layout, 
   Sparkles,
-  RefreshCcw
+  RefreshCcw,
+  Image as ImageIcon,
+  Upload,
+  Loader2
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
@@ -80,6 +83,7 @@ export default function App() {
   const [newPresetName, setNewPresetName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [toasts, setToasts] = useState<ToastType[]>([]);
 
   // --- Persistence ---
@@ -186,6 +190,90 @@ export default function App() {
       addToast('Erro ao otimizar com IA.', 'error');
     } finally {
       setIsOptimizing(false);
+    }
+  };
+
+  const fileToGenerativePart = async (file: File) => {
+    return new Promise<{ inlineData: { data: string, mimeType: string } }>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = (reader.result as string).split(',')[1];
+        resolve({
+          inlineData: {
+            data: base64data,
+            mimeType: file.type
+          }
+        });
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleAnalyzeReference = async (file: File) => {
+    setIsAnalyzing(true);
+    addToast('Mestre IA analisando sua referência...', 'info');
+    
+    try {
+      const imagePart = await fileToGenerativePart(file);
+      
+      const allOptionsPrompt = `
+        Aja como um especialista em direção cinematográfica e ShotCraft. 
+        Analise esta imagem e identifique quais destas opções técnicas melhor a descrevem.
+        Retorne APENAS um objeto JSON válido com as chaves: subject (breve descrição do que está na foto), 
+        framing, angle, perspective, aspect, lens, lighting, environment, style (array de IDs), detail (array de IDs).
+        
+        Opções disponíveis (use APENAS estes IDs):
+        - Enquadramento (framing): ${SHOT_TYPES.map(o => o.id).join(', ')}
+        - Ângulo (angle): ${ANGLES.map(o => o.id).join(', ')}
+        - Perspectiva (perspective): ${PERSPECTIVES.map(o => o.id).join(', ')}
+        - Formato (aspect): ${ASPECT_RATIOS.map(o => o.id).join(', ')}
+        - Lente (lens): ${LENSES.map(o => o.id).join(', ')}
+        - Luz (lighting): ${LIGHTING.map(o => o.id).join(', ')}
+        - Cenário (environment): ${ENVIRONMENTS.map(o => o.id).join(', ')}
+        - Estilo (style): ${STYLES.map(o => o.id).join(', ')}
+        - Detalhes (detail): ${DETAILS.map(o => o.id).join(', ')}
+      `;
+
+      const result = await ai.models.generateContent({
+        model: "gemini-1.5-flash",
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: allOptionsPrompt },
+              imagePart
+            ]
+          }
+        ],
+        generationConfig: {
+          responseMimeType: "application/json"
+        }
+      });
+
+      const analysis = JSON.parse(result.text);
+      
+      if (analysis.subject) setSubject(analysis.subject);
+      
+      setSelections({
+        framing: analysis.framing || '',
+        angle: analysis.angle || '',
+        perspective: analysis.perspective || '',
+        aspect: analysis.aspect || '',
+        lens: analysis.lens || '',
+        lighting: analysis.lighting || '',
+        environment: analysis.environment || '',
+        style: analysis.style || [],
+        detail: analysis.detail || []
+      });
+
+      addToast('Mestre IA concluiu a análise!', 'success');
+      setActiveStep(1); // Mover para o próximo passo para ver os resultados
+    } catch (error) {
+      console.error('Erro na análise:', error);
+      addToast('Erro ao analisar imagem.', 'error');
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -327,6 +415,7 @@ export default function App() {
             activeStep={activeStep} steps={steps}
             subject={subject} setSubject={setSubject}
             isOptimizing={isOptimizing} handleOptimizeSubject={handleOptimizeSubject}
+            isAnalyzing={isAnalyzing} handleAnalyzeReference={handleAnalyzeReference}
             setActiveStep={setActiveStep} getCurrentOptions={getCurrentOptions}
             handleSelect={handleSelect} selections={selections}
             customAspect={customAspect} setCustomAspect={setCustomAspect}

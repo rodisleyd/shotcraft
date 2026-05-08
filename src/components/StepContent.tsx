@@ -4,8 +4,8 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown } from "lucide-react";
-import { Option, Step } from "../types";
+import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Option, Step, SelectionState } from "../types";
 import { STYLES } from "../data/constants";
 import { useState } from "react";
 
@@ -16,6 +16,8 @@ interface StepContentProps {
   setSubject: (val: string) => void;
   isOptimizing: boolean;
   handleOptimizeSubject: () => void;
+  isAnalyzing: boolean;
+  handleAnalyzeReference: (file: File) => void;
   setActiveStep: (step: number) => void;
   getCurrentOptions: (step: number) => Option[];
   handleSelect: (category: string, id: string) => void;
@@ -33,6 +35,8 @@ export function StepContent({
   setSubject,
   isOptimizing,
   handleOptimizeSubject,
+  isAnalyzing,
+  handleAnalyzeReference,
   setActiveStep,
   getCurrentOptions,
   handleSelect,
@@ -62,25 +66,69 @@ export function StepContent({
                 <h2 className="text-2xl font-bold mb-2">O que vamos filmar?</h2>
                 <p className={`${themeClasses.textMuted} text-sm`}>Descreva o sujeito e a ação principal da cena.</p>
               </div>
-              <textarea 
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="Ex: A young detective sitting alone in a crowded bar..."
-                className={`w-full h-40 rounded-2xl p-6 transition-all text-lg resize-none border outline-none focus:ring-2 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
-              />
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t mt-4">
-                <button 
-                  onClick={handleOptimizeSubject}
-                  disabled={isOptimizing || !subject.trim()}
-                  className={`w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all border shadow-sm ${
-                    theme === 'dark' 
-                      ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-100 bg-zinc-900/50' 
-                      : 'border-[#8b5a2b]/20 hover:bg-[#8b5a2b]/5 text-[#8b5a2b] bg-white'
-                  } disabled:opacity-50 group`}
-                >
-                  <Wand2 size={18} className={`${isOptimizing ? 'animate-spin' : 'group-hover:scale-110 transition-transform'} text-amber-500`} />
-                  {isOptimizing ? 'Otimizando com IA...' : 'Refinar Assunto com IA'}
-                </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <textarea 
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    placeholder="Ex: A young detective sitting alone in a crowded bar..."
+                    className={`w-full h-48 rounded-2xl p-6 transition-all text-lg resize-none border outline-none focus:ring-2 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
+                  />
+                  <button 
+                    onClick={handleOptimizeSubject}
+                    disabled={isOptimizing || !subject.trim()}
+                    className={`w-full px-6 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all border shadow-sm ${
+                      theme === 'dark' 
+                        ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-100 bg-zinc-900/50' 
+                        : 'border-[#8b5a2b]/20 hover:bg-[#8b5a2b]/5 text-[#8b5a2b] bg-white'
+                    } disabled:opacity-50 group`}
+                  >
+                    <Wand2 size={18} className={`${isOptimizing ? 'animate-spin' : 'group-hover:scale-110 transition-transform'} text-amber-500`} />
+                    {isOptimizing ? 'Otimizando com IA...' : 'Refinar Assunto com IA'}
+                  </button>
+                </div>
+
+                <div className="relative group h-full min-h-[200px]">
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleAnalyzeReference(file);
+                    }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    disabled={isAnalyzing}
+                  />
+                  <div className={`h-full p-8 rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-4 text-center ${
+                    isAnalyzing 
+                      ? 'border-indigo-500 bg-indigo-500/5' 
+                      : 'border-zinc-200 hover:border-indigo-400 hover:bg-zinc-50/50'
+                  }`}>
+                    {isAnalyzing ? (
+                      <>
+                        <div className="relative">
+                          <Loader2 size={48} className="text-indigo-500 animate-spin" />
+                          <ImageIcon size={24} className="absolute inset-0 m-auto text-indigo-300" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-indigo-500 text-lg">Mestre IA Analisando...</div>
+                          <p className="text-xs text-zinc-400 mt-1">Identificando estilos, luz e composição</p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-20 h-20 rounded-3xl bg-zinc-100 flex items-center justify-center group-hover:scale-110 transition-all shadow-inner">
+                          <Upload size={32} className="text-zinc-400 group-hover:text-indigo-500 transition-colors" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-zinc-600 text-lg">Modo Mestre</div>
+                          <p className="text-xs text-zinc-400 mt-1">Suba uma imagem para que o IA <br/> marque as opções automaticamente</p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
                 <button 
                   onClick={() => setActiveStep(1)}
                   className={`w-full sm:w-auto text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg ${themeClasses.accent}`}
