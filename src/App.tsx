@@ -146,24 +146,29 @@ export default function App() {
     setSelections(prev => {
       const key = category as keyof SelectionState;
       let nextSelections = { ...prev };
+      let isAdding = false;
 
       if (category === 'style' || category === 'detail') {
         const current = prev[key] as string[];
         if (current.includes(id)) {
           (nextSelections[key] as string[]) = current.filter(item => item !== id);
+          isAdding = false;
         } else {
           (nextSelections[key] as string[]) = [...current, id];
+          isAdding = true;
         }
       } else {
         if (prev[key] === id) {
           (nextSelections[key] as string) = '';
+          isAdding = false;
         } else {
           (nextSelections[key] as string) = id;
+          isAdding = true;
         }
       }
 
-      // Auto-combinations
-      if (AUTO_COMBINATIONS[id]) {
+      // Auto-combinations (Apenas ao selecionar)
+      if (isAdding && AUTO_COMBINATIONS[id]) {
         const combo = AUTO_COMBINATIONS[id];
         Object.entries(combo).forEach(([cat, val]) => {
           if (cat === 'style' || cat === 'detail') {
