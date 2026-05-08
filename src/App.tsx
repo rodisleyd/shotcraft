@@ -251,8 +251,11 @@ export default function App() {
         }
       });
 
-      const analysis = JSON.parse(result.text);
-
+      const responseText = result.text || "";
+      // Limpa possíveis blocos de código markdown se o modelo ignorar o responseMimeType
+      const cleanJson = responseText.replace(/```json|```/g, '').trim();
+      const analysis = JSON.parse(cleanJson);
+      
       if (analysis.subject) setSubject(analysis.subject);
 
       setSelections({
