@@ -103,6 +103,7 @@ export const STYLES: Option[] = [
   { id: 'bico-de-pena', label: 'Bico de pena', prompt: 'fine pen and ink drawing, delicate linework', category: 'style', subCategory: '3. Tinta e Line Art' },
   { id: 'pincel', label: 'Pincel', prompt: 'painterly style, visible brushstrokes, artistic textured paint application', category: 'style', subCategory: '3. Tinta e Line Art' },
   { id: 'sketch-pincel-nanquim', label: 'Sketch em pincel e nanquim', prompt: `expressive ink portrait sketch of an old bearded man wearing a turban, dynamic brush pen lines, loose gestural drawing, black ink illustration, confident strokes, comic book inking style, rough hatching, minimalist shading, hand drawn sketchbook aesthetic, elegant line economy, editorial illustration style`, category: 'style', subCategory: '3. Tinta e Line Art' },
+  { id: 'croqui', label: 'Croqui', prompt: `expressive gestural ink croqui, loose unfinished lines, elegant calligraphic brushwork, sophisticated editorial sketch, dynamic line variation, minimalist black ink on white paper, spontaneous artistic strokes, implied forms, fashion illustration energy, abstract figure sketching, hand drawn imperfections, NOT cartoon, NOT vector, NOT clean outlines`, category: 'style', subCategory: '3. Tinta e Line Art' },
   { id: 'line-art', label: 'Line art', prompt: 'clean minimalist line art drawing', category: 'style', subCategory: '3. Tinta e Line Art' },
 
   // 4. Técnicas de Sombreamento (HQ)
