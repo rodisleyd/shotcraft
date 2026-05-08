@@ -48,7 +48,7 @@ async function optimizeSubject(subject: string) {
   if (!subject.trim()) return subject;
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3.1-flash",
+      model: "gemini-3-flash-preview",
       contents: `Transforme este assunto de imagem em algo mais rico, cinematográfico e detalhado (em poucas palavras): "${subject}". Retorne apenas a versão melhorada.`,
     });
     return response.text || subject;
@@ -236,7 +236,7 @@ export default function App() {
       `;
 
       const result = await ai.models.generateContent({
-        model: "gemini-3.1-flash",
+        model: "gemini-3-flash-preview",
         contents: [
           {
             role: "user",
