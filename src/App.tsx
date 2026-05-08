@@ -4,15 +4,15 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
-import { 
-  Camera, 
-  Lightbulb, 
-  Monitor, 
-  MapPin, 
-  Palette, 
-  Zap, 
-  Film, 
-  Layout, 
+import {
+  Camera,
+  Lightbulb,
+  Monitor,
+  MapPin,
+  Palette,
+  Zap,
+  Film,
+  Layout,
   Sparkles,
   RefreshCcw,
   Image as ImageIcon,
@@ -25,10 +25,10 @@ import { GoogleGenAI } from "@google/genai";
 import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step } from './types';
 
 // Constants
-import { 
-  SHOT_TYPES, ANGLES, PERSPECTIVES, ASPECT_RATIOS, 
-  LENSES, LIGHTING, ENVIRONMENTS, STYLES, DETAILS, 
-  PRESETS, AUTO_COMBINATIONS 
+import {
+  SHOT_TYPES, ANGLES, PERSPECTIVES, ASPECT_RATIOS,
+  LENSES, LIGHTING, ENVIRONMENTS, STYLES, DETAILS,
+  PRESETS, AUTO_COMBINATIONS
 } from './data/constants';
 
 // Components
@@ -89,10 +89,10 @@ export default function App() {
   // --- Persistence ---
   useEffect(() => {
     const savedPresets = localStorage.getItem('shotcraft_user_presets');
-    if (savedPresets) try { setUserPresets(JSON.parse(savedPresets)); } catch (e) {}
-    
+    if (savedPresets) try { setUserPresets(JSON.parse(savedPresets)); } catch (e) { }
+
     const savedHistory = localStorage.getItem('shotcraft_history');
-    if (savedHistory) try { setHistory(JSON.parse(savedHistory)); } catch (e) {}
+    if (savedHistory) try { setHistory(JSON.parse(savedHistory)); } catch (e) { }
   }, []);
 
   useEffect(() => {
@@ -174,7 +174,7 @@ export default function App() {
           }
         });
       }
-      
+
       return nextSelections;
     });
   };
@@ -213,10 +213,10 @@ export default function App() {
   const handleAnalyzeReference = async (file: File) => {
     setIsAnalyzing(true);
     addToast('Mestre IA analisando sua referência...', 'info');
-    
+
     try {
       const imagePart = await fileToGenerativePart(file);
-      
+
       const allOptionsPrompt = `
         Aja como um especialista em direção cinematográfica e ShotCraft. 
         Analise esta imagem e identifique quais destas opções técnicas melhor a descrevem.
@@ -252,9 +252,9 @@ export default function App() {
       });
 
       const analysis = JSON.parse(result.text);
-      
+
       if (analysis.subject) setSubject(analysis.subject);
-      
+
       setSelections({
         framing: analysis.framing || '',
         angle: analysis.angle || '',
@@ -345,7 +345,7 @@ export default function App() {
       const prompt = STYLES.find(o => o.id === id)?.prompt;
       if (prompt) parts.push(prompt);
     });
-    
+
     if (mode === 'storyboard') parts.push("professional storyboard sketch, black and white pencil lines, compositional notes, rough sketches");
     else if (mode === 'cinematic') parts.push("cinematic color grading, professional cinematography, technical realism");
     else if (mode === 'illustration') parts.push("artistic hand-crafted illustration, distinct aesthetic");
@@ -397,10 +397,10 @@ export default function App() {
   return (
     <div className={`min-h-screen transition-colors duration-500 font-sans selection:bg-indigo-500/30 ${themeClasses.bg} ${themeClasses.text}`}>
       <Toast toasts={toasts} removeToast={removeToast} />
-      
-      <Header 
-        mode={mode} setMode={setMode} 
-        theme={theme} setTheme={setTheme} 
+
+      <Header
+        mode={mode} setMode={setMode}
+        theme={theme} setTheme={setTheme}
         copyToClipboard={copyToClipboard} copied={copied}
         handleReset={handleReset}
         themeClasses={themeClasses}
@@ -410,8 +410,8 @@ export default function App() {
         {/* Left Column: UI Controls */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           <Stepper steps={steps} activeStep={activeStep} setActiveStep={setActiveStep} themeClasses={themeClasses} />
-          
-          <StepContent 
+
+          <StepContent
             activeStep={activeStep} steps={steps}
             subject={subject} setSubject={setSubject}
             isOptimizing={isOptimizing} handleOptimizeSubject={handleOptimizeSubject}
@@ -422,36 +422,36 @@ export default function App() {
             theme={theme} themeClasses={themeClasses}
           />
 
-          <NegativePrompt 
-            negativePrompt={negativePrompt} setNegativePrompt={setNegativePrompt} 
-            themeClasses={themeClasses} 
+          <NegativePrompt
+            negativePrompt={negativePrompt} setNegativePrompt={setNegativePrompt}
+            themeClasses={themeClasses}
           />
         </div>
 
         {/* Right Column: Preview & Storage */}
         <div className="lg:col-span-4 flex flex-col gap-6">
-          <PromptPreview 
+          <PromptPreview
             finalPrompt={finalPrompt} copyToClipboard={copyToClipboard} copied={copied}
             isSaving={isSaving} setIsSaving={setIsSaving}
             newPresetName={newPresetName} setNewPresetName={setNewPresetName}
             handleSavePreset={handleSavePreset} themeClasses={themeClasses}
           />
 
-          <UserPresets 
+          <UserPresets
             userPresets={userPresets} loadUserPreset={(p) => {
               setSelections(p.selections);
               setSubject(p.subject);
               addToast('Preset carregado!', 'info');
-            }} 
+            }}
             deleteUserPreset={(idx) => {
               setUserPresets(prev => prev.filter((_, i) => i !== idx));
               addToast('Preset removido.', 'info');
-            }} 
-            themeClasses={themeClasses} 
+            }}
+            themeClasses={themeClasses}
           />
 
-          <History 
-            history={history} 
+          <History
+            history={history}
             loadFromHistory={(item) => {
               setSubject(item.subject);
               if (item.negativePrompt) setNegativePrompt(item.negativePrompt);
