@@ -146,7 +146,7 @@ export const STYLES: Option[] = [
   { id: 'day-for-night', label: 'Day for Night', prompt: 'day for night cinematography, simulated nighttime, blue tint, high contrast', category: 'style', subCategory: '9. Fotografia Cinematográfica' },
   
   // 10. Técnicas de Gravura
-  { id: 'xilogravura', label: 'Xilogravura', prompt: `A mystical black and white illustration of an old craftsman carving a massive twisted tree in a dark forest. The artwork should resemble traditional woodcut and linocut printmaking, with highly detailed engraved lines, swirling bark textures, dramatic black shadows, and white etched highlights. The composition should feel like an ancient folklore illustration, handcrafted and organic, with dense hatching and expressive carving marks.`, category: 'style', subCategory: '10. Técnicas de Gravura' },
+  { id: 'xilogravura', label: 'Xilogravura', prompt: `The artwork should resemble traditional woodcut and linocut printmaking, with highly detailed engraved lines, swirling bark textures, dramatic black shadows, and white etched highlights. The composition should feel like an ancient folklore illustration, handcrafted and organic, with dense hatching and expressive carving marks., artistic hand-crafted illustration, distinct aesthetic`, category: 'style', subCategory: '10. Técnicas de Gravura' },
 ];
 
 export const DETAILS: Option[] = [
