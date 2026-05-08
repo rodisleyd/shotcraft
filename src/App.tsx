@@ -432,7 +432,7 @@ export default function App() {
         </div>
 
         {/* Right Column: Preview & Storage */}
-        <div className="lg:col-span-4 flex flex-col gap-6">
+        <div className="lg:col-span-4 flex flex-col gap-6 sticky top-8 h-fit">
           <PromptPreview
             finalPrompt={finalPrompt} copyToClipboard={copyToClipboard} copied={copied}
             isSaving={isSaving} setIsSaving={setIsSaving}

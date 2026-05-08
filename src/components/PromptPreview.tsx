@@ -30,7 +30,7 @@ export function PromptPreview({
   themeClasses
 }: PromptPreviewProps) {
   return (
-    <div className={`border rounded-3xl p-8 sticky top-24 transition-colors ${themeClasses.card} shadow-xl`}>
+    <div className={`border rounded-3xl p-8 transition-colors ${themeClasses.card} shadow-xl`}>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Sparkles size={20} className={themeClasses.accentText} />
@@ -47,7 +47,7 @@ export function PromptPreview({
         </div>
       </div>
 
-      <div className={`p-6 rounded-2xl border mb-6 relative group min-h-[120px] transition-all ${themeClasses.bg}`}>
+      <div className={`p-6 rounded-2xl border mb-6 relative group min-h-[120px] max-h-[300px] overflow-y-auto transition-all ${themeClasses.bg} scrollbar-thin scrollbar-thumb-zinc-400 scrollbar-track-transparent`}>
         <p className="text-sm leading-relaxed font-medium break-words italic opacity-90">
           {finalPrompt}
         </p>
