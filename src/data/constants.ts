@@ -102,7 +102,7 @@ export const STYLES: Option[] = [
   { id: 'nanquim', label: 'Nanquim', prompt: 'ink wash illustration, deep black india ink', category: 'style', subCategory: '3. Tinta e Line Art' },
   { id: 'bico-de-pena', label: 'Bico de pena', prompt: 'fine pen and ink drawing, delicate linework', category: 'style', subCategory: '3. Tinta e Line Art' },
   { id: 'pincel', label: 'Pincel', prompt: 'painterly style, visible brushstrokes, artistic textured paint application', category: 'style', subCategory: '3. Tinta e Line Art' },
-  { id: 'sketch-pincel-nanquim', label: 'Sketch em pincel e nanquim', prompt: `expressive ink portrait sketch of an old bearded man wearing a turban, dynamic brush pen lines, loose gestural drawing, black ink illustration, confident strokes, comic book inking style, rough hatching, minimalist shading, hand drawn sketchbook aesthetic, elegant line economy, editorial illustration style`, category: 'style', subCategory: '3. Tinta e Line Art' },
+  { id: 'sketch-pincel-nanquim', label: 'Sketch em pincel e nanquim', prompt: `expressive ink sketch, dynamic brush pen lines, loose gestural drawing, black ink illustration, confident strokes, comic book inking style, rough hatching, minimalist shading, hand drawn sketchbook aesthetic, elegant line economy, editorial illustration style`, category: 'style', subCategory: '3. Tinta e Line Art' },
   { id: 'croqui', label: 'Croqui', prompt: `A raw artist's sketchbook page, expressive gestural ink-and-pencil sketch. High-contrast black ink cross-hatching, heavy dense shadow patches, and minimalist, rough scratching lines with varying weight. Features abstract, floating ink marks in the white space. Monochromatic.`, category: 'style', subCategory: '3. Tinta e Line Art' },
   { id: 'line-art', label: 'Line art', prompt: 'clean minimalist line art drawing', category: 'style', subCategory: '3. Tinta e Line Art' },
 
@@ -168,7 +168,7 @@ export const PRESETS = [
       lens: '24mm', 
       lighting: 'low-key', 
       environment: 'fog', 
-      style: { '5. Estilo Artístico': 'realista', '8. Cor e Finalização': 'alto-contraste' }, 
+      style: ['realista', 'alto-contraste'], 
       detail: 'detailed' 
     } 
   },
@@ -182,7 +182,7 @@ export const PRESETS = [
       lens: '85mm', 
       lighting: 'soft', 
       environment: 'sunset', 
-      style: { '1. Pintura Tradicional': 'oleo' }, 
+      style: ['oleo'], 
       detail: 'detailed' 
     } 
   },
@@ -196,7 +196,7 @@ export const PRESETS = [
       lens: '35mm', 
       lighting: 'hard', 
       environment: 'urban', 
-      style: { '8. Cor e Finalização': 'pb', '5. Estilo Artístico': 'realista' }, 
+      style: ['pb', 'realista'], 
       detail: 'detailed' 
     } 
   },
@@ -210,7 +210,7 @@ export const PRESETS = [
       lens: '24mm', 
       lighting: 'rim', 
       environment: 'medieval', 
-      style: { '5. Estilo Artístico': 'realista' }, 
+      style: ['realista'], 
       detail: 'detailed' 
     } 
   },

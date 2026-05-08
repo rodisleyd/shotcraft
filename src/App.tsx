@@ -114,6 +114,18 @@ export default function App() {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
+  const sanitizeSelections = (sel: any): SelectionState => {
+    return {
+      ...sel,
+      style: Array.isArray(sel.style) 
+        ? sel.style 
+        : (typeof sel.style === 'object' && sel.style !== null ? Object.values(sel.style) : []),
+      detail: Array.isArray(sel.detail) 
+        ? sel.detail 
+        : (typeof sel.detail === 'object' && sel.detail !== null ? Object.values(sel.detail) : [sel.detail].filter(Boolean))
+    };
+  };
+
   const steps: Step[] = [
     { title: 'Sujeito', icon: <Sparkles size={20} /> },
     { title: 'Formato', icon: <Layout size={20} /> },
@@ -260,7 +272,7 @@ export default function App() {
       
       if (analysis.subject) setSubject(analysis.subject);
 
-      setSelections({
+      const sanitized = sanitizeSelections({
         framing: analysis.framing || '',
         angle: analysis.angle || '',
         perspective: analysis.perspective || '',
@@ -271,6 +283,8 @@ export default function App() {
         style: analysis.style || [],
         detail: analysis.detail || []
       });
+
+      setSelections(sanitized);
 
       addToast('Mestre IA concluiu a análise!', 'success');
       setActiveStep(1); // Mover para o próximo passo para ver os resultados
@@ -444,7 +458,7 @@ export default function App() {
 
           <UserPresets
             userPresets={userPresets} loadUserPreset={(p) => {
-              setSelections(p.selections);
+              setSelections(sanitizeSelections(p.selections));
               setSubject(p.subject);
               addToast('Preset carregado!', 'info');
             }}
