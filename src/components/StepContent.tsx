@@ -135,7 +135,6 @@ export function StepContent({
                 >
                   Próximo Passo <ChevronRight size={18} />
                 </button>
-              </div>
             </div>
           )}
 
