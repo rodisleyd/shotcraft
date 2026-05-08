@@ -245,10 +245,7 @@ export default function App() {
               imagePart
             ]
           }
-        ],
-        generationConfig: {
-          responseMimeType: "application/json"
-        }
+        ]
       });
 
       const responseText = result.text || "";

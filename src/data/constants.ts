@@ -124,6 +124,7 @@ export const STYLES: Option[] = [
 
   // 6. Digital
   { id: 'digital-painting', label: 'Pintura digital', prompt: 'professional digital painting, soft blending', category: 'style', subCategory: '6. Digital' },
+  { id: 'flat-color', label: 'Flat Color', prompt: 'flat color illustration, bold clean shapes, minimal cel shading, vector-style artwork, elegant color blocking, simplified geometry, crisp contours, highly readable composition, limited cinematic palette, graphic design aesthetic, modern editorial illustration, polished professional artwork, smooth edges, premium stylized illustration', category: 'style', subCategory: '6. Digital' },
   { id: 'cel-shading', label: 'Cel shading', prompt: 'cel-shaded animation style, flat colors with hard shadows', category: 'style', subCategory: '6. Digital' },
   { id: 'matte-painting', label: 'Pintura matte', prompt: 'epic matte painting, cinematic backdrop style', category: 'style', subCategory: '6. Digital' },
   { id: 'concept-art', label: 'Concept art', prompt: 'production concept art, loose but professional polish', category: 'style', subCategory: '6. Digital' },
