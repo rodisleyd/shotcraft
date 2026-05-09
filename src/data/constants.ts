@@ -134,6 +134,7 @@ export const STYLES: Option[] = [
   { id: 'pencil', label: 'Esboço a lápis', prompt: `semi-realistic cartoon style, expressive character design, pencil sketch illustration, loose graphite lines, hand drawn sketchbook style, visible construction lines, soft graphite texture, light cross-hatching shading, detailed linework, whimsical concept art, children's book illustration style, monochrome pencil drawing, natural proportions, realistic details, rough artistic sketch on white paper`, category: 'style', subCategory: '7. Produção / Processo' },
   { id: 'storyboard', label: 'Storyboard', prompt: 'professional storyboard sketch, sequential art style', category: 'style', subCategory: '7. Produção / Processo' },
   { id: 'cartoon-expressions', label: 'Expressões faciais cartoon', prompt: 'cartoon character expression sheet, multiple facial expressions, animation model sheet, head rotation studies, expressive emotions, classic hand-drawn animation character design, caricature expressions, clean sketch layout', category: 'style', subCategory: '7. Produção / Processo' },
+  { id: 'cartoon-acting', label: 'Cartoon character acting', prompt: 'cartoon character acting sheet, multiple dynamic poses, high angle, low angle, front, back, profile, expressive body language, exaggerated cartoon acting, hand drawn animation style', category: 'style', subCategory: '7. Produção / Processo' },
 
   // 8. Cor e Finalização
   { id: 'pb', label: 'Preto e Branco', prompt: 'high contrast black and white graphic style', category: 'style', subCategory: '8. Cor e Finalização' },
@@ -253,6 +254,12 @@ export const AUTO_COMBINATIONS: Record<string, Partial<Record<string, any>>> = {
     'style': { '7. Produção / Processo': 'cartoon-expressions' },
     'lighting': 'high-key',
     'perspective': 'normal'
+  },
+  'cartoon-acting': {
+    'style': { '7. Produção / Processo': 'cartoon-acting' },
+    'lighting': 'high-key',
+    'perspective': 'dynamic',
+    'framing': 'full'
   },
   'ukiyo-e': {
     'style': { '5. Estilo Artístico': 'ukiyo-e' },
