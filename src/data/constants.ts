@@ -115,6 +115,7 @@ export const STYLES: Option[] = [
 
   // 5. Estilo Artístico
   { id: 'cartoon', label: 'Cartoon', prompt: 'classic cartoon character style, exaggerated features', category: 'style', subCategory: '5. Estilo Artístico' },
+  { id: 'comic-fun', label: 'Comic fun', prompt: 'high appeal cartoon character design, expressive caricature deformation, animation industry style model sheet, stylized facial anatomy, simplified geometric forms, classic animated film aesthetics, emotionally expressive character acting, strong silhouette language, playful proportions, exaggerated expressions, hand-crafted animation design sensibility, believable caricature, appealing asymmetry, visual rhythm in shapes, clean stylized construction', category: 'style', subCategory: '5. Estilo Artístico' },
   { id: 'anime', label: 'Anime', prompt: 'modern anime style, vibrant colors, clean linework', category: 'style', subCategory: '5. Estilo Artístico' },
   { id: 'manga', label: 'Mangá', prompt: 'classic manga style, detailed line art, expressive eyes, volume-driven shading', category: 'style', subCategory: '5. Estilo Artístico' },
   { id: 'realista', label: 'Realista', prompt: 'highly realistic illustration, accurate proportions', category: 'style', subCategory: '5. Estilo Artístico' },
@@ -240,6 +241,11 @@ export const AUTO_COMBINATIONS: Record<string, Partial<Record<string, any>>> = {
   'cartoon': {
     'style': { '5. Estilo Artístico': 'cartoon' },
     'lighting': 'vibrant',
+    'perspective': 'dynamic'
+  },
+  'comic-fun': {
+    'style': { '5. Estilo Artístico': 'comic-fun' },
+    'lighting': 'high-key',
     'perspective': 'dynamic'
   },
   'ukiyo-e': {
