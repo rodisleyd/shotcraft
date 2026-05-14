@@ -17,7 +17,8 @@ import {
   RefreshCcw,
   Image as ImageIcon,
   Upload,
-  Loader2
+  Loader2,
+  Languages
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
@@ -58,6 +59,20 @@ async function optimizeSubject(subject: string) {
   }
 }
 
+async function translateSubject(subject: string) {
+  if (!subject.trim()) return subject;
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: `Traduza o seguinte texto para o inglês, mantendo o estilo descritivo para um prompt de geração de imagem: "${subject}". Retorne APENAS a tradução em inglês.`,
+    });
+    return response.text || subject;
+  } catch (error) {
+    console.error('Erro ao traduzir:', error);
+    throw error;
+  }
+}
+
 export default function App() {
   // --- States ---
   const [subject, setSubject] = useState<string>('A mysterious detective standing in the rain');
@@ -83,6 +98,7 @@ export default function App() {
   const [newPresetName, setNewPresetName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [toasts, setToasts] = useState<ToastType[]>([]);
 
@@ -207,6 +223,20 @@ export default function App() {
       addToast('Erro ao otimizar com IA.', 'error');
     } finally {
       setIsOptimizing(false);
+    }
+  };
+
+  const handleTranslateSubject = async () => {
+    if (!subject.trim()) return;
+    setIsTranslating(true);
+    try {
+      const translated = await translateSubject(subject);
+      setSubject(translated);
+      addToast('Traduzido para o inglês!', 'success');
+    } catch (error) {
+      addToast('Erro ao traduzir para o inglês.', 'error');
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -434,6 +464,7 @@ export default function App() {
             activeStep={activeStep} steps={steps}
             subject={subject} setSubject={setSubject}
             isOptimizing={isOptimizing} handleOptimizeSubject={handleOptimizeSubject}
+            isTranslating={isTranslating} handleTranslateSubject={handleTranslateSubject}
             isAnalyzing={isAnalyzing} handleAnalyzeReference={handleAnalyzeReference}
             setActiveStep={setActiveStep} getCurrentOptions={getCurrentOptions}
             handleSelect={handleSelect} selections={selections}

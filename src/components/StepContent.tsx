@@ -4,7 +4,7 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages } from "lucide-react";
 import { Option, Step, SelectionState } from "../types";
 import { STYLES } from "../data/constants";
 import { useState } from "react";
@@ -16,6 +16,8 @@ interface StepContentProps {
   setSubject: (val: string) => void;
   isOptimizing: boolean;
   handleOptimizeSubject: () => void;
+  isTranslating: boolean;
+  handleTranslateSubject: () => void;
   isAnalyzing: boolean;
   handleAnalyzeReference: (file: File) => void;
   setActiveStep: (step: number) => void;
@@ -35,6 +37,8 @@ export function StepContent({
   setSubject,
   isOptimizing,
   handleOptimizeSubject,
+  isTranslating,
+  handleTranslateSubject,
   isAnalyzing,
   handleAnalyzeReference,
   setActiveStep,
@@ -85,6 +89,18 @@ export function StepContent({
                   >
                     <Wand2 size={18} className={`${isOptimizing ? 'animate-spin' : 'group-hover:scale-110 transition-transform'} text-amber-500`} />
                     {isOptimizing ? 'Otimizando com IA...' : 'Refinar Assunto com IA'}
+                  </button>
+                  <button 
+                    onClick={handleTranslateSubject}
+                    disabled={isTranslating || !subject.trim()}
+                    className={`w-full px-6 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all border shadow-sm ${
+                      theme === 'dark' 
+                        ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-100 bg-zinc-900/50' 
+                        : 'border-[#8b5a2b]/20 hover:bg-[#8b5a2b]/5 text-[#8b5a2b] bg-white'
+                    } disabled:opacity-50 group`}
+                  >
+                    <Languages size={18} className={`${isTranslating ? 'animate-spin' : 'group-hover:scale-110 transition-transform'} text-indigo-500`} />
+                    {isTranslating ? 'Traduzindo...' : 'Traduzir para Inglês'}
                   </button>
                 </div>
 
