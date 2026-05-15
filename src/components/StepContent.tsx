@@ -4,7 +4,7 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X } from "lucide-react";
 import { Option, Step, SelectionState } from "../types";
 import { STYLES } from "../data/constants";
 import { useState } from "react";
@@ -300,11 +300,116 @@ export function StepContent({
                   <ChevronLeft size={18} /> Voltar
                 </button>
                 <button 
-                  onClick={() => setActiveStep(activeStep === 9 ? activeStep : activeStep + 1)}
+                  onClick={() => setActiveStep(activeStep === 10 ? activeStep : activeStep + 1)}
                   className={`text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg ${themeClasses.accent}`}
                 >
-                  {activeStep === 9 ? 'Finalizar' : 'Próximo Passo'} <ChevronRight size={18} />
+                  {activeStep === 10 ? 'Finalizar' : 'Próximo Passo'} <ChevronRight size={18} />
                 </button>
+              </div>
+            </div>
+          )}
+          
+          {activeStep === 10 && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Revisão Final</h2>
+                <p className={`${themeClasses.textMuted} text-sm`}>Confira todas as suas escolhas técnicas. Remova o que não deseja clicando no ícone.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Sujeito */}
+                <div className={`p-4 rounded-2xl border ${themeClasses.card} flex flex-col gap-2`}>
+                   <div className="flex items-center justify-between">
+                     <span className="text-[10px] font-black uppercase tracking-widest opacity-50">Sujeito</span>
+                     <button onClick={() => setSubject('')} className="p-1 hover:text-rose-500 transition-colors">
+                       <Trash2 size={14} />
+                     </button>
+                   </div>
+                   <p className="text-sm font-medium line-clamp-3 italic">"{subject}"</p>
+                </div>
+
+                {/* Outras categorias simples */}
+                {[
+                  { key: 'aspect', label: 'Formato', options: getCurrentOptions(1) },
+                  { key: 'framing', label: 'Enquadramento', options: getCurrentOptions(2) },
+                  { key: 'angle', label: 'Ângulo', options: getCurrentOptions(3) },
+                  { key: 'perspective', label: 'Perspectiva', options: getCurrentOptions(4) },
+                  { key: 'lens', label: 'Lente', options: getCurrentOptions(5) },
+                  { key: 'lighting', label: 'Luz', options: getCurrentOptions(6) },
+                  { key: 'environment', label: 'Cenário', options: getCurrentOptions(7) },
+                ].map((cat) => {
+                  const selectionId = selections[cat.key];
+                  if (!selectionId) return null;
+                  const option = cat.options.find(o => o.id === selectionId);
+                  if (!option) return null;
+
+                  return (
+                    <div key={cat.key} className={`p-4 rounded-2xl border ${themeClasses.card} flex items-center justify-between group`}>
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-50">{cat.label}</span>
+                        <span className="text-sm font-bold">{option.label}</span>
+                      </div>
+                      <button 
+                        onClick={() => handleSelect(cat.key, selectionId)}
+                        className="p-2 rounded-lg hover:bg-rose-500/10 text-zinc-400 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  );
+                })}
+
+                {/* Estilos (Múltiplos) */}
+                {selections.style.length > 0 && (
+                  <div className={`col-span-full p-4 rounded-2xl border ${themeClasses.card}`}>
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-3 block">Estilos Selecionados</span>
+                    <div className="flex flex-wrap gap-2">
+                      {selections.style.map((id: string) => {
+                        const option = STYLES.find(o => o.id === id);
+                        return (
+                          <div key={id} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold ${themeClasses.optionActive}`}>
+                            {option?.label || id}
+                            <button onClick={() => handleSelect('style', id)} className="hover:text-rose-200 transition-colors">
+                              <X size={14} />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Detalhes (Múltiplos) */}
+                {selections.detail.length > 0 && (
+                  <div className={`col-span-full p-4 rounded-2xl border ${themeClasses.card}`}>
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-3 block">Detalhes Adicionais</span>
+                    <div className="flex flex-wrap gap-2">
+                      {selections.detail.map((id: string) => {
+                        const option = getCurrentOptions(9).find(o => o.id === id);
+                        return (
+                          <div key={id} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold ${themeClasses.optionActive}`}>
+                            {option?.label || id}
+                            <button onClick={() => handleSelect('detail', id)} className="hover:text-rose-200 transition-colors">
+                              <X size={14} />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-between pt-8 mt-auto">
+                <button 
+                  onClick={() => setActiveStep(activeStep - 1)}
+                  className={`${themeClasses.textMuted} hover:text-black/80 px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all`}
+                >
+                  <ChevronLeft size={18} /> Voltar
+                </button>
+                <div className={`px-8 py-3 rounded-xl font-bold flex items-center gap-2 bg-emerald-500/10 text-emerald-600 border border-emerald-500/20`}>
+                  <Check size={18} /> Tudo Pronto!
+                </div>
               </div>
             </div>
           )}

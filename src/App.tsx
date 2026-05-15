@@ -18,7 +18,9 @@ import {
   Image as ImageIcon,
   Upload,
   Loader2,
-  Languages
+  Languages,
+  CheckCircle2,
+  Trash2
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
@@ -153,6 +155,7 @@ export default function App() {
     { title: 'Cenário', icon: <MapPin size={20} /> },
     { title: 'Estilo', icon: <Palette size={20} /> },
     { title: 'Detalhe', icon: <Zap size={20} /> },
+    { title: 'Revisão', icon: <CheckCircle2 size={20} /> },
   ];
 
   const getCurrentOptions = (step: number) => {
