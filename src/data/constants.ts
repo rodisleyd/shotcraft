@@ -179,12 +179,43 @@ export const LENSES: Option[] = [
 ];
 
 export const LIGHTING: Option[] = [
-  { id: 'soft', label: 'Luz Suave', prompt: 'soft diffused lighting', category: 'lighting' },
-  { id: 'hard', label: 'Luz Dura', prompt: 'hard directional lighting, high contrast', category: 'lighting' },
-  { id: 'rim', label: 'Luz de Contorno', prompt: 'rim lighting, backlight silhouette', category: 'lighting' },
-  { id: 'backlight', label: 'Contraluz', prompt: 'strong backlight', category: 'lighting' },
-  { id: 'low-key', label: 'Low Key', prompt: 'low-key lighting, moody shadows', category: 'lighting' },
-  { id: 'high-key', label: 'High Key', prompt: 'high-key lighting, bright and airy', category: 'lighting' },
+  // 1. Iluminação Básica
+  { id: 'soft', label: 'Luz Suave (Soft)', prompt: 'soft diffused lighting', category: 'lighting', subCategory: '1. Iluminação Básica' },
+  { id: 'hard', label: 'Luz Dura (Hard)', prompt: 'hard directional lighting, high contrast', category: 'lighting', subCategory: '1. Iluminação Básica' },
+  { id: 'ambient', label: 'Luz Ambiente (Ambient)', prompt: 'ambient lighting, flat even fill light', category: 'lighting', subCategory: '1. Iluminação Básica' },
+  { id: 'side', label: 'Luz Lateral (Side)', prompt: 'side lighting, strong key light from side, high texture detail', category: 'lighting', subCategory: '1. Iluminação Básica' },
+
+  // 2. Iluminação Dramática
+  { id: 'low-key', label: 'Low Key (Sombrio)', prompt: 'low-key lighting, moody deep shadows, high contrast drama', category: 'lighting', subCategory: '2. Iluminação Dramática' },
+  { id: 'split-light', label: 'Split Lighting (Bipartida)', prompt: 'split lighting portrait, half face lit, high drama shadow split', category: 'lighting', subCategory: '2. Iluminação Dramática' },
+  { id: 'noir-lighting', label: 'Noir Lighting (Claro-Escuro)', prompt: 'film noir lighting style, extreme chiaroscuro, venetian blind shadows', category: 'lighting', subCategory: '2. Iluminação Dramática' },
+  { id: 'underlighting', label: 'Underlighting (Luz de Baixo)', prompt: 'underlighting, dramatic uplight, horror light direction, looking up from bottom', category: 'lighting', subCategory: '2. Iluminação Dramática' },
+
+  // 3. Iluminação Cinematográfica
+  { id: 'rim', label: 'Luz de Contorno (Rim Light)', prompt: 'rim lighting, strong edge light, backlight silhouette outline', category: 'lighting', subCategory: '3. Iluminação Cinematográfica' },
+  { id: 'volumetric', label: 'Luz Volumétrica', prompt: 'volumetric lighting, visible light shafts, haze beams', category: 'lighting', subCategory: '3. Iluminação Cinematográfica' },
+  { id: 'motivated', label: 'Luz Motivada (Motivated)', prompt: 'motivated lighting, realistic source lighting, natural looking cinematography', category: 'lighting', subCategory: '3. Iluminação Cinematográfica' },
+  { id: 'practical', label: 'Luz Prática (Practical)', prompt: 'practical lighting, visible in-scene light sources, glowing candlelight or screens', category: 'lighting', subCategory: '3. Iluminação Cinematográfica' },
+  { id: 'rembrandt', label: 'Luz Rembrandt', prompt: 'Rembrandt lighting style, signature light triangle on cheek, painterly portrait look', category: 'lighting', subCategory: '3. Iluminação Cinematográfica' },
+  { id: 'butterfly', label: 'Luz Butterfly (Borboleta)', prompt: 'butterfly lighting portrait, overhead glamour key light, fashion look', category: 'lighting', subCategory: '3. Iluminação Cinematográfica' },
+  { id: 'loop', label: 'Luz Loop', prompt: 'loop lighting portrait, subtle nose shadow, classic studio lighting', category: 'lighting', subCategory: '3. Iluminação Cinematográfica' },
+  { id: 'top-lighting', label: 'Luz Superior (Top Light)', prompt: 'top lighting, dramatic overhead keylight, interrogative atmosphere', category: 'lighting', subCategory: '3. Iluminação Cinematográfica' },
+  { id: 'god-rays', label: 'Raios Divinos (God Rays)', prompt: 'cinematic god rays, crepuscular sun beams, volumetric light haze', category: 'lighting', subCategory: '3. Iluminação Cinematográfica' },
+
+  // 4. Iluminação Natural
+  { id: 'golden-hour', label: 'Golden Hour (Pôr do Sol)', prompt: 'golden hour sunset lighting, warm orange glow, long soft shadows', category: 'lighting', subCategory: '4. Iluminação Natural' },
+  { id: 'blue-hour', label: 'Blue Hour (Crepúsculo)', prompt: 'blue hour lighting, cool atmospheric twilight, soft ambient dusk', category: 'lighting', subCategory: '4. Iluminação Natural' },
+  { id: 'moonlight', label: 'Moonlight (Luar)', prompt: 'moonlight lighting, cool blue night illumination, soft lunar glow', category: 'lighting', subCategory: '4. Iluminação Natural' },
+  { id: 'overcast', label: 'Nublado (Overcast)', prompt: 'overcast sky lighting, flat diffused daylight, desaturated soft shadows', category: 'lighting', subCategory: '4. Iluminação Natural' },
+  { id: 'candlelight', label: 'Luz de Velas (Candlelight)', prompt: 'warm candlelight, flickering flame lighting, historical drama ambience', category: 'lighting', subCategory: '4. Iluminação Natural' },
+
+  // 5. Iluminação Estilizada
+  { id: 'cyberpunk-lighting', label: 'Cyberpunk Lighting', prompt: 'cyberpunk style lighting, neon color contrast, wet surface reflections', category: 'lighting', subCategory: '5. Iluminação Estilizada' },
+  { id: 'neon', label: 'Luz Neon (Neon)', prompt: 'neon glow, colorful neon tube illumination, synthwave ambience', category: 'lighting', subCategory: '5. Iluminação Estilizada' },
+  { id: 'colored-light', label: 'Luz Colorida (Colored)', prompt: 'colored lighting, stylized dual-tone gel lighting, red and blue split', category: 'lighting', subCategory: '5. Iluminação Estilizada' },
+  { id: 'stage-lighting', label: 'Luz de Palco (Stage)', prompt: 'stage spotlighting, dramatic theatrical stage beams, performance look', category: 'lighting', subCategory: '5. Iluminação Estilizada' },
+  { id: 'horror-lighting', label: 'Luz de Terror (Horror)', prompt: 'horror cinema lighting, dynamic high contrast shadows, eerie green and purple tones', category: 'lighting', subCategory: '5. Iluminação Estilizada' },
+  { id: 'studio', label: 'Luz de Estúdio (Studio)', prompt: 'controlled professional studio lighting, three-point setup, clean portrait fill', category: 'lighting', subCategory: '5. Iluminação Estilizada' },
 ];
 
 export const ENVIRONMENTS: Option[] = [
@@ -292,6 +323,10 @@ export const DETAILS: Option[] = [
   { id: 'bloom', label: 'Bloom Effect (Brilho Intenso)', prompt: 'blooming highlights, glowing light sources, ethereal glow', category: 'detail', subCategory: '1. Efeitos Ópticos' },
   { id: 'halation', label: 'Halation (Analógico)', prompt: 'film halation, red glow around high-contrast edges, cinematic analog look', category: 'detail', subCategory: '1. Efeitos Ópticos' },
   { id: 'motion-blur', label: 'Motion Blur (Movimento)', prompt: 'motion blur, dynamic action streaking, shutter speed blur', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'glow-effect', label: 'Brilho Suave (Glow)', prompt: 'dreamy soft glow, glowing halation, luminous overlay', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'light-leak', label: 'Vazamento de Luz (Light Leak)', prompt: 'analogue light leak, vintage film burn, warm color leak', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'caustics', label: 'Cáusticas (Caustics)', prompt: 'underwater light caustics, water surface reflections, light refraction', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'dust-rays', label: 'Poeira na Luz (Dust Rays)', prompt: 'volumetric dust particles in light shafts, floating dust in sun rays', category: 'detail', subCategory: '1. Efeitos Ópticos' },
 
   // 2. Nível de Detalhe
   { id: 'rough', label: 'Rough (Bruto)', prompt: 'rough unpolished look', category: 'detail', subCategory: '2. Nível de Detalhe' },
