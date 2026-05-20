@@ -329,51 +329,153 @@ export const AUTO_COMBINATIONS: Record<string, Partial<Record<string, any>>> = {
 
 export const COLOR_PALETTES: ColorPaletteOption[] = [
   {
+    id: 'terror-psicologico',
+    name: 'Terror Psicológico',
+    colors: ['#4a5340', '#3c4f5e', '#2b2d2f', '#7d1c1c', '#111213'],
+    description: 'Insanidade, desconforto, paranoia e claustrofobia. Tons de verde doente, azul dessaturado, cinza úmido e vermelho escuro.'
+  },
+  {
+    id: 'slasher',
+    name: 'Slasher (Terror Sangrento)',
+    colors: ['#08090a', '#9e0a0a', '#111e38', '#eef1f6', '#3a3f47'],
+    description: 'Violência, perseguição e medo imediato. Preto profundo, vermelho sangue, azul noturno e branco frio.'
+  },
+  {
     id: 'cyberpunk',
     name: 'Cyberpunk Neon',
-    colors: ['#00f0ff', '#ff007f', '#9b51e0', '#2d9cdb', '#100e17'],
-    description: 'Cores neon vibrantes e contrastantes. Tons eletrizantes de ciano, magenta e roxo profundo.'
+    colors: ['#ff007f', '#00f5d4', '#7b2cbf', '#007aff', '#0c0c0e'],
+    description: 'Tecnologia, decadência urbana e futurismo. Tons de magenta neon, ciano, roxo elétrico e preto molhado.'
   },
   {
-    id: 'noir',
-    name: 'Cinematic Noir',
-    colors: ['#121212', '#333333', '#7a7a7a', '#cccccc', '#f5f5f5'],
-    description: 'Escala de cinzas dramática. Excelente para sombreamento duro, silhuetas e alto contraste.'
+    id: 'space-opera',
+    name: 'Space Opera (Ficção Científica)',
+    colors: ['#0f172a', '#d4af37', '#f8fafc', '#020617', '#4c1d95'],
+    description: 'Grandiosidade, aventura e exploração espacial. Azul profundo, dourado, branco estelar e roxo nebulosa.'
   },
   {
-    id: 'vaporwave',
-    name: 'Vaporwave Sunset',
-    colors: ['#ff9cfc', '#9ad0ec', '#e3bec6', '#a1e3d4', '#ffd3b6'],
-    description: 'Estética retrô e nostálgica dos anos 80/90. Tons suaves de rosa, ciano pastel e menta.'
+    id: 'dark-fantasy',
+    name: 'Dark Fantasy (Fantasia Sombria)',
+    colors: ['#3f4a3c', '#5c4033', '#1a1a1a', '#b89047', '#8b3a3a'],
+    description: 'Magia proibida e decadência medieval. Verde musgo, marrom antigo, preto carvão e ouro envelhecido.'
   },
   {
-    id: 'golden-hour',
-    name: 'Golden Hour',
-    colors: ['#f2994a', '#f2c94c', '#e0e0e0', '#eb5757', '#4f4f4f'],
-    description: 'Luz solar quente e atmosférica. Cores de pôr do sol com laranjas e amarelos ricos.'
+    id: 'high-fantasy',
+    name: 'High Fantasy (Fantasia Clássica)',
+    colors: ['#4169e1', '#ffffff', '#ffd700', '#228b22', '#87ceeb'],
+    description: 'Heroísmo, esperança e magia clássica. Azul royal, branco luminoso, dourado e verde natureza.'
   },
   {
-    id: 'earth-tones',
-    name: 'Tons de Terra',
-    colors: ['#8b5a2b', '#2d5a27', '#dfc794', '#9e2a2b', '#3e2723'],
-    description: 'Paleta orgânica e acolhedora. Tons argilosos, verdes florestais, ocres e marrons profundos.'
+    id: 'neo-noir',
+    name: 'Neo-Noir',
+    colors: ['#0f0f10', '#1a365d', '#2d124d', '#ff003c', '#d53f8c'],
+    description: 'Mistério, corrupção e solidão urbana. Preto, azul petróleo, roxo escuro e neon vermelho.'
   },
   {
-    id: 'pastel-cozy',
-    name: 'Pastel Cozy',
-    colors: ['#ffccd5', '#ffeb3b', '#b3e5fc', '#c8e6c9', '#f8bbd0'],
-    description: 'Estética delicada, aconchegante e fofa. Perfeito para o estilo 3D estilizado e fantasia suave.'
+    id: 'noir-classico',
+    name: 'Noir Clássico',
+    colors: ['#000000', '#ffffff', '#8e8e93', '#3a3a3c', '#1c1c1e'],
+    description: 'Investigação, fatalismo e tensão clássica. Escala pura de preto, cinza fumaça, cinza escuro e branco.'
   },
   {
-    id: 'vintage-comic',
-    name: 'Quadrinhos Vintage (CMYK)',
-    colors: ['#e74c3c', '#3498db', '#f1c40f', '#ecf0f1', '#2c3e50'],
-    description: 'Cores clássicas de quadrinhos retro. Vermelho, azul e amarelo primários levemente desbotados.'
+    id: 'romance-nostalgico',
+    name: 'Romance Nostálgico',
+    colors: ['#c88b90', '#e8d8c8', '#e5c158', '#f08080', '#4e3629'],
+    description: 'Carinho, memória e calor emocional. Rosa antigo, bege, dourado suave e laranja sunset.'
   },
   {
-    id: 'nordic-cold',
-    name: 'Frio Nórdico',
-    colors: ['#e3f2fd', '#bbdefb', '#90caf9', '#64b5f6', '#1e88e5'],
-    description: 'Tons gelados e melancólicos. Perfeito para cenas de neblina, inverno e ficção científica fria.'
+    id: 'militar-tatico',
+    name: 'Militar Tático',
+    colors: ['#556b2f', '#708090', '#1a1a1a', '#ff4500', '#d2b48c'],
+    description: 'Combate, estratégia, camuflagem e tensão. Verde oliva, cinza metálico, preto e laranja explosão.'
+  },
+  {
+    id: 'cartoon-moderno',
+    name: 'Cartoon Moderno',
+    colors: ['#ff3b30', '#34c759', '#007aff', '#ffcc00', '#af52de'],
+    description: 'Diversão, energia e dinamismo. Cores primárias altamente vibrantes com contraste forte.'
+  },
+  {
+    id: 'drama-melancolia',
+    name: 'Drama & Melancolia',
+    colors: ['#4f5d75', '#a4b0be', '#747d8c', '#2f3542', '#eccc68'],
+    description: 'Sentimentos profundos, solidão e reflexão. Tons azuis frios desbotados, cinza pérola e bege pálido.'
+  },
+  {
+    id: 'medo-tensao',
+    name: 'Medo & Tensão',
+    colors: ['#57606f', '#2f3542', '#1e272e', '#485460', '#d2d2d2'],
+    description: 'Clima de suspense e apreensão. Amarelos esverdeados doentes, verde pântano e preto asfalto.'
+  },
+  {
+    id: 'aventura-exploracao',
+    name: 'Aventura & Exploração',
+    colors: ['#20bf6b', '#0984e3', '#fa8231', '#f7b731', '#ffffff'],
+    description: 'Jornadas épicas e otimismo. Verde floresta brilhante, azul oceano, laranja ensolarado e ocre areia.'
+  },
+  {
+    id: 'coragem-heroismo',
+    name: 'Coragem & Heroísmo',
+    colors: ['#eb3b5a', '#f7b731', '#3867d6', '#ffffff', '#a55eea'],
+    description: 'Atos valentes e de grande impacto. Vermelho escarlate heroico, ouro cintilante e azul marinho profundo.'
+  },
+  {
+    id: 'verao-tropical',
+    name: 'Verão Tropical',
+    colors: ['#fed330', '#2bcbba', '#fd9644', '#26de81', '#fc5c65'],
+    description: 'Calor, festividade e vivacidade. Amarelo sol, azul turquesa, coral quente e verde limão.'
+  },
+  {
+    id: 'inverno-congelante',
+    name: 'Inverno Congelante',
+    colors: ['#45aaf2', '#a55eea', '#ffffff', '#d1d8e0', '#778ca3'],
+    description: 'Friagem, solidão e paz. Azul gelo profundo, ciano claro, branco neve e cinza ártico.'
+  },
+  {
+    id: 'primavera-florada',
+    name: 'Primavera Florada',
+    colors: ['#fd79a8', '#55efc4', '#a29bfe', '#ffeaa7', '#fab1a0'],
+    description: 'Renascimento, leveza e romance. Rosa flor de cerejeira, verde broto, lavanda e pêssego.'
+  },
+  {
+    id: 'psicodelico-synth',
+    name: 'Psicodélico Synth',
+    colors: ['#6c5ce7', '#00cec9', '#e84393', '#fdcb6e', '#ffeaa7'],
+    description: 'Viagem alucinógena, sonhos e psicodelia. Roxo ultravioleta, verde ácido, rosa neon e amarelo elétrico.'
+  },
+  {
+    id: 'neon-decay',
+    name: 'Neon Decay (Profissional)',
+    colors: ['#00f5d4', '#7b2cbf', '#ff007f', '#240046', '#adff2f'],
+    description: 'Futurismo decadente e tóxico. Ciano esverdeado neon, magenta queimado, roxo tóxico e verde ácido.'
+  },
+  {
+    id: 'sacred-dawn',
+    name: 'Sacred Dawn (Profissional)',
+    colors: ['#ffe5ec', '#ffb3c6', '#ff85a1', '#f72585', '#7209b7'],
+    description: 'Alvorecer sagrado, místico e espiritual. Dourado celestial, rosa amanhecer, azul etéreo e violeta.'
+  },
+  {
+    id: 'toxic-hospital',
+    name: 'Toxic Hospital (Profissional)',
+    colors: ['#a8dadc', '#457b9d', '#1d3557', '#e63946', '#f1faee'],
+    description: 'Atmosfera hospitalar doente e fria. Verde hospitalar asséptico, azul cirúrgico e vermelho sangue coagulado.'
+  },
+  {
+    id: 'crimson-hunt',
+    name: 'Crimson Hunt (Profissional)',
+    colors: ['#641e16', '#a93226', '#1a5276', '#f4f6f7', '#17202a'],
+    description: 'Caçada implacável e vampirismo. Vermelhos intensos, tons de pele pálida e pretos profundos.'
+  },
+  {
+    id: 'industrial-rain',
+    name: 'Industrial Rain (Profissional)',
+    colors: ['#4b5563', '#b45309', '#1e3a8a', '#eab308', '#111827'],
+    description: 'Metal pesado, poeira e chuva ácida. Cinzas de concreto, marrom ferrugem, azul tempestade e amarelo alerta.'
+  },
+  {
+    id: 'rusted-empire',
+    name: 'Rusted Empire (Profissional)',
+    colors: ['#854d0e', '#b45309', '#14532d', '#991b1b', '#fef08a'],
+    description: 'Impérios antigos esquecidos. Dourado envelhecido, marrom ferrugem, cobre esverdeado e vermelho imperial gasto.'
   }
 ];
