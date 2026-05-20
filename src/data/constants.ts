@@ -81,6 +81,7 @@ export const ANGLES: Option[] = [
   { id: 'side-view', label: 'Side View (Visão de Lado / Perfil)', prompt: 'side view profile, full side portrait', category: 'angle', subCategory: '4. Ângulos de Personagem' },
   { id: 'back-view', label: 'Back View (Visão Traseira / Costas)', prompt: 'back view profile, character facing away', category: 'angle', subCategory: '4. Ângulos de Personagem' },
   { id: 'three-quarter', label: 'Three-Quarter View (Três Quartos)', prompt: 'three-quarter camera view, 3/4 view angle', category: 'angle', subCategory: '4. Ângulos de Personagem' },
+  { id: 'turnaround', label: 'Turnaround (Vários Ângulos)', prompt: 'Generate a full professional turnaround sheet for the provided subject/reference. Show all necessary orthographic angles and consistent views including front, side, back, 3/4 and top views when needed. Preserve exact visual consistency between every angle including shape, proportions, colors, textures, materials and details. Arrange like an animation/game industry model sheet. Neutral lighting, clean background, ultra detailed, highly organized layout, no perspective distortion, no redesign, no inconsistencies.', category: 'angle', subCategory: '4. Ângulos de Personagem' },
 
   // 5. Ângulos Cinematográficos
   { id: 'through-object', label: 'Through Object (Através de Objeto)', prompt: 'shooting through object camera angle, frame within a frame shot, foreground occlusion', category: 'angle', subCategory: '5. Ângulos Cinematográficos' },
