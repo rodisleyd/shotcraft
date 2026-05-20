@@ -64,6 +64,8 @@ export function StepContent({
       setExpandedCategory('1. Enquadramentos Básicos');
     } else if (activeStep === 3) {
       setExpandedCategory('1. Ângulos Básicos');
+    } else if (activeStep === 4) {
+      setExpandedCategory('1. Perspectivas Clássicas');
     } else {
       setExpandedCategory(null);
     }
@@ -385,7 +387,7 @@ export function StepContent({
                 <p className={`${themeClasses.textMuted} text-sm`}>Escolha uma opção técnica para refinar a composição.</p>
               </div>
               
-              {activeStep === 9 || activeStep === 2 || activeStep === 3 ? (
+              {activeStep === 9 || activeStep === 2 || activeStep === 3 || activeStep === 4 ? (
                 <div className="space-y-3">
                   {Array.from(new Set(getCurrentOptions(activeStep).map(s => s.subCategory))).filter(Boolean).map(subCat => (
                     <div key={subCat} className={`border rounded-2xl overflow-hidden transition-colors ${themeClasses.card}`}>

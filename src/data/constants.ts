@@ -101,10 +101,36 @@ export const ANGLES: Option[] = [
 ];
 
 export const PERSPECTIVES: Option[] = [
-  { id: 'normal', label: 'Perspectiva Normal', prompt: 'normal perspective, realistic depth', category: 'perspective' },
-  { id: 'foreshortening', label: 'Distorcida (Foreshortening)', prompt: 'extreme foreshortening perspective, distorted depth', category: 'perspective' },
-  { id: 'isometric', label: 'Isométrica', prompt: 'isometric perspective, 2.5D view, no vanishing point', category: 'perspective' },
-  { id: 'dynamic', label: 'Dinâmica', prompt: 'dynamic perspective, vanishing point focus, cinematic depth', category: 'perspective' },
+  // 1. Perspectivas Clássicas
+  { id: 'normal', label: 'Perspectiva Normal', prompt: 'normal perspective, realistic depth', category: 'perspective', subCategory: '1. Perspectivas Clássicas' },
+  { id: 'one-point', label: '1 Ponto de Fuga (One-Point)', prompt: 'one point perspective, single vanishing point', category: 'perspective', subCategory: '1. Perspectivas Clássicas' },
+  { id: 'two-point', label: '2 Pontos de Fuga (Two-Point)', prompt: 'two point perspective', category: 'perspective', subCategory: '1. Perspectivas Clássicas' },
+  { id: 'three-point', label: '3 Pontos de Fuga (Three-Point)', prompt: 'three point perspective', category: 'perspective', subCategory: '1. Perspectivas Clássicas' },
+
+  // 2. Perspectivas Estilizadas
+  { id: 'fisheye', label: 'Olho de Peixe (Fisheye)', prompt: 'fisheye lens perspective, ultra wide distortion', category: 'perspective', subCategory: '2. Perspectivas Estilizadas' },
+  { id: 'curvilinear', label: 'Curvilinear', prompt: 'curvilinear perspective', category: 'perspective', subCategory: '2. Perspectivas Estilizadas' },
+  { id: 'exaggerated', label: 'Exagerada (Exaggerated)', prompt: 'exaggerated perspective, dynamic anime distortion', category: 'perspective', subCategory: '2. Perspectivas Estilizadas' },
+  { id: 'foreshortening', label: 'Distorcida (Foreshortening)', prompt: 'extreme foreshortening perspective, distorted depth', category: 'perspective', subCategory: '2. Perspectivas Estilizadas' },
+
+  // 3. Perspectivas Cinematográficas
+  { id: 'deep-focus', label: 'Foco Profundo (Deep Focus)', prompt: 'deep focus perspective, everything in sharp focus', category: 'perspective', subCategory: '3. Perspectivas Cinematográficas' },
+  { id: 'shallow-depth', label: 'Profundidade Raseira (Shallow Depth)', prompt: 'shallow depth of field, cinematic depth', category: 'perspective', subCategory: '3. Perspectivas Cinematográficas' },
+  { id: 'cinematic', label: 'Lente Cinematográfica (Cinematic)', prompt: 'cinematic perspective, anamorphic depth', category: 'perspective', subCategory: '3. Perspectivas Cinematográficas' },
+  { id: 'compression', label: 'Compressão de Teleobjetiva', prompt: 'compression perspective, compressed background, telephoto look', category: 'perspective', subCategory: '3. Perspectivas Cinematográficas' },
+
+  // 4. Perspectivas Artísticas
+  { id: 'atmospheric', label: 'Atmosférica (Atmosférica)', prompt: 'atmospheric perspective, depth by fog and haze', category: 'perspective', subCategory: '4. Perspectivas Artísticas' },
+  { id: 'layered', label: 'Camadas Planas (Layered)', prompt: 'layered perspective, distinct foreground midground and background, Ghibli layout style', category: 'perspective', subCategory: '4. Perspectivas Artísticas' },
+  { id: 'forced', label: 'Perspectiva Forçada (Forced)', prompt: 'forced perspective, illusion of scale', category: 'perspective', subCategory: '4. Perspectivas Artísticas' },
+  { id: 'epic-scale', label: 'Escala Épica (Epic Scale)', prompt: 'epic scale perspective, tiny character in massive environment', category: 'perspective', subCategory: '4. Perspectivas Artísticas' },
+
+  // 5. Perspectivas Técnicas
+  { id: 'orthographic', label: 'Ortográfica (Orthographic)', prompt: 'orthographic view, no perspective distortion', category: 'perspective', subCategory: '5. Perspectivas Técnicas' },
+  { id: 'isometric', label: 'Isométrica', prompt: 'isometric perspective, 2.5D view, no vanishing point', category: 'perspective', subCategory: '5. Perspectivas Técnicas' },
+  { id: 'four-point', label: '4 Pontos de Fuga (Four-Point)', prompt: 'four point perspective, curvilinear perspective', category: 'perspective', subCategory: '5. Perspectivas Técnicas' },
+  { id: 'five-point', label: '5 Pontos de Fuga (Five-Point)', prompt: 'five point perspective, spherical perspective', category: 'perspective', subCategory: '5. Perspectivas Técnicas' },
+  { id: 'spherical', label: 'Perspectiva Esférica', prompt: 'spherical perspective, fisheye curved lines', category: 'perspective', subCategory: '5. Perspectivas Técnicas' },
 ];
 
 export const ASPECT_RATIOS: Option[] = [
