@@ -146,10 +146,36 @@ export const ASPECT_RATIOS: Option[] = [
 ];
 
 export const LENSES: Option[] = [
-  { id: '24mm', label: '24mm (Grande Angular)', prompt: 'shot on 24mm wide-angle lens', category: 'lens' },
-  { id: '35mm', label: '35mm (Padrão)', prompt: 'shot on 35mm lens', category: 'lens' },
-  { id: '50mm', label: '50mm (Natural)', prompt: 'shot on 50mm prime lens', category: 'lens' },
-  { id: '85mm', label: '85mm (Retrato)', prompt: 'shot on 85mm portrait lens', category: 'lens' },
+  // 1. Lentes Naturais
+  { id: '24mm', label: '24mm (Wide Natural)', prompt: 'shot on 24mm wide-angle lens', category: 'lens', subCategory: '1. Lentes Naturais' },
+  { id: '35mm', label: '35mm (Cinema Moderno)', prompt: 'shot on 35mm lens, natural field of view', category: 'lens', subCategory: '1. Lentes Naturais' },
+  { id: '50mm', label: '50mm (Perspectiva Humana)', prompt: 'shot on 50mm lens, standard human perspective', category: 'lens', subCategory: '1. Lentes Naturais' },
+  { id: '85mm', label: '85mm (Retrato Cinematográfico)', prompt: 'shot on 85mm lens, cinematic portrait compression, blurred background', category: 'lens', subCategory: '1. Lentes Naturais' },
+
+  // 2. Lentes Cinematográficas
+  { id: 'anamorphic', label: 'Lente Anamórfica', prompt: 'shot on anamorphic lens, oval bokeh, horizontal blue lens flare, cinematic aspect', category: 'lens', subCategory: '2. Lentes Cinematográficas' },
+  { id: 'imax', label: 'Lente IMAX', prompt: 'shot on IMAX lens, gigantic scale, high-fidelity details, massive field of view', category: 'lens', subCategory: '2. Lentes Cinematográficas' },
+  { id: 'spherical-lens', label: 'Lente Esférica (Cinema Clássico)', prompt: 'shot on spherical cinema lens, classic movie rendering', category: 'lens', subCategory: '2. Lentes Cinematográficas' },
+  { id: 'cooke-lens', label: 'Lente Cooke (Cooke Look)', prompt: 'shot on Cooke speed panchro lens, warm organic look, gentle contrast, golden tones', category: 'lens', subCategory: '2. Lentes Cinematográficas' },
+  { id: 'zeiss-lens', label: 'Lente Zeiss (Nítida)', prompt: 'shot on Zeiss cinema lens, ultra-sharp details, high contrast, clean modern look', category: 'lens', subCategory: '2. Lentes Cinematográficas' },
+
+  // 3. Lentes Dramáticas
+  { id: 'ultra-wide', label: 'Ultra Grande Angular (14mm-20mm)', prompt: 'shot on 14mm ultra-wide lens, dynamic distortion, deep field view', category: 'lens', subCategory: '3. Lentes Dramáticas' },
+  { id: 'fisheye-lens', label: 'Olho de Peixe (Fisheye)', prompt: 'shot on fisheye lens, ultra-wide 180-degree spherical distortion, curved lines', category: 'lens', subCategory: '3. Lentes Dramáticas' },
+  { id: 'telephoto', label: 'Teleobjetiva (135mm-300mm)', prompt: 'shot on 200mm telephoto lens, strong background compression, flattened depth', category: 'lens', subCategory: '3. Lentes Dramáticas' },
+  { id: 'super-telephoto', label: 'Super Teleobjetiva (300mm+)', prompt: 'shot on 400mm super telephoto lens, wildlife and surveillance zoom', category: 'lens', subCategory: '3. Lentes Dramáticas' },
+
+  // 4. Lentes Artísticas
+  { id: 'vintage-lens', label: 'Lente Vintage', prompt: 'shot on vintage lens, chromatic aberration, organic flare, soft focus edges', category: 'lens', subCategory: '4. Lentes Artísticas' },
+  { id: 'tilt-shift-lens', label: 'Lente Tilt-Shift (Miniatura)', prompt: 'shot on tilt-shift lens, miniature effect, selective blur tilt-shift', category: 'lens', subCategory: '4. Lentes Artísticas' },
+  { id: 'dream-lens', label: 'Lente Dream (Glow & Halation)', prompt: 'shot on dream lens, soft halation diffuse glow, romantic dreamlike aesthetic', category: 'lens', subCategory: '4. Lentes Artísticas' },
+
+  // 5. Lentes Técnicas
+  { id: 'macro-lens', label: 'Lente Macro', prompt: 'shot on macro lens, extreme close-up detail, tiny subject magnification', category: 'lens', subCategory: '5. Lentes Técnicas' },
+  { id: 'cctv-lens', label: 'Lente CCTV (Segurança)', prompt: 'shot on security CCTV lens, low-fidelity surveillance video style', category: 'lens', subCategory: '5. Lentes Técnicas' },
+  { id: 'smartphone-lens', label: 'Lente de Smartphone', prompt: 'shot on mobile smartphone camera lens, modern social media visual style', category: 'lens', subCategory: '5. Lentes Técnicas' },
+  { id: 'vr-360', label: 'Lente VR / 360 Graus', prompt: 'shot on 360-degree VR camera lens, equirectangular panoramas, immersive sphere', category: 'lens', subCategory: '5. Lentes Técnicas' },
+  { id: 'documentary-lens', label: 'Lente Documental', prompt: 'shot on documentary lens, raw and realistic aesthetic, handheld news style', category: 'lens', subCategory: '5. Lentes Técnicas' },
 ];
 
 export const LIGHTING: Option[] = [
@@ -254,10 +280,24 @@ export const STYLES: Option[] = [
 ];
 
 export const DETAILS: Option[] = [
-  { id: 'rough', label: 'Rough (Bruto)', prompt: 'rough unpolished look', category: 'detail' },
-  { id: 'detailed', label: 'Altamente Detalhado', prompt: 'highly detailed, intricate textures', category: 'detail' },
-  { id: 'anatomy', label: 'Anatomia Perfeita', prompt: 'perfect anatomy, clear fingers, anatomically correct hands, well-defined limbs', category: 'detail' },
-  { id: 'minimalist', label: 'Minimalista', prompt: 'minimalist composition, clean simple details', category: 'detail' },
+  // 1. Efeitos Ópticos
+  { id: 'shallow-dof', label: 'Desfoque de Fundo (Shallow DoF)', prompt: 'shallow depth of field, blurred background, beautiful cinematic bokeh', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'deep-dof', label: 'Foco Profundo (Deep DoF)', prompt: 'deep depth of field, sharp focus foreground to background', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'anamorphic-flare', label: 'Anamorphic Lens Flare (Azul)', prompt: 'horizontal blue lens flares, anamorphic light streak', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'cinematic-flare', label: 'Cinematic Lens Flare (Natural)', prompt: 'cinematic light leaks, natural sun flare, organic lens flare', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'circular-bokeh', label: 'Bokeh Circular (Padrão)', prompt: 'circular bokeh lights, round out-of-focus highlights', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'oval-bokeh', label: 'Bokeh Oval (Anamórfico)', prompt: 'oval anamorphic bokeh, elliptical bokeh shapes', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'chromatic-aberration', label: 'Aberração Cromática', prompt: 'subtle chromatic aberration, red-cyan color fringing, lo-fi lens effect', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'soft-focus', label: 'Foco Suave (Soft Focus)', prompt: 'soft focus effect, dreamy hazy glow, diffused skin tones', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'bloom', label: 'Bloom Effect (Brilho Intenso)', prompt: 'blooming highlights, glowing light sources, ethereal glow', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'halation', label: 'Halation (Analógico)', prompt: 'film halation, red glow around high-contrast edges, cinematic analog look', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+  { id: 'motion-blur', label: 'Motion Blur (Movimento)', prompt: 'motion blur, dynamic action streaking, shutter speed blur', category: 'detail', subCategory: '1. Efeitos Ópticos' },
+
+  // 2. Nível de Detalhe
+  { id: 'rough', label: 'Rough (Bruto)', prompt: 'rough unpolished look', category: 'detail', subCategory: '2. Nível de Detalhe' },
+  { id: 'detailed', label: 'Altamente Detalhado', prompt: 'highly detailed, intricate textures', category: 'detail', subCategory: '2. Nível de Detalhe' },
+  { id: 'anatomy', label: 'Anatomia Perfeita', prompt: 'perfect anatomy, clear fingers, anatomically correct hands, well-defined limbs', category: 'detail', subCategory: '2. Nível de Detalhe' },
+  { id: 'minimalist', label: 'Minimalista', prompt: 'minimalist composition, clean simple details', category: 'detail', subCategory: '2. Nível de Detalhe' },
 ];
 
 export const PRESETS = [
