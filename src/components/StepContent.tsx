@@ -6,8 +6,8 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy } from "lucide-react";
 import { Option, Step, SelectionState } from "../types";
-import { STYLES, COLOR_PALETTES } from "../data/constants";
-import React, { useState } from "react";
+import { STYLES, COLOR_PALETTES, VISUAL_TAGS } from "../data/constants";
+import React, { useState, useEffect } from "react";
 
 interface StepContentProps {
   activeStep: number;
@@ -57,6 +57,16 @@ export function StepContent({
   const [expandedCategory, setExpandedCategory] = useState<string | null>('1. Pintura Tradicional');
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (activeStep === 9) {
+      setExpandedCategory('1. Pintura Tradicional');
+    } else if (activeStep === 2) {
+      setExpandedCategory('1. Enquadramentos Básicos');
+    } else {
+      setExpandedCategory(null);
+    }
+  }, [activeStep]);
+
   const [colorMode, setColorMode] = useState<'extract' | 'presets'>('extract');
   const [isExtractingColors, setIsExtractingColors] = useState(false);
   const [tempImageSrc, setTempImageSrc] = useState<string | null>(null);
@@ -91,6 +101,23 @@ export function StepContent({
       y: Math.round(y * 100),
       k: Math.round(k * 100)
     };
+  };
+
+  const handleApplyVisualTag = (tag: any) => {
+    setSelections((prev: any) => {
+      const next = { ...prev };
+      Object.entries(tag.selections).forEach(([key, val]) => {
+        if (key === 'style' || key === 'detail') {
+          const current = (prev[key as keyof SelectionState] as string[]) || [];
+          const toAdd = Array.isArray(val) ? val : [val as string];
+          (next[key as keyof SelectionState] as string[]) = Array.from(new Set([...current, ...toAdd]));
+        } else {
+          (next[key as keyof SelectionState] as any) = val;
+        }
+      });
+      return next;
+    });
+    addToast(`Clima "${tag.label}" aplicado! Enquadramento e luz configurados.`, 'success');
   };
 
   const handleColorImageUpload = (file: File) => {
@@ -305,12 +332,47 @@ export function StepContent({
                   </div>
                 </div>
               </div>
+
+              {/* Clima & Sensações Rápidas (Tags Visuais) */}
+              <div className="border-t border-zinc-200/50 dark:border-zinc-800/50 pt-6 space-y-4">
+                <div>
+                  <h3 className="font-bold text-base flex items-center gap-2">
+                    <span>✨</span> Clima & Sensações Rápidas
+                  </h3>
+                  <p className={`${themeClasses.textMuted} text-xs`}>
+                    Selecione um tom emocional para pré-configurar enquadramentos, luzes e ângulos de forma automatizada.
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {VISUAL_TAGS.map((tag) => (
+                    <button
+                      key={tag.id}
+                      onClick={() => handleApplyVisualTag(tag)}
+                      className={`group p-3 rounded-xl border text-left transition-all ${
+                        themeClasses.option + ' hover:border-[#8b5a2b]/60 hover:bg-[#8b5a2b]/5 active:scale-[0.98]'
+                      }`}
+                      title={tag.description}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-lg">{tag.icon}</span>
+                        <span className="font-bold text-xs">{tag.label}</span>
+                      </div>
+                      <div className={`text-[10px] leading-tight opacity-65 group-hover:opacity-100 ${themeClasses.textMuted}`}>
+                        {tag.description}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-2">
                 <button 
                   onClick={() => setActiveStep(1)}
                   className={`w-full sm:w-auto text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg ${themeClasses.accent}`}
                 >
                   Próximo Passo <ChevronRight size={18} />
                 </button>
+              </div>
             </div>
           )}
 
@@ -321,9 +383,9 @@ export function StepContent({
                 <p className={`${themeClasses.textMuted} text-sm`}>Escolha uma opção técnica para refinar a composição.</p>
               </div>
               
-              {activeStep === 9 ? (
+              {activeStep === 9 || activeStep === 2 ? (
                 <div className="space-y-3">
-                  {Array.from(new Set(STYLES.map(s => s.subCategory))).map(subCat => (
+                  {Array.from(new Set(getCurrentOptions(activeStep).map(s => s.subCategory))).filter(Boolean).map(subCat => (
                     <div key={subCat} className={`border rounded-2xl overflow-hidden transition-colors ${themeClasses.card}`}>
                       <button
                         onClick={() => setExpandedCategory(expandedCategory === subCat ? null : subCat)}
@@ -344,8 +406,10 @@ export function StepContent({
                             transition={{ duration: 0.3 }}
                           >
                             <div className="px-6 pb-6 pt-2 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                              {STYLES.filter(s => s.subCategory === subCat).map((option) => {
-                                const isSelected = selections.style.includes(option.id);
+                              {getCurrentOptions(activeStep).filter(s => s.subCategory === subCat).map((option) => {
+                                const isSelected = (option.category === 'style' || option.category === 'detail')
+                                  ? (selections[option.category as keyof SelectionState] as string[]).includes(option.id)
+                                  : selections[option.category as keyof SelectionState] === option.id;
                                 
                                 return (
                                   <button
@@ -360,6 +424,9 @@ export function StepContent({
                                     }`}
                                   >
                                     <div className="font-bold text-xs mb-1">{option.label}</div>
+                                    <div className={`text-[10px] leading-tight opacity-75 ${isSelected ? 'text-white/80' : themeClasses.textMuted}`}>
+                                      {option.prompt}
+                                    </div>
                                     {isSelected && (
                                       <div className="absolute top-2 right-2">
                                         <Check size={12} className="text-white" />

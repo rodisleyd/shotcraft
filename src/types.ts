@@ -63,3 +63,11 @@ export interface ColorPaletteOption {
   colors: string[]; // Códigos HEX
   description: string;
 }
+
+export interface VisualTag {
+  id: string;
+  label: string;
+  icon: string;
+  description: string;
+  selections: Partial<SelectionState>;
+}

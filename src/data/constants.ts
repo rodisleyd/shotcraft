@@ -3,24 +3,57 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Option, ColorPaletteOption } from "../types";
+import { Option, ColorPaletteOption, VisualTag } from "../types";
 
 export const SHOT_TYPES: Option[] = [
-  { id: 'ecu', label: 'Plano Detalhe (Extreme Close-up)', prompt: 'extreme close-up shot, macro detail', category: 'framing' },
-  { id: 'close-up', label: 'Close-up', prompt: 'close-up shot', category: 'framing' },
-  { id: 'mcu', label: 'Medium Close-up', prompt: 'medium close-up, chest-up shot', category: 'framing' },
-  { id: 'medium', label: 'Plano Médio (Medium shot)', prompt: 'medium shot, waist-up', category: 'framing' },
-  { id: 'cowboy', label: 'Plano Americano (Cowboy Shot)', prompt: 'cowboy shot, mid-thigh up shot', category: 'framing' },
-  { id: 'full', label: 'Plano Inteiro (Full Shot)', prompt: 'full body shot, character head to toe', category: 'framing' },
-  { id: 'long', label: 'Plano Aberto (Long Shot)', prompt: 'long shot, character in wide environment', category: 'framing' },
-  { id: 'wide', label: 'Wide Shot', prompt: 'wide angle shot, environmental focus', category: 'framing' },
-  { id: 'ews', label: 'Extreme Wide Shot', prompt: 'extreme wide shot, massive landscape focus, tiny character', category: 'framing' },
-  { id: 'ots', label: 'Sobre o Ombro (OTS)', prompt: 'over-the-shoulder shot', category: 'framing' },
-  { id: 'two-shot', label: 'Two Shot', prompt: 'two-shot, two characters in frame', category: 'framing' },
-  { id: 'group', label: 'Group Shot', prompt: 'group shot, multiple characters', category: 'framing' },
-  { id: 'pov', label: 'POV', prompt: 'first-person point of view, POV shot', category: 'framing' },
-  { id: 'insert', label: 'Insert Shot', prompt: 'insert shot, close-up on object', category: 'framing' },
-  { id: 'cutaway', label: 'Cutaway', prompt: 'cutaway shot, showing secondary action', category: 'framing' },
+  // 1. Enquadramentos Básicos
+  { id: 'ecu', label: 'Plano Detalhe (Extreme Close-up)', prompt: 'extreme close-up shot, macro detail', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'close-up', label: 'Close-up', prompt: 'close-up shot', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'mcu', label: 'Medium Close-up', prompt: 'medium close-up, chest-up shot', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'medium', label: 'Plano Médio (Medium shot)', prompt: 'medium shot, waist-up', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'cowboy', label: 'Plano Americano (Cowboy Shot)', prompt: 'cowboy shot, mid-thigh up shot', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'full', label: 'Plano Inteiro (Full Shot)', prompt: 'full body shot, character head to toe', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'long', label: 'Plano Aberto (Long Shot)', prompt: 'long shot, character in wide environment', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'wide', label: 'Wide Shot', prompt: 'wide angle shot, environmental focus', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'ews', label: 'Extreme Wide Shot', prompt: 'extreme wide shot, massive landscape focus, tiny character', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'ots', label: 'Sobre o Ombro (OTS)', prompt: 'over-the-shoulder shot', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'two-shot', label: 'Two Shot', prompt: 'two-shot, two characters in frame', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'group', label: 'Group Shot', prompt: 'group shot, multiple characters', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'pov', label: 'POV', prompt: 'first-person point of view, POV shot', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'insert', label: 'Insert Shot', prompt: 'insert shot, close-up on object', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+  { id: 'cutaway', label: 'Cutaway', prompt: 'cutaway shot, showing secondary action', category: 'framing', subCategory: '1. Enquadramentos Básicos' },
+
+  // 2. Enquadramentos Cinematográficos
+  { id: 'establishing-shot', label: 'Establishing Shot (Plano de Estabelecimento)', prompt: 'establishing shot, cinematic establishing view', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos' },
+  { id: 'master-shot', label: 'Master Shot (Plano Mestre)', prompt: 'master shot, full scene composition', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos' },
+  { id: 'dutch-angle-framing', label: 'Dutch Angle (Ângulo Inclinado)', prompt: 'dutch angle, tilted camera, canted shot', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos' },
+  { id: 'center-framed', label: 'Center Framed Shot (Centralizado)', prompt: 'center framed composition, symmetrical framing', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos' },
+  { id: 'frame-within-frame', label: 'Frame Within Frame (Moldura Interna)', prompt: 'frame within frame composition, shoot through framing', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos' },
+
+  // 3. Enquadramentos de Ação (Anime/Mangá)
+  { id: 'hero-shot', label: 'Hero Shot (Enquadramento Heroico)', prompt: 'hero shot, dramatic hero framing', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)' },
+  { id: 'transformation-shot', label: 'Transformation Shot (Transformação)', prompt: 'transformation sequence framing, energy power up shot', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)' },
+  { id: 'dynamic-action', label: 'Dynamic Action Shot (Ação Dinâmica)', prompt: 'dynamic action framing, intense perspective shot', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)' },
+  { id: 'speed-perspective', label: 'Speed Perspective (Perspectiva de Velocidade)', prompt: 'exaggerated speed perspective shot, shonen manga action lines', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)' },
+
+  // 4. Enquadramentos Dramáticos
+  { id: 'profile-shot', label: 'Profile Shot (Perfil de Lado)', prompt: 'side profile shot, profile view', category: 'framing', subCategory: '4. Enquadramentos Dramáticos' },
+  { id: 'rear-shot', label: 'Rear Shot (Visto de Costas)', prompt: 'rear view shot, back facing character', category: 'framing', subCategory: '4. Enquadramentos Dramáticos' },
+  { id: 'silhouette-shot', label: 'Silhouette Shot (Silhueta)', prompt: 'silhouette shot, backlit silhouette', category: 'framing', subCategory: '4. Enquadramentos Dramáticos' },
+  { id: 'negative-space', label: 'Negative Space (Espaço Negativo)', prompt: 'negative space composition, tiny character in large frame', category: 'framing', subCategory: '4. Enquadramentos Dramáticos' },
+
+  // 5. Enquadramentos Técnicos
+  { id: 'macro-shot', label: 'Macro Shot (Detalhe Macro)', prompt: 'macro shot, ultra close detail, extreme macro', category: 'framing', subCategory: '5. Enquadramentos Técnicos' },
+  { id: 'reflection-shot', label: 'Reflection Shot (Através de Reflexo)', prompt: 'reflection shot, mirror reflection composition', category: 'framing', subCategory: '5. Enquadramentos Técnicos' },
+  { id: 'surveillance-shot', label: 'Surveillance Shot (Câmera de Segurança)', prompt: 'surveillance camera view, CCTV framing', category: 'framing', subCategory: '5. Enquadramentos Técnicos' },
+  { id: 'handheld-shot', label: 'Handheld Shot (Câmera na Mão)', prompt: 'handheld camera shot, shaky footage aesthetic', category: 'framing', subCategory: '5. Enquadramentos Técnicos' },
+  { id: 'found-footage', label: 'Found Footage (Câmera Amadora)', prompt: 'found footage shot, home video style, REC interface elements', category: 'framing', subCategory: '5. Enquadramentos Técnicos' },
+
+  // 6. Composições para HQ e Ilustração
+  { id: 'splash-panel', label: 'Splash Panel (Página Inteira)', prompt: 'splash page composition, splash panel layout, dramatic comic page', category: 'framing', subCategory: '6. Composições para HQ e Ilustração' },
+  { id: 'vertical-cinematic', label: 'Vertical Cinematic (Formato Mobile)', prompt: 'vertical cinematic composition, webtoon style framing', category: 'framing', subCategory: '6. Composições para HQ e Ilustração' },
+  { id: 'diagonal-composition', label: 'Diagonal Composition (Composição Diagonal)', prompt: 'diagonal composition lines, dynamic tilted layout', category: 'framing', subCategory: '6. Composições para HQ e Ilustração' },
+  { id: 'layered-depth', label: 'Layered Depth (Profundidade em Camadas)', prompt: 'layered depth composition, strong foreground and background elements, Ghibli style layout', category: 'framing', subCategory: '6. Composições para HQ e Ilustração' },
 ];
 
 export const ANGLES: Option[] = [
@@ -481,3 +514,99 @@ export const COLOR_PALETTES: ColorPaletteOption[] = [
     description: 'Impérios antigos esquecidos. Dourado envelhecido, marrom ferrugem, cobre esverdeado e vermelho imperial gasto.'
   }
 ];
+
+export const VISUAL_TAGS: VisualTag[] = [
+  {
+    id: 'epico',
+    label: 'Épico',
+    icon: '⚡',
+    description: 'Ângulo baixo e iluminação de contorno para impacto dramático.',
+    selections: {
+      framing: 'hero-shot',
+      angle: 'low',
+      lighting: 'rim',
+      perspective: 'dynamic'
+    }
+  },
+  {
+    id: 'intimo',
+    label: 'Íntimo',
+    icon: '❤️',
+    description: 'Close-up suave com lente de retrato para focar na emoção.',
+    selections: {
+      framing: 'close-up',
+      angle: 'eye-level',
+      lighting: 'soft',
+      lens: '85mm'
+    }
+  },
+  {
+    id: 'dramatico',
+    label: 'Dramático',
+    icon: '🎭',
+    description: 'Silhueta e iluminação de alto contraste para máxima tensão.',
+    selections: {
+      framing: 'silhouette-shot',
+      angle: 'high',
+      lighting: 'low-key'
+    }
+  },
+  {
+    id: 'claustrofobico',
+    label: 'Claustrofóbico',
+    icon: '🕸️',
+    description: 'Plano super detalhe, ângulo holandês e iluminação sombria.',
+    selections: {
+      framing: 'ecu',
+      angle: 'dutch',
+      lighting: 'low-key',
+      lens: '24mm'
+    }
+  },
+  {
+    id: 'heroico',
+    label: 'Heroico',
+    icon: '🛡️',
+    description: 'Enquadramento heroico clássico com ângulo baixo.',
+    selections: {
+      framing: 'hero-shot',
+      angle: 'low',
+      perspective: 'foreshortening',
+      lighting: 'rim'
+    }
+  },
+  {
+    id: 'cinematico',
+    label: 'Cinematográfico',
+    icon: '🎬',
+    description: 'Estabelecimento amplo com proporção ultrawide e contraluz.',
+    selections: {
+      framing: 'establishing-shot',
+      lens: '35mm',
+      aspect: '21:9',
+      lighting: 'backlight'
+    }
+  },
+  {
+    id: 'anime',
+    label: 'Anime/Mangá',
+    icon: '🌸',
+    description: 'Perspectiva exagerada e ação com traço marcante.',
+    selections: {
+      framing: 'speed-perspective',
+      lens: '35mm'
+    }
+  },
+  {
+    id: 'noir',
+    label: 'Noir',
+    icon: '🕶️',
+    description: 'Preto e branco, sombras marcantes e silhueta dramática.',
+    selections: {
+      framing: 'silhouette-shot',
+      lighting: 'hard',
+      environment: 'urban'
+    }
+  }
+];
+
