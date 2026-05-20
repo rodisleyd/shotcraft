@@ -57,16 +57,47 @@ export const SHOT_TYPES: Option[] = [
 ];
 
 export const ANGLES: Option[] = [
-  { id: 'eye-level', label: 'Nível do Olhar', prompt: 'eye-level angle', category: 'angle' },
-  { id: 'low', label: 'Ângulo Baixo (Plongée)', prompt: 'low angle, looking up', category: 'angle' },
-  { id: 'high', label: 'Ângulo Alto (Contra-Plongée)', prompt: 'high angle, looking down', category: 'angle' },
-  { id: 'top', label: 'Top Shot', prompt: 'top-down vertical shot', category: 'angle' },
-  { id: 'birds-eye', label: 'Vista de Pássaro', prompt: 'bird\'s eye view shot', category: 'angle' },
-  { id: 'overhead', label: 'Overhead', prompt: 'overhead shot', category: 'angle' },
-  { id: 'worms-eye', label: 'Vista de Verme', prompt: 'worm\'s eye view, looking straight up', category: 'angle' },
-  { id: 'dutch', label: 'Ângulo Holandês', prompt: 'dutch angle, tilted frame', category: 'angle' },
-  { id: 'shoulder-level', label: 'Nível do Ombro', prompt: 'shoulder level camera angle', category: 'angle' },
-  { id: 'hip-level', label: 'Nível do Quadril', prompt: 'hip level camera angle', category: 'angle' },
+  // 1. Ângulos Básicos
+  { id: 'eye-level', label: 'Nível do Olhar', prompt: 'eye-level angle', category: 'angle', subCategory: '1. Ângulos Básicos' },
+  { id: 'low', label: 'Ângulo Baixo (Plongée)', prompt: 'low angle, looking up', category: 'angle', subCategory: '1. Ângulos Básicos' },
+  { id: 'high', label: 'Ângulo Alto (Contra-Plongée)', prompt: 'high angle, looking down', category: 'angle', subCategory: '1. Ângulos Básicos' },
+  { id: 'shoulder-level', label: 'Nível do Ombro', prompt: 'shoulder level camera angle', category: 'angle', subCategory: '1. Ângulos Básicos' },
+  { id: 'hip-level', label: 'Nível do Quadril', prompt: 'hip level camera angle', category: 'angle', subCategory: '1. Ângulos Básicos' },
+
+  // 2. Ângulos Verticais
+  { id: 'top', label: 'Top Shot', prompt: 'top-down vertical shot', category: 'angle', subCategory: '2. Ângulos Verticais' },
+  { id: 'overhead', label: 'Overhead', prompt: 'overhead shot', category: 'angle', subCategory: '2. Ângulos Verticais' },
+  { id: 'birds-eye', label: 'Vista de Pássaro (90 Graus)', prompt: "bird's eye view shot", category: 'angle', subCategory: '2. Ângulos Verticais' },
+  { id: 'worms-eye', label: 'Vista de Verme (90 Graus de Baixo)', prompt: "worm's eye view, looking straight up", category: 'angle', subCategory: '2. Ângulos Verticais' },
+
+  // 3. Ângulos Dramáticos
+  { id: 'dutch', label: 'Ângulo Holandês (Dutch Angle)', prompt: 'dutch angle, tilted frame', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
+  { id: 'dynamic-tilt', label: 'Dynamic Tilt (Inclinação Dinâmica)', prompt: 'dynamic tilt angle, extremely canted framing, dramatic skewed camera', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
+  { id: 'extreme-low', label: 'Extreme Low Angle (Câmera no Chão)', prompt: 'extreme low angle shot, ground level camera angle', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
+  { id: 'extreme-high', label: 'Extreme High Angle (Câmera Muito Alta)', prompt: 'extreme high angle view, looking straight down from high altitude', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
+
+  // 4. Ângulos de Personagem
+  { id: 'front-view', label: 'Front View (Visão Frontal)', prompt: 'front view portrait, straight-on camera angle', category: 'angle', subCategory: '4. Ângulos de Personagem' },
+  { id: 'side-view', label: 'Side View (Visão de Lado / Perfil)', prompt: 'side view profile, full side portrait', category: 'angle', subCategory: '4. Ângulos de Personagem' },
+  { id: 'back-view', label: 'Back View (Visão Traseira / Costas)', prompt: 'back view profile, character facing away', category: 'angle', subCategory: '4. Ângulos de Personagem' },
+  { id: 'three-quarter', label: 'Three-Quarter View (Três Quartos)', prompt: 'three-quarter camera view, 3/4 view angle', category: 'angle', subCategory: '4. Ângulos de Personagem' },
+
+  // 5. Ângulos Cinematográficos
+  { id: 'through-object', label: 'Through Object (Através de Objeto)', prompt: 'shooting through object camera angle, frame within a frame shot, foreground occlusion', category: 'angle', subCategory: '5. Ângulos Cinematográficos' },
+  { id: 'hidden-camera', label: 'Hidden Camera (Câmera Escondida)', prompt: 'hidden camera angle, spy camera look, voyeuristic framing', category: 'angle', subCategory: '5. Ângulos Cinematográficos' },
+  { id: 'security-camera', label: 'Security Camera (Câmera de Segurança)', prompt: 'security camera angle view, high angle CCTV feed visual style', category: 'angle', subCategory: '5. Ângulos Cinematográficos' },
+  { id: 'reflection-angle', label: 'Reflection Angle (Através de Reflexo)', prompt: 'reflection angle shot, mirror or water surface reflection composition', category: 'angle', subCategory: '5. Ângulos Cinematográficos' },
+  { id: 'pov-angle', label: 'POV (Ponto de Vista do Personagem)', prompt: 'POV shot, first person camera perspective', category: 'angle', subCategory: '5. Ângulos Cinematográficos' },
+  { id: 'ots-low', label: 'OTS Low (Sobre o Ombro Baixo)', prompt: 'over-the-shoulder low angle shot, looking up from behind shoulder', category: 'angle', subCategory: '5. Ângulos Cinematográficos' },
+  { id: 'ots-high', label: 'OTS High (Sobre o Ombro Alto)', prompt: 'over-the-shoulder high angle shot, looking down from behind shoulder', category: 'angle', subCategory: '5. Ângulos Cinematográficos' },
+
+  // 6. Ângulos de Ação (Anime/Mangá)
+  { id: 'chase-camera', label: 'Chase Camera (Câmera de Perseguição)', prompt: 'chase camera angle, trailing tracking shot', category: 'angle', subCategory: '6. Ângulos de Ação (Anime/Mangá)' },
+  { id: 'hero-perspective', label: 'Hero Perspective (Perspectiva Heroica)', prompt: 'heroic camera perspective, wide angle low hero positioning', category: 'angle', subCategory: '6. Ângulos de Ação (Anime/Mangá)' },
+  { id: 'speed-perspective-angle', label: 'Speed Perspective (Perspectiva de Velocidade)', prompt: 'exaggerated speed perspective camera angle, high speed motion lines', category: 'angle', subCategory: '6. Ângulos de Ação (Anime/Mangá)' },
+  { id: 'overhead-diagonal', label: 'Overhead Diagonal (Diagonal de Cima)', prompt: 'overhead diagonal angle, tilted bird\'s eye camera view', category: 'angle', subCategory: '6. Ângulos de Ação (Anime/Mangá)' },
+  { id: 'rotational-angle', label: 'Rotational Angle (Ângulo Rotacional)', prompt: 'rotational camera angle, spinning camera perspective', category: 'angle', subCategory: '6. Ângulos de Ação (Anime/Mangá)' },
+  { id: 'impact-frame-angle', label: 'Impact Frame (Frame de Impacto)', prompt: 'action impact frame camera angle, dynamic shockwave framing', category: 'angle', subCategory: '6. Ângulos de Ação (Anime/Mangá)' },
 ];
 
 export const PERSPECTIVES: Option[] = [
