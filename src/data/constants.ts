@@ -219,14 +219,105 @@ export const LIGHTING: Option[] = [
 ];
 
 export const ENVIRONMENTS: Option[] = [
-  { id: 'urban', label: 'Urbano', prompt: 'urban city environment', category: 'environment' },
-  { id: 'futuristic', label: 'Futurista', prompt: 'futuristic sci-fi setting', category: 'environment' },
-  { id: 'medieval', label: 'Medieval', prompt: 'medieval historical setting', category: 'environment' },
-  { id: 'interior', label: 'Interior', prompt: 'indoor interior setting', category: 'environment' },
-  { id: 'exterior', label: 'Exterior', prompt: 'outdoor exterior setting', category: 'environment' },
-  { id: 'rain', label: 'Chuva', prompt: 'heavy rain atmosphere', category: 'environment' },
-  { id: 'fog', label: 'Neblina', prompt: 'mysterious foggy atmosphere', category: 'environment' },
-  { id: 'sunset', label: 'Pôr do Sol', prompt: 'golden hour sunset lighting', category: 'environment' },
+  // 1. Cenários Naturais
+  { id: 'fantasy-forest', label: 'Floresta de Fantasia', prompt: 'fantasy forest, mystical trees, glowing flora', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'dense-forest', label: 'Floresta Densa', prompt: 'dense forest, canopy shadows, wilderness foliage', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'mystical-forest', label: 'Floresta Mística', prompt: 'mystical forest, ethereal haze, ancient roots', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'desert', label: 'Deserto (Dunas)', prompt: 'vast desert landscape, sand dunes, wind patterns', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'arid-wasteland', label: 'Terra Árida / Devastada', prompt: 'arid wasteland, cracked soil, dry climate', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'mountain-range', label: 'Cordilheira de Montanhas', prompt: 'massive mountain range, rocky peaks', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'snowy-mountains', label: 'Montanhas Nevadas', prompt: 'snowy mountains, ice peaks, winter altitude', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'tropical-beach', label: 'Praia Tropical', prompt: 'tropical beach, palm trees, clear water', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'cinematic-coast', label: 'Costa Cinematográfica', prompt: 'cinematic coastal cliffs, waves crashing, dramatic shore', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'open-sea', label: 'Mar Aberto', prompt: 'open sea horizon, endless ocean blue', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'stormy-ocean', label: 'Oceano Tempestuoso', prompt: 'stormy ocean waves, dark clouds, violent sea', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'jungle', label: 'Selva Tropical', prompt: 'dense jungle environment, wild tropical vines', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'frozen-landscape', label: 'Paisagem Congelada', prompt: 'frozen landscape, deep snow environment, subzero tundra', category: 'environment', subCategory: '1. Cenários Naturais' },
+  { id: 'volcanic-terrain', label: 'Terreno Vulcânico', prompt: 'volcanic terrain, cooling lava flows, sulfur gas smoke', category: 'environment', subCategory: '1. Cenários Naturais' },
+
+  // 2. Cenários Urbanos
+  { id: 'modern-city', label: 'Cidade Moderna (Downtown)', prompt: 'modern city downtown, high-rise office buildings, glass skyscrapers', category: 'environment', subCategory: '2. Cenários Urbanos' },
+  { id: 'cyberpunk-city', label: 'Cidade Cyberpunk', prompt: 'neon cyberpunk city, cyber-aesthetic towers, flying vehicles', category: 'environment', subCategory: '2. Cenários Urbanos' },
+  { id: 'cyberpunk-streets', label: 'Ruas Cyberpunk', prompt: 'cyberpunk streets, glowing holographic signs, dark wet pavements', category: 'environment', subCategory: '2. Cenários Urbanos' },
+  { id: 'rainy-neon-alley', label: 'Beco Neon Chuvoso', prompt: 'rainy neon alleyway, colorful reflections on puddles, urban noir', category: 'environment', subCategory: '2. Cenários Urbanos' },
+  { id: 'ruined-city', label: 'Cidade em Ruínas', prompt: 'ruined city, post-apocalyptic urban decay, overgrown concrete', category: 'environment', subCategory: '2. Cenários Urbanos' },
+  { id: 'abandoned-world', label: 'Mundo Abandonado (Pós-Apoc.)', prompt: 'post-apocalyptic abandoned world, remnants of civilization', category: 'environment', subCategory: '2. Cenários Urbanos' },
+  { id: 'favela', label: 'Favela / Urbano Denso', prompt: 'dense vertical favela architecture, layered brick houses, complex urban cluster', category: 'environment', subCategory: '2. Cenários Urbanos' },
+  { id: 'industrial-complex', label: 'Complexo Industrial', prompt: 'industrial complex, smoke factories, piping structures', category: 'environment', subCategory: '2. Cenários Urbanos' },
+  { id: 'suburban-neighborhood', label: 'Bairro Suburbano', prompt: 'suburban neighborhood street, neat houses and lawns', category: 'environment', subCategory: '2. Cenários Urbanos' },
+
+  // 3. Fantasia / RPG
+  { id: 'fantasy-kingdom', label: 'Reino Fantástico', prompt: 'glorious fantasy kingdom, grand spires, epic fantasy landscape', category: 'environment', subCategory: '3. Fantasia / RPG' },
+  { id: 'medieval-castle', label: 'Castelo Medieval', prompt: 'medieval castle stone structure, majestic towers', category: 'environment', subCategory: '3. Fantasia / RPG' },
+  { id: 'gothic-castle', label: 'Castelo Gótico', prompt: 'dark gothic castle, sharp silhouettes, ominous moonlit gargoyles', category: 'environment', subCategory: '3. Fantasia / RPG' },
+  { id: 'medieval-village', label: 'Vila Medieval', prompt: 'medieval village tavern and dirt streets, timber-framed houses', category: 'environment', subCategory: '3. Fantasia / RPG' },
+  { id: 'dungeon', label: 'Dungeon (Masmorra)', prompt: 'dark dungeon corridor, stone brick walls, iron torches, damp cell block', category: 'environment', subCategory: '3. Fantasia / RPG' },
+  { id: 'ancient-temple', label: 'Templo Antigo', prompt: 'ancient ruined temple, mossy pillars, lost ruins', category: 'environment', subCategory: '3. Fantasia / RPG' },
+  { id: 'enchanted-forest', label: 'Floresta Encantada', prompt: 'enchanted forest, magical glowing mushrooms, floating wisps', category: 'environment', subCategory: '3. Fantasia / RPG' },
+
+  // 4. Sci-Fi / Futurista
+  { id: 'spaceship-interior', label: 'Interior de Nave Espacial', prompt: 'spaceship interior corridor, white plastic panels, sci-fi computer interfaces', category: 'environment', subCategory: '4. Sci-Fi / Futurista' },
+  { id: 'sci-fi-station', label: 'Estação Espacial', prompt: 'futuristic space station hub, viewport window showing outer space stars', category: 'environment', subCategory: '4. Sci-Fi / Futurista' },
+  { id: 'alien-world', label: 'Planeta Alienígena', prompt: 'alien planet surface, strange ringed skies, bioluminescent organisms', category: 'environment', subCategory: '4. Sci-Fi / Futurista' },
+  { id: 'futuristic-lab', label: 'Laboratório Futurista', prompt: 'futuristic scientific lab, cybernetic pods, holographic research holograms', category: 'environment', subCategory: '4. Sci-Fi / Futurista' },
+  { id: 'mega-city', label: 'Megacidade Futurista', prompt: 'futuristic mega city, towering solar-punk buildings, high-tech infrastructure', category: 'environment', subCategory: '4. Sci-Fi / Futurista' },
+
+  // 5. Terror / Suspense
+  { id: 'haunted-mansion', label: 'Mansão Assombrada', prompt: 'creepy haunted mansion, dusty portraits, cobwebs, gothic architecture', category: 'environment', subCategory: '5. Terror / Suspense' },
+  { id: 'abandoned-hospital', label: 'Hospital Abandonado', prompt: 'derelict abandoned hospital corridor, flickering fluorescent lights, rust', category: 'environment', subCategory: '5. Terror / Suspense' },
+  { id: 'dark-forest', label: 'Floresta Sombria', prompt: 'spooky dark forest at night, twisted dead trees, thick fog', category: 'environment', subCategory: '5. Terror / Suspense' },
+  { id: 'dark-alley', label: 'Beco Escuro', prompt: 'dark shady alleyway, dim street lamp, garbage cans, suspenseful vibe', category: 'environment', subCategory: '5. Terror / Suspense' },
+  { id: 'ghost-town', label: 'Cidade Fantasma', prompt: 'abandoned dusty ghost town, old western storefronts, tumbleweeds', category: 'environment', subCategory: '5. Terror / Suspense' },
+
+  // 6. Cenários Históricos
+  { id: 'ancient-egypt', label: 'Egito Antigo', prompt: 'ancient Egypt landscape, grand pyramids, sand dust, sphinx', category: 'environment', subCategory: '6. Cenários Históricos' },
+  { id: 'ancient-roma', label: 'Roma Antiga', prompt: 'ancient Rome forum, colosseum facade, marble columns, roman flags', category: 'environment', subCategory: '6. Cenários Históricos' },
+  { id: 'feudal-japan', label: 'Japão Feudal', prompt: 'feudal Japan village, traditional pagoda, cherry blossom trees, samurai aesthetic', category: 'environment', subCategory: '6. Cenários Históricos' },
+  { id: 'wild-western', label: 'Velho Oeste (Western)', prompt: 'old wild west town saloon, dusty main street, wooden boardwalks', category: 'environment', subCategory: '6. Cenários Históricos' },
+  { id: 'victorian-era', label: 'Era Vitoriana', prompt: 'Victorian era London street, gas lamps, cobblestones, brick townhouses, steam fog', category: 'environment', subCategory: '6. Cenários Históricos' },
+
+  // 7. Interiores Especializados
+  { id: 'office', label: 'Escritório', prompt: 'modern office interior, corporate cubicles, desks, fluorescent office lighting', category: 'environment', subCategory: '7. Interiores Especializados' },
+  { id: 'classroom', label: 'Sala de Aula', prompt: 'school classroom, blackboard, students desks, educational posters', category: 'environment', subCategory: '7. Interiores Especializados' },
+  { id: 'library', label: 'Biblioteca', prompt: 'grand old library interior, high wooden bookshelves packed with books, study tables', category: 'environment', subCategory: '7. Interiores Especializados' },
+  { id: 'cafe', label: 'Café', prompt: 'cozy coffee shop interior, warm wooden tables, barista counter, espresso machine', category: 'environment', subCategory: '7. Interiores Especializados' },
+  { id: 'bar', label: 'Bar / Pub', prompt: 'dimly lit bar pub interior, bar counter, neon beer signs, bottles behind bar', category: 'environment', subCategory: '7. Interiores Especializados' },
+  { id: 'restaurant', label: 'Restaurante', prompt: 'fine dining restaurant interior, set tables, ambient dining lighting', category: 'environment', subCategory: '7. Interiores Especializados' },
+  { id: 'bedroom', label: 'Quarto', prompt: 'cozy bedroom interior, unmade bed, warm bedroom lamp, window view', category: 'environment', subCategory: '7. Interiores Especializados' },
+  { id: 'church', label: 'Igreja', prompt: 'solemn church interior, stained glass windows, wooden pews, stone arches', category: 'environment', subCategory: '7. Interiores Especializados' },
+  { id: 'market', label: 'Mercado', prompt: 'bustling indoor market, food stalls, hanging signs, crowded alleys', category: 'environment', subCategory: '7. Interiores Especializados' },
+
+  // 8. Clima & Atmosfera
+  { id: 'storm', label: 'Tempestade', prompt: 'raging storm atmosphere, heavy wind, dark ominous clouds', category: 'environment', subCategory: '8. Clima & Atmosfera' },
+  { id: 'blizzard', label: 'Nevasca', prompt: 'heavy winter blizzard, howling wind, low visibility snowstorm', category: 'environment', subCategory: '8. Clima & Atmosfera' },
+  { id: 'heavy-rain', label: 'Chuva Forte', prompt: 'pouring heavy rain atmosphere, water droplets in air, sheet rain', category: 'environment', subCategory: '8. Clima & Atmosfera' },
+  { id: 'night-time', label: 'Noite', prompt: 'pitch black night setting, stars, cinematic night atmosphere', category: 'environment', subCategory: '8. Clima & Atmosfera' },
+  { id: 'midnight', label: 'Madrugada', prompt: 'silent midnight ambiance, faint distant lights, mist', category: 'environment', subCategory: '8. Clima & Atmosfera' },
+  { id: 'dawn', label: 'Amanhecer', prompt: 'golden dawn twilight atmosphere, rising sun rays, early morning haze', category: 'environment', subCategory: '8. Clima & Atmosfera' },
+  { id: 'eclipse', label: 'Eclipse Solar', prompt: 'dramatic solar eclipse sky, corona ring light, eerie midday twilight', category: 'environment', subCategory: '8. Clima & Atmosfera' },
+  { id: 'red-sky', label: 'Céu Vermelho', prompt: 'apocalyptic blood red sky atmosphere, dramatic clouds', category: 'environment', subCategory: '8. Clima & Atmosfera' },
+  { id: 'thunderstorm', label: 'Tempestade Elétrica', prompt: 'heavy thunderstorm, forks of lightning illuminating sky, electric charge', category: 'environment', subCategory: '8. Clima & Atmosfera' },
+  { id: 'starry-sky', label: 'Céu Estrelado', prompt: 'clear night starry sky, milky way galaxy visible, deep space cosmos', category: 'environment', subCategory: '8. Clima & Atmosfera' },
+
+  // 9. Atmosfera Emocional
+  { id: 'melancholic', label: 'Melancólico', prompt: 'melancholic mood, cold color grading, somber quiet vibe', category: 'environment', subCategory: '9. Atmosfera Emocional' },
+  { id: 'gloomy', label: 'Sombrio', prompt: 'gloomy atmosphere, heavy shadows, low contrast dark mood', category: 'environment', subCategory: '9. Atmosfera Emocional' },
+  { id: 'cozy', label: 'Acolhedor (Cozy)', prompt: 'cozy warm mood, soft golden lighting, inviting homey vibe', category: 'environment', subCategory: '9. Atmosfera Emocional' },
+  { id: 'epic', label: 'Épico', prompt: 'epic heroic mood, grand cinematic scale, dramatic high contrast', category: 'environment', subCategory: '9. Atmosfera Emocional' },
+  { id: 'mysterious', label: 'Misterioso', prompt: 'mysterious atmosphere, enigmatic shadows, fog rays', category: 'environment', subCategory: '9. Atmosfera Emocional' },
+  { id: 'chaotic', label: 'Caótico', prompt: 'chaotic mood, dust explosions, debris flying, dynamic action tension', category: 'environment', subCategory: '9. Atmosfera Emocional' },
+  { id: 'lonely', label: 'Solitário', prompt: 'lonely atmosphere, vast empty spaces, single focal point, isolation', category: 'environment', subCategory: '9. Atmosfera Emocional' },
+  { id: 'dreamy', label: 'Sonhador (Dreamy)', prompt: 'dreamy pastel atmosphere, soft focus glow, romantic fantasy vibe', category: 'environment', subCategory: '9. Atmosfera Emocional' },
+
+  // 10. Estilos de Cenário
+  { id: 'ghibli-env', label: 'Estilo Ghibli', prompt: 'Ghibli style painted background environment, hand-drawn anime aesthetic, lush green grass, blue watercolor sky', category: 'environment', subCategory: '10. Estilos de Cenário' },
+  { id: 'noir-env', label: 'Estilo Film Noir', prompt: 'film noir style high contrast black and white scene, vintage detective film look', category: 'environment', subCategory: '10. Estilos de Cenário' },
+  { id: 'blade-runner', label: 'Blade Runner Style', prompt: 'Blade Runner style cyberpunk backdrop, industrial futuristic aesthetic, neon haze, heavy rain', category: 'environment', subCategory: '10. Estilos de Cenário' },
+  { id: 'dark-fantasy-env', label: 'Dark Fantasy', prompt: 'dark fantasy world environment, gothic ominous skies, ancient ruined towers', category: 'environment', subCategory: '10. Estilos de Cenário' },
+  { id: 'solarpunk', label: 'Solarpunk', prompt: 'solarpunk city environment, green architecture integration, solar panels, clean ecological future', category: 'environment', subCategory: '10. Estilos de Cenário' },
+  { id: 'steampunk', label: 'Steampunk', prompt: 'steampunk town environment, brass pipes, steam vents, gears, Victorian sci-fi machinery', category: 'environment', subCategory: '10. Estilos de Cenário' },
+  { id: 'vaporwave', label: 'Vaporwave', prompt: 'vaporwave grid wireframe environment, pink sunset, neon grid landscape, low poly 3D assets', category: 'environment', subCategory: '10. Estilos de Cenário' },
+  { id: 'synthwave', label: 'Synthwave', prompt: 'synthwave grid highway landscape, outrun retro sun, neon purple and orange wires', category: 'environment', subCategory: '10. Estilos de Cenário' },
 ];
 
 export const STYLES: Option[] = [
@@ -333,6 +424,12 @@ export const DETAILS: Option[] = [
   { id: 'detailed', label: 'Altamente Detalhado', prompt: 'highly detailed, intricate textures', category: 'detail', subCategory: '2. Nível de Detalhe' },
   { id: 'anatomy', label: 'Anatomia Perfeita', prompt: 'perfect anatomy, clear fingers, anatomically correct hands, well-defined limbs', category: 'detail', subCategory: '2. Nível de Detalhe' },
   { id: 'minimalist', label: 'Minimalista', prompt: 'minimalist composition, clean simple details', category: 'detail', subCategory: '2. Nível de Detalhe' },
+
+  // 3. Densidade do Ambiente
+  { id: 'lived-in', label: 'Ambiente Habitado (Lived-in)', prompt: 'lived-in cluttered environment, realistic details of occupancy, personal items scattered', category: 'detail', subCategory: '3. Densidade do Ambiente' },
+  { id: 'cluttered', label: 'Ambiente Acumulado (Cluttered)', prompt: 'cluttered environment, packed with objects, dense composition, visual noise', category: 'detail', subCategory: '3. Densidade do Ambiente' },
+  { id: 'minimalist-env', label: 'Densidade Mínima (Minimalist)', prompt: 'minimalist layout, clean empty space, negative space focus', category: 'detail', subCategory: '3. Densidade do Ambiente' },
+  { id: 'ultra-detailed', label: 'Detalhamento Máximo', prompt: 'ultra detailed, intricate background elements, microscopic textures', category: 'detail', subCategory: '3. Densidade do Ambiente' },
 ];
 
 export const PRESETS = [

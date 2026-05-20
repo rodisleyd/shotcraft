@@ -70,6 +70,8 @@ export function StepContent({
       setExpandedCategory('1. Lentes Naturais');
     } else if (activeStep === 6) {
       setExpandedCategory('1. Iluminação Básica');
+    } else if (activeStep === 7) {
+      setExpandedCategory('1. Cenários Naturais');
     } else if (activeStep === 10) {
       setExpandedCategory('1. Efeitos Ópticos');
     } else {
@@ -393,7 +395,7 @@ export function StepContent({
                 <p className={`${themeClasses.textMuted} text-sm`}>Escolha uma opção técnica para refinar a composição.</p>
               </div>
               
-              {activeStep === 9 || activeStep === 2 || activeStep === 3 || activeStep === 4 || activeStep === 5 || activeStep === 6 || activeStep === 10 ? (
+              {activeStep === 9 || activeStep === 2 || activeStep === 3 || activeStep === 4 || activeStep === 5 || activeStep === 6 || activeStep === 7 || activeStep === 10 ? (
                 <div className="space-y-3">
                   {Array.from(new Set(getCurrentOptions(activeStep).map(s => s.subCategory))).filter(Boolean).map(subCat => (
                     <div key={subCat} className={`border rounded-2xl overflow-hidden transition-colors ${themeClasses.card}`}>
