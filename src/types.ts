@@ -28,6 +28,8 @@ export interface SelectionState {
   environment: string;
   style: string[];
   detail: string[];
+  colorPalette: string[];
+  colorPaletteId: string;
 }
 
 export interface UserPreset {
@@ -53,4 +55,11 @@ export interface ToastType {
   id: string;
   message: string;
   type: 'success' | 'error' | 'info';
+}
+
+export interface ColorPaletteOption {
+  id: string;
+  name: string;
+  colors: string[]; // Códigos HEX
+  description: string;
 }

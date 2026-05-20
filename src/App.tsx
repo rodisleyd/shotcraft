@@ -20,7 +20,8 @@ import {
   Loader2,
   Languages,
   CheckCircle2,
-  Trash2
+  Trash2,
+  Droplet
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
@@ -90,7 +91,9 @@ export default function App() {
     lighting: '',
     environment: '',
     style: [],
-    detail: []
+    detail: [],
+    colorPalette: [],
+    colorPaletteId: ''
   });
   const [customAspect, setCustomAspect] = useState('2:1');
   const [copied, setCopied] = useState(false);
@@ -140,7 +143,9 @@ export default function App() {
         : (typeof sel.style === 'object' && sel.style !== null ? Object.values(sel.style) : []),
       detail: Array.isArray(sel.detail) 
         ? sel.detail 
-        : (typeof sel.detail === 'object' && sel.detail !== null ? Object.values(sel.detail) : [sel.detail].filter(Boolean))
+        : (typeof sel.detail === 'object' && sel.detail !== null ? Object.values(sel.detail) : [sel.detail].filter(Boolean)),
+      colorPalette: Array.isArray(sel?.colorPalette) ? sel.colorPalette : [],
+      colorPaletteId: typeof sel?.colorPaletteId === 'string' ? sel.colorPaletteId : ''
     };
   };
 
@@ -153,6 +158,7 @@ export default function App() {
     { title: 'Lente', icon: <Camera size={20} /> },
     { title: 'Luz', icon: <Lightbulb size={20} /> },
     { title: 'Cenário', icon: <MapPin size={20} /> },
+    { title: 'Colorização', icon: <Droplet size={20} /> },
     { title: 'Estilo', icon: <Palette size={20} /> },
     { title: 'Detalhe', icon: <Zap size={20} /> },
     { title: 'Revisão', icon: <CheckCircle2 size={20} /> },
@@ -167,8 +173,9 @@ export default function App() {
       case 5: return LENSES;
       case 6: return LIGHTING;
       case 7: return ENVIRONMENTS;
-      case 8: return STYLES;
-      case 9: return DETAILS;
+      case 8: return [];
+      case 9: return STYLES;
+      case 10: return DETAILS;
       default: return [];
     }
   };
@@ -354,7 +361,9 @@ export default function App() {
       lighting: '',
       environment: '',
       style: [],
-      detail: []
+      detail: [],
+      colorPalette: [],
+      colorPaletteId: ''
     });
     setActiveStep(0);
     addToast('Todas as configurações foram resetadas.', 'info');
@@ -397,6 +406,10 @@ export default function App() {
       const prompt = STYLES.find(o => o.id === id)?.prompt;
       if (prompt) parts.push(prompt);
     });
+
+    if (selections.colorPalette && selections.colorPalette.length > 0) {
+      parts.push(`using color palette reference (${selections.colorPalette.join(', ')})`);
+    }
 
     if (mode === 'storyboard') parts.push("professional storyboard sketch, black and white pencil lines, compositional notes, rough sketches");
     else if (mode === 'cinematic') parts.push("cinematic color grading, professional cinematography, technical realism");
@@ -471,8 +484,10 @@ export default function App() {
             isAnalyzing={isAnalyzing} handleAnalyzeReference={handleAnalyzeReference}
             setActiveStep={setActiveStep} getCurrentOptions={getCurrentOptions}
             handleSelect={handleSelect} selections={selections}
+            setSelections={setSelections}
             customAspect={customAspect} setCustomAspect={setCustomAspect}
             theme={theme} themeClasses={themeClasses}
+            addToast={addToast}
           />
 
           <NegativePrompt

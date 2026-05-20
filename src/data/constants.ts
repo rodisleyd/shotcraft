@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Option } from "../types";
+import { Option, ColorPaletteOption } from "../types";
 
 export const SHOT_TYPES: Option[] = [
   { id: 'ecu', label: 'Plano Detalhe (Extreme Close-up)', prompt: 'extreme close-up shot, macro detail', category: 'framing' },
@@ -326,3 +326,54 @@ export const AUTO_COMBINATIONS: Record<string, Partial<Record<string, any>>> = {
     'lighting': 'high-key'
   }
 };
+
+export const COLOR_PALETTES: ColorPaletteOption[] = [
+  {
+    id: 'cyberpunk',
+    name: 'Cyberpunk Neon',
+    colors: ['#00f0ff', '#ff007f', '#9b51e0', '#2d9cdb', '#100e17'],
+    description: 'Cores neon vibrantes e contrastantes. Tons eletrizantes de ciano, magenta e roxo profundo.'
+  },
+  {
+    id: 'noir',
+    name: 'Cinematic Noir',
+    colors: ['#121212', '#333333', '#7a7a7a', '#cccccc', '#f5f5f5'],
+    description: 'Escala de cinzas dramática. Excelente para sombreamento duro, silhuetas e alto contraste.'
+  },
+  {
+    id: 'vaporwave',
+    name: 'Vaporwave Sunset',
+    colors: ['#ff9cfc', '#9ad0ec', '#e3bec6', '#a1e3d4', '#ffd3b6'],
+    description: 'Estética retrô e nostálgica dos anos 80/90. Tons suaves de rosa, ciano pastel e menta.'
+  },
+  {
+    id: 'golden-hour',
+    name: 'Golden Hour',
+    colors: ['#f2994a', '#f2c94c', '#e0e0e0', '#eb5757', '#4f4f4f'],
+    description: 'Luz solar quente e atmosférica. Cores de pôr do sol com laranjas e amarelos ricos.'
+  },
+  {
+    id: 'earth-tones',
+    name: 'Tons de Terra',
+    colors: ['#8b5a2b', '#2d5a27', '#dfc794', '#9e2a2b', '#3e2723'],
+    description: 'Paleta orgânica e acolhedora. Tons argilosos, verdes florestais, ocres e marrons profundos.'
+  },
+  {
+    id: 'pastel-cozy',
+    name: 'Pastel Cozy',
+    colors: ['#ffccd5', '#ffeb3b', '#b3e5fc', '#c8e6c9', '#f8bbd0'],
+    description: 'Estética delicada, aconchegante e fofa. Perfeito para o estilo 3D estilizado e fantasia suave.'
+  },
+  {
+    id: 'vintage-comic',
+    name: 'Quadrinhos Vintage (CMYK)',
+    colors: ['#e74c3c', '#3498db', '#f1c40f', '#ecf0f1', '#2c3e50'],
+    description: 'Cores clássicas de quadrinhos retro. Vermelho, azul e amarelo primários levemente desbotados.'
+  },
+  {
+    id: 'nordic-cold',
+    name: 'Frio Nórdico',
+    colors: ['#e3f2fd', '#bbdefb', '#90caf9', '#64b5f6', '#1e88e5'],
+    description: 'Tons gelados e melancólicos. Perfeito para cenas de neblina, inverno e ficção científica fria.'
+  }
+];
