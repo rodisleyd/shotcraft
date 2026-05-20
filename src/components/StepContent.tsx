@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy } from "lucide-react";
 import { Option, Step, SelectionState } from "../types";
 import { STYLES, COLOR_PALETTES } from "../data/constants";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface StepContentProps {
   activeStep: number;

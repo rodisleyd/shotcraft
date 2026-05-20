@@ -114,6 +114,7 @@ export const STYLES: Option[] = [
   { id: 'pontilhismo', label: 'Pontilhismo', prompt: 'pointillism technique, dots create form and color', category: 'style', subCategory: '4. Técnicas de Sombreamento (HQ)' },
   { id: 'halftone', label: 'Halftone', prompt: 'halftone dot pattern, vintage comic print style', category: 'style', subCategory: '4. Técnicas de Sombreamento (HQ)' },
   { id: 'screentone', label: 'Screentone', prompt: 'manga screentone style, dot and line patterns', category: 'style', subCategory: '4. Técnicas de Sombreamento (HQ)' },
+  { id: 'ben-day-dots', label: 'Ben-Day dots', prompt: 'Authentic vintage comic book printing aesthetic, Ben-Day dot shading, CMYK halftone texture, retro newsprint paper, imperfect offset registration, subtle cyan magenta yellow misalignment, bold black contour inks, aged paper grain, low fidelity comic printing, 1980s comic colorization, pulp comic texture, classic American comic book look', category: 'style', subCategory: '4. Técnicas de Sombreamento (HQ)' },
 
   // 5. Estilo Artístico
   { id: 'cartoon', label: 'Cartoon', prompt: 'classic cartoon character style, exaggerated features', category: 'style', subCategory: '5. Estilo Artístico' },
