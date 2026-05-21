@@ -846,6 +846,18 @@ export const VISUAL_TAGS: VisualTag[] = [
       lighting: 'hard',
       environment: 'urban'
     }
+  },
+  {
+    id: 'turnaround-tag',
+    label: 'Turnaround 3D/2D',
+    icon: '🔄',
+    description: 'Configura o app para criar uma folha de modelo de personagem em múltiplos ângulos.',
+    selections: {
+      angle: 'turnaround',
+      perspective: 'orthographic',
+      lighting: 'studio',
+      framing: 'full'
+    }
   }
 ];
 

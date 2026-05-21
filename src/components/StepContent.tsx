@@ -136,7 +136,12 @@ export function StepContent({
       });
       return next;
     });
-    addToast(`Clima "${tag.label}" aplicado! Enquadramento e luz configurados.`, 'success');
+    addToast(
+      tag.id === 'turnaround-tag'
+        ? `Configuração de Turnaround aplicada! Pronto para criar a folha de modelo.`
+        : `Clima "${tag.label}" aplicado! Enquadramento e luz configurados.`,
+      'success'
+    );
   };
 
   const handleColorImageUpload = (file: File) => {
