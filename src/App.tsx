@@ -26,7 +26,7 @@ import {
 import { GoogleGenAI } from "@google/genai";
 
 // Types
-import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step } from './types';
+import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step, ColorPaletteOption } from './types';
 
 // Constants
 import {
@@ -106,6 +106,7 @@ export default function App() {
   const [isTranslating, setIsTranslating] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [toasts, setToasts] = useState<ToastType[]>([]);
+  const [customPalettes, setCustomPalettes] = useState<ColorPaletteOption[]>([]);
 
   // --- Persistence ---
   useEffect(() => {
@@ -114,6 +115,9 @@ export default function App() {
 
     const savedHistory = localStorage.getItem('shotcraft_history');
     if (savedHistory) try { setHistory(JSON.parse(savedHistory)); } catch (e) { }
+
+    const savedCustomPalettes = localStorage.getItem('shotcraft_custom_palettes');
+    if (savedCustomPalettes) try { setCustomPalettes(JSON.parse(savedCustomPalettes)); } catch (e) { }
   }, []);
 
   useEffect(() => {
@@ -123,6 +127,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('shotcraft_history', JSON.stringify(history));
   }, [history]);
+
+  useEffect(() => {
+    localStorage.setItem('shotcraft_custom_palettes', JSON.stringify(customPalettes));
+  }, [customPalettes]);
 
   // --- Helpers ---
   const addToast = (message: string, type: ToastType['type'] = 'info') => {
@@ -248,6 +256,25 @@ export default function App() {
     } finally {
       setIsTranslating(false);
     }
+  };
+
+  const handleSaveCustomPalette = (name: string, colors: string[]) => {
+    const id = `custom-${Date.now()}`;
+    const newPalette: ColorPaletteOption = {
+      id,
+      name,
+      colors,
+      description: 'Paleta personalizada extraída.'
+    };
+    setCustomPalettes(prev => [newPalette, ...prev]);
+    setSelections(prev => ({ ...prev, colorPalette: colors, colorPaletteId: id }));
+    addToast(`Paleta "${name}" salva com sucesso!`, 'success');
+  };
+
+  const handleDeleteCustomPalette = (id: string) => {
+    setCustomPalettes(prev => prev.filter(p => p.id !== id));
+    setSelections(prev => prev.colorPaletteId === id ? { ...prev, colorPalette: [], colorPaletteId: '' } : prev);
+    addToast('Paleta personalizada excluída.', 'info');
   };
 
   const fileToGenerativePart = async (file: File) => {
@@ -488,6 +515,9 @@ export default function App() {
             customAspect={customAspect} setCustomAspect={setCustomAspect}
             theme={theme} themeClasses={themeClasses}
             addToast={addToast}
+            customPalettes={customPalettes}
+            onSaveCustomPalette={handleSaveCustomPalette}
+            onDeleteCustomPalette={handleDeleteCustomPalette}
           />
 
           <NegativePrompt

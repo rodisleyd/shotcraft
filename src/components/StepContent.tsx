@@ -5,7 +5,7 @@
 
 import { motion, AnimatePresence } from "motion/react";
 import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy } from "lucide-react";
-import { Option, Step, SelectionState } from "../types";
+import { Option, Step, SelectionState, ColorPaletteOption } from "../types";
 import { STYLES, COLOR_PALETTES, VISUAL_TAGS } from "../data/constants";
 import React, { useState, useEffect } from "react";
 
@@ -30,6 +30,9 @@ interface StepContentProps {
   theme: string;
   themeClasses: any;
   addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+  customPalettes: ColorPaletteOption[];
+  onSaveCustomPalette: (name: string, colors: string[]) => void;
+  onDeleteCustomPalette: (id: string) => void;
 }
 
 export function StepContent({
@@ -52,10 +55,14 @@ export function StepContent({
   setCustomAspect,
   theme,
   themeClasses,
-  addToast
+  addToast,
+  customPalettes,
+  onSaveCustomPalette,
+  onDeleteCustomPalette
 }: StepContentProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>('1. Pintura Tradicional');
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
+  const [customPaletteName, setCustomPaletteName] = useState('');
 
   useEffect(() => {
     if (activeStep === 9) {
@@ -693,6 +700,37 @@ export function StepContent({
                       </div>
 
                       {selections.colorPalette && selections.colorPalette.length > 0 && (
+                        <div className="mt-4 p-4 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl bg-black/5 dark:bg-white/5 space-y-3">
+                          <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-500">
+                            Salvar Paleta Personalizada
+                          </label>
+                          <div className="flex gap-2">
+                            <input 
+                              type="text"
+                              value={customPaletteName}
+                              onChange={(e) => setCustomPaletteName(e.target.value)}
+                              placeholder="Dê um nome para a paleta..."
+                              className={`flex-1 px-3 py-2 text-xs rounded-xl border outline-none focus:ring-1 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (!customPaletteName.trim()) {
+                                  addToast('Por favor, digite um nome para a paleta.', 'error');
+                                  return;
+                                }
+                                onSaveCustomPalette(customPaletteName.trim(), selections.colorPalette);
+                                setCustomPaletteName('');
+                              }}
+                              className={`px-4 py-2 rounded-xl text-xs font-bold text-white transition-all ${themeClasses.accent}`}
+                            >
+                              Salvar
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {selections.colorPalette && selections.colorPalette.length > 0 && (
                         <div className="flex flex-wrap gap-3 pt-4">
                           <button 
                             type="button"
@@ -720,7 +758,7 @@ export function StepContent({
                 {colorMode === 'presets' && (
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
-                      {COLOR_PALETTES.map((preset) => {
+                      {[...customPalettes, ...COLOR_PALETTES].map((preset) => {
                         const isSelected = selections.colorPaletteId === preset.id;
                         return (
                           <div 
@@ -740,14 +778,36 @@ export function StepContent({
                           >
                             <div className="flex justify-between items-start">
                               <div>
-                                <h3 className="font-bold text-sm">{preset.name}</h3>
+                                <h3 className="font-bold text-sm flex items-center gap-2">
+                                  {preset.name}
+                                  {preset.id.startsWith('custom-') && (
+                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#8b5a2b]/10 text-[#8b5a2b] dark:bg-indigo-500/10 dark:text-indigo-400 font-bold border border-[#8b5a2b]/20 dark:border-indigo-500/20">
+                                      Custom
+                                    </span>
+                                  )}
+                                </h3>
                                 <p className="text-[10px] leading-tight opacity-60 mt-1">{preset.description}</p>
                               </div>
-                              {isSelected && (
-                                <div className="p-1 bg-[#8b5a2b] text-white rounded-full">
-                                  <Check size={12} />
-                                </div>
-                              )}
+                              <div className="flex items-center gap-2">
+                                {preset.id.startsWith('custom-') && onDeleteCustomPalette && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onDeleteCustomPalette(preset.id);
+                                    }}
+                                    className="p-1 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 rounded transition-colors animate-in fade-in"
+                                    title="Excluir paleta"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                )}
+                                {isSelected && (
+                                  <div className="p-1 bg-[#8b5a2b] text-white rounded-full">
+                                    <Check size={12} />
+                                  </div>
+                                )}
+                              </div>
                             </div>
 
                             <div className="flex h-8 rounded-xl overflow-hidden shadow-inner border border-black/10">
@@ -885,7 +945,7 @@ export function StepContent({
                       <span className="text-xs font-semibold opacity-60">
                         {selections.colorPaletteId === 'custom' 
                           ? 'Extraída de Imagem' 
-                          : COLOR_PALETTES.find(p => p.id === selections.colorPaletteId)?.name || 'Paleta de Cores'}
+                          : [...customPalettes, ...COLOR_PALETTES].find(p => p.id === selections.colorPaletteId)?.name || 'Paleta de Cores'}
                       </span>
                     </div>
                   </div>
