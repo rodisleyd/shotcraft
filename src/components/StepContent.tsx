@@ -139,6 +139,10 @@ export function StepContent({
     addToast(
       tag.id === 'turnaround-tag'
         ? `Configuração de Turnaround aplicada! Pronto para criar a folha de modelo.`
+        : tag.id === 'expressions-tag'
+        ? `Configuração de Folha de Expressões aplicada! Pronto para gerar os rostos.`
+        : tag.id === 'poses-tag'
+        ? `Configuração de Folha de Poses aplicada! Pronto para as poses.`
         : `Clima "${tag.label}" aplicado! Enquadramento e luz configurados.`,
       'success'
     );

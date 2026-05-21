@@ -858,6 +858,30 @@ export const VISUAL_TAGS: VisualTag[] = [
       lighting: 'studio',
       framing: 'full'
     }
+  },
+  {
+    id: 'expressions-tag',
+    label: 'Folha de Expressões',
+    icon: '😊',
+    description: 'Configura o app para criar uma folha de rostos com múltiplos sentimentos e expressões.',
+    selections: {
+      angle: 'front-view',
+      framing: 'close-up',
+      lighting: 'studio',
+      style: ['cartoon-expressions']
+    }
+  },
+  {
+    id: 'poses-tag',
+    label: 'Folha de Poses',
+    icon: '🤸',
+    description: 'Configura o app para criar uma folha com múltiplas poses de ação e gestos do personagem.',
+    selections: {
+      angle: 'eye-level',
+      framing: 'full',
+      lighting: 'studio',
+      style: ['cartoon-acting']
+    }
   }
 ];
 
