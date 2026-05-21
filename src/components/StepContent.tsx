@@ -618,24 +618,26 @@ export function StepContent({
                             </div>
                           </>
                         ) : (
-                          <label className="cursor-pointer flex flex-col items-center gap-3 w-full h-full py-6">
-                            <div className="p-4 bg-[#8b5a2b]/10 text-[#8b5a2b] rounded-2xl">
-                              {isExtractingColors ? <Loader2 className="animate-spin" size={24} /> : <Upload size={24} />}
-                            </div>
-                            <div>
-                              <span className="font-bold text-sm block">Clique para fazer upload</span>
-                              <span className="text-xs text-zinc-400">Arraste e solte uma imagem aqui</span>
-                            </div>
+                          <>
                             <input 
                               type="file" 
                               accept="image/*" 
-                              className="hidden" 
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) handleColorImageUpload(file);
                               }}
                             />
-                          </label>
+                            <div className="flex flex-col items-center gap-3 w-full h-full py-6 pointer-events-none">
+                              <div className="p-4 bg-[#8b5a2b]/10 text-[#8b5a2b] rounded-2xl">
+                                {isExtractingColors ? <Loader2 className="animate-spin" size={24} /> : <Upload size={24} />}
+                              </div>
+                              <div>
+                                <span className="font-bold text-sm block">Clique para fazer upload</span>
+                                <span className="text-xs text-zinc-400">Arraste e solte uma imagem aqui</span>
+                              </div>
+                            </div>
+                          </>
                         )}
                       </div>
                     </div>
