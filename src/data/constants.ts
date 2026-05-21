@@ -403,6 +403,7 @@ export const STYLES: Option[] = [
 
   // 12. Colagem e Técnicas Mistas
   { id: 'colagem', label: 'Colagem', prompt: 'Masterpiece mixed media collage portrait exactly matching the artistic style of the reference, face meticulously assembled from torn paper fragments, vintage newspaper text, fabric swatches, blue denim pieces, floral illustrations, old maps and layered ephemera, real pressed flowers blooming from the composition, visible rough paper edges, overlapping layers, texture and physical depth, decoupage and collage technique, delicate yet bold composition, sophisticated color harmony, artistic paper texture, high detail --stylize 650 --v 6 --q 2', category: 'style', subCategory: '12. Colagem e Técnicas Mistas' },
+  { id: 'arte-poligonal', label: 'Arte Poligonal / Facetada', prompt: 'Vibrant geometric fragmentation portrait, polygonal facet art, sharp triangular planes, stained glass effect, highly saturated colors, bold contrasting palette, modern digital cubism, intricate geometric mosaic on face and clothing, crystalline facets, dramatic lighting, masterpiece --stylize 600 --v 6', category: 'style', subCategory: '12. Colagem e Técnicas Mistas' },
 ];
 
 export const DETAILS: Option[] = [
