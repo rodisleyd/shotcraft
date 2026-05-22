@@ -384,6 +384,8 @@ export const STYLES: Option[] = [
   { id: 'pb', label: 'Preto e Branco', prompt: 'high contrast black and white graphic style', category: 'style', subCategory: '8. Cor e Finalização' },
   { id: 'tons-cinza', label: 'Tons de cinza', prompt: 'grayscale monochromatic style, varying shades of gray', category: 'style', subCategory: '8. Cor e Finalização' },
   { id: 'alto-contraste', label: 'Alto contraste', prompt: 'high contrast extreme lighting, deep blacks and bright whites', category: 'style', subCategory: '8. Cor e Finalização' },
+  { id: 'noir-pb-master', label: 'Noir Preto & Branco (Master)', prompt: 'extreme noir black and white illustration, pure black shadows, heavy black spotting, dramatic chiaroscuro lighting, bold silhouette rendering, graphic ink composition, strong negative space, hard rim lighting, minimal grayscale, white highlights only, sin city aesthetic, frank miller inspired noir, woodcut texture, dry brush ink feeling, high contrast cinematic composition, posterized shadows, ultra graphic novel style', category: 'style', subCategory: '8. Cor e Finalização' },
+  { id: 'noir-pb-extremo', label: 'Noir P&B Extremo / Agressivo', prompt: 'pure black and white only, no gray tones, extreme shadow masses, aggressive chiaroscuro, high contrast noir ink, solid black shapes, cutout shadow aesthetic, threshold black and white effect', category: 'style', subCategory: '8. Cor e Finalização' },
 
   // 9. Fotografia Cinematográfica
   { id: 'anamorfico', label: 'Anamórfico', prompt: 'cinematic anamorphic shot, horizontal lens flares, oval bokeh', category: 'style', subCategory: '9. Fotografia Cinematográfica' },
