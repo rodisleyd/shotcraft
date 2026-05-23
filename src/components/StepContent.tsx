@@ -4,7 +4,7 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn } from "lucide-react";
 import { Option, Step, SelectionState, ColorPaletteOption } from "../types";
 import { STYLES, COLOR_PALETTES, VISUAL_TAGS } from "../data/constants";
 import React, { useState, useEffect } from "react";
@@ -63,6 +63,7 @@ export function StepContent({
   const [expandedCategory, setExpandedCategory] = useState<string | null>('1. Pintura Tradicional');
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
   const [customPaletteName, setCustomPaletteName] = useState('');
+  const [selectedZoomImage, setSelectedZoomImage] = useState<{ src: string; label: string; prompt: string } | null>(null);
 
   useEffect(() => {
     if (activeStep === 9) {
@@ -442,12 +443,19 @@ export function StepContent({
                                   : selections[option.category as keyof SelectionState] === option.id;
                                 
                                 return (
-                                  <button
+                                  <div
                                     key={option.id}
+                                    role="button"
+                                    tabIndex={0}
                                     onMouseEnter={() => setHoveredOption(option.id)}
                                     onMouseLeave={() => setHoveredOption(null)}
                                     onClick={() => handleSelect(option.category, option.id)}
-                                    className={`group relative p-4 rounded-xl border text-left transition-all ${
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                        handleSelect(option.category, option.id);
+                                      }
+                                    }}
+                                    className={`cursor-pointer group relative p-4 rounded-xl border text-left transition-all ${
                                       option.category === 'style' ? '' : 'overflow-hidden'
                                     } ${
                                       isSelected
@@ -463,6 +471,30 @@ export function StepContent({
                                       <div className="absolute top-2 right-2">
                                         <Check size={12} className="text-white" />
                                       </div>
+                                    )}
+                                    {/* Zoom Icon Button for Styles */}
+                                    {option.category === 'style' && (
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedZoomImage({
+                                            src: option.image || `/images/styles/${option.id}.png`,
+                                            label: option.label,
+                                            prompt: option.prompt
+                                          });
+                                        }}
+                                        className={`absolute bottom-2 right-2 p-1 rounded-lg border transition-all z-20 ${
+                                          isSelected
+                                            ? 'bg-white/20 border-white/20 text-white hover:bg-white/30'
+                                            : theme === 'dark'
+                                            ? 'bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-white'
+                                            : 'bg-white border-zinc-200 hover:bg-zinc-100 text-zinc-600 hover:text-black'
+                                        } opacity-0 group-hover:opacity-100 shadow-sm`}
+                                        title="Visualizar demonstração ampliada"
+                                      >
+                                        <ZoomIn size={12} />
+                                      </button>
                                     )}
                                     {/* Preview Image on Hover */}
                                     <AnimatePresence>
@@ -487,7 +519,7 @@ export function StepContent({
                                         </motion.div>
                                       )}
                                     </AnimatePresence>
-                                  </button>
+                                  </div>
                                 );
                               })}
                             </div>
@@ -506,12 +538,19 @@ export function StepContent({
                           : selections[option.category as keyof SelectionState] === option.id;
 
                         return (
-                          <button
+                          <div
                             key={option.id}
+                            role="button"
+                            tabIndex={0}
                             onMouseEnter={() => setHoveredOption(option.id)}
                             onMouseLeave={() => setHoveredOption(null)}
                             onClick={() => handleSelect(option.category, option.id)}
-                            className={`group relative p-4 rounded-2xl border text-left transition-all ${
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                handleSelect(option.category, option.id);
+                              }
+                            }}
+                            className={`cursor-pointer group relative p-4 rounded-2xl border text-left transition-all ${
                               option.category === 'style' ? '' : 'overflow-hidden'
                             } ${
                               isSelected
@@ -527,6 +566,30 @@ export function StepContent({
                               <div className="absolute top-2 right-2">
                                 <Check size={14} className="text-white" />
                               </div>
+                            )}
+                            {/* Zoom Icon Button for Styles */}
+                            {option.category === 'style' && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedZoomImage({
+                                    src: option.image || `/images/styles/${option.id}.png`,
+                                    label: option.label,
+                                    prompt: option.prompt
+                                  });
+                                }}
+                                className={`absolute bottom-2 right-2 p-1 rounded-lg border transition-all z-20 ${
+                                  isSelected
+                                    ? 'bg-white/20 border-white/20 text-white hover:bg-white/30'
+                                    : theme === 'dark'
+                                    ? 'bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-white'
+                                    : 'bg-white border-zinc-200 hover:bg-zinc-100 text-zinc-600 hover:text-black'
+                                } opacity-0 group-hover:opacity-100 shadow-sm`}
+                                title="Visualizar demonstração ampliada"
+                              >
+                                <ZoomIn size={12} />
+                              </button>
                             )}
                             {/* Preview Image on Hover */}
                             <AnimatePresence>
@@ -551,7 +614,7 @@ export function StepContent({
                                 </motion.div>
                               )}
                             </AnimatePresence>
-                          </button>
+                          </div>
                         );
                       })}
                   </div>
@@ -1047,6 +1110,66 @@ export function StepContent({
             </div>
           )}
         </motion.div>
+      </AnimatePresence>
+
+      {/* Zoom Image Modal */}
+      <AnimatePresence>
+        {selectedZoomImage && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
+            {/* Backdrop with dark blur */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedZoomImage(null)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+
+            {/* Modal Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              className={`relative z-10 max-w-xl w-full rounded-3xl overflow-hidden shadow-2xl border ${
+                theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
+              }`}
+            >
+              {/* Header */}
+              <div className="p-5 border-b border-black/10 dark:border-white/10 flex justify-between items-center">
+                <div>
+                  <h3 className="font-bold text-base">{selectedZoomImage.label}</h3>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Demonstração de Estilo Ampliada</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedZoomImage(null)}
+                  className="p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Image */}
+              <div className="aspect-square w-full relative bg-zinc-950 flex items-center justify-center">
+                <img
+                  src={selectedZoomImage.src}
+                  alt={selectedZoomImage.label}
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/images/styles/default.png';
+                  }}
+                />
+              </div>
+
+              {/* Footer */}
+              <div className="p-5 bg-black/5 dark:bg-white/5 border-t border-black/10 dark:border-white/10">
+                <div className="text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">Prompt de Estilo:</div>
+                <p className="text-xs font-mono opacity-85 leading-relaxed break-words max-h-24 overflow-y-auto pr-1">{selectedZoomImage.prompt}</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </AnimatePresence>
     </div>
   );
