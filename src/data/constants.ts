@@ -383,7 +383,6 @@ export const STYLES: Option[] = [
   { id: 'cartoon-acting', label: 'Cartoon character acting', prompt: 'cartoon character acting sheet, multiple dynamic poses, high angle, low angle, front, back, profile, expressive body language, exaggerated cartoon acting, hand drawn animation style', category: 'style', subCategory: '7. Produção / Processo' },
 
   // 8. Cor e Finalização
-  { id: 'pb', label: 'Preto e Branco', prompt: 'high contrast black and white graphic style', category: 'style', subCategory: '8. Cor e Finalização' },
   { id: 'tons-cinza', label: 'Tons de cinza', prompt: 'grayscale monochromatic style, varying shades of gray', category: 'style', subCategory: '8. Cor e Finalização' },
   { id: 'alto-contraste', label: 'Alto contraste', prompt: 'high contrast extreme lighting, deep blacks and bright whites', category: 'style', subCategory: '8. Cor e Finalização' },
   { id: 'noir-pb-master', label: 'Noir Preto & Branco (Master)', prompt: 'extreme noir black and white illustration, pure black shadows, heavy black spotting, dramatic chiaroscuro lighting, bold silhouette rendering, graphic ink composition, strong negative space, hard rim lighting, minimal grayscale, white highlights only, sin city aesthetic, frank miller inspired noir, woodcut texture, dry brush ink feeling, high contrast cinematic composition, posterized shadows, ultra graphic novel style', category: 'style', subCategory: '8. Cor e Finalização' },
@@ -486,7 +485,7 @@ export const PRESETS = [
       lens: '35mm', 
       lighting: 'hard', 
       environment: 'urban', 
-      style: ['pb', 'realista'], 
+      style: ['tons-cinza', 'realista'], 
       detail: 'detailed' 
     } 
   },
@@ -516,7 +515,7 @@ export const AUTO_COMBINATIONS: Record<string, Partial<Record<string, any>>> = {
     'style': { 
       '5. Estilo Artístico': 'manga',
       '4. Técnicas de Sombreamento (HQ)': 'screentone',
-      '8. Cor e Finalização': 'pb'
+      '8. Cor e Finalização': 'tons-cinza'
     },
     'lens': '35mm',
     'lighting': 'high-contrast'
@@ -569,17 +568,17 @@ export const AUTO_COMBINATIONS: Record<string, Partial<Record<string, any>>> = {
     'detail': 'detailed'
   },
   'nanquim': {
-    'style': { '3. Tinta e Line Art': 'nanquim', '8. Cor e Finalização': 'pb' },
+    'style': { '3. Tinta e Line Art': 'nanquim', '8. Cor e Finalização': 'tons-cinza' },
     'lighting': 'high-contrast',
     'detail': 'clean-lines'
   },
   'carvao': {
-    'style': { '2. Desenho Tradicional': 'carvao', '8. Cor e Finalização': 'pb' },
+    'style': { '2. Desenho Tradicional': 'carvao', '8. Cor e Finalização': 'tons-cinza' },
     'lighting': 'dramatic'
   },
-  'pb': {
+  'tons-cinza': {
     'lighting': 'dramatic',
-    'style': { '8. Cor e Finalização': 'pb' }
+    'style': { '8. Cor e Finalização': 'tons-cinza' }
   },
   'cyberpunk': {
     'lighting': 'neon',
@@ -587,7 +586,7 @@ export const AUTO_COMBINATIONS: Record<string, Partial<Record<string, any>>> = {
     'environment': 'urban'
   },
   'noir': {
-    'style': { '8. Cor e Finalização': 'pb', '4. Técnicas de Sombreamento (HQ)': 'hachura' },
+    'style': { '8. Cor e Finalização': 'tons-cinza', '4. Técnicas de Sombreamento (HQ)': 'hachura' },
     'lighting': 'dramatic',
     'environment': 'urban'
   },
