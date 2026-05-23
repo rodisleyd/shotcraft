@@ -1,9 +1,4 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import { Film, Lightbulb, Zap, Check, Copy, Monitor, Layout, Sparkles, RotateCcw } from 'lucide-react';
+import { Film, Lightbulb, Zap, Check, Copy, Monitor, Layout, Sparkles, RotateCcw, BookOpen, Sliders } from 'lucide-react';
 import { ShotMode, Theme } from '../types';
 
 interface HeaderProps {
@@ -15,6 +10,8 @@ interface HeaderProps {
   handleReset: () => void;
   copied: boolean;
   themeClasses: any;
+  currentTab: 'builder' | 'library';
+  setCurrentTab: (tab: 'builder' | 'library') => void;
 }
 
 export function Header({ 
@@ -25,17 +22,47 @@ export function Header({
   copyToClipboard, 
   handleReset,
   copied, 
-  themeClasses 
+  themeClasses,
+  currentTab,
+  setCurrentTab
 }: HeaderProps) {
   return (
     <header className={`border-b backdrop-blur-xl sticky top-0 z-50 transition-colors duration-500 ${themeClasses.header}`}>
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center">
-          <img 
-            src={theme === 'dark' ? '/logotipo negativo.png' : '/logotipo.png'} 
-            alt="ShotCraft Logo" 
-            className="h-12 w-auto object-contain"
-          />
+        <div className="flex items-center gap-6">
+          <div className="flex items-center">
+            <img 
+              src={theme === 'dark' ? '/logotipo negativo.png' : '/logotipo.png'} 
+              alt="ShotCraft Logo" 
+              className="h-12 w-auto object-contain cursor-pointer"
+              onClick={() => setCurrentTab('builder')}
+            />
+          </div>
+
+          <nav className="flex items-center gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-2xl border border-black/5 dark:border-white/5">
+            <button
+              onClick={() => setCurrentTab('builder')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                currentTab === 'builder'
+                  ? theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-[#8b5a2b] text-white'
+                  : themeClasses.textMuted + ' hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <Sliders size={13} />
+              Simulador
+            </button>
+            <button
+              onClick={() => setCurrentTab('library')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                currentTab === 'library'
+                  ? theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-[#8b5a2b] text-white'
+                  : themeClasses.textMuted + ' hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <BookOpen size={13} />
+              Biblioteca
+            </button>
+          </nav>
         </div>
 
         <div className="hidden md:flex bg-black/10 p-1 rounded-full border border-black/5">

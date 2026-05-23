@@ -44,6 +44,7 @@ import { UserPresets } from './components/UserPresets';
 import { NegativePrompt } from './components/NegativePrompt';
 import { History } from './components/History';
 import { Toast } from './components/Toast';
+import { Library } from './components/Library';
 
 // AI Optimization Service
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -78,6 +79,7 @@ async function translateSubject(subject: string) {
 
 export default function App() {
   // --- States ---
+  const [currentTab, setCurrentTab] = useState<'builder' | 'library'>('builder');
   const [subject, setSubject] = useState<string>('A mysterious detective standing in the rain');
   const [negativePrompt, setNegativePrompt] = useState<string>('');
   const [mode, setMode] = useState<ShotMode>('cinematic');
@@ -496,73 +498,88 @@ export default function App() {
         copyToClipboard={copyToClipboard} copied={copied}
         handleReset={handleReset}
         themeClasses={themeClasses}
+        currentTab={currentTab}
+        setCurrentTab={setCurrentTab}
       />
 
-      <main className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: UI Controls */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
-          <Stepper steps={steps} activeStep={activeStep} setActiveStep={setActiveStep} themeClasses={themeClasses} />
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {currentTab === 'builder' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-300">
+            {/* Left Column: UI Controls */}
+            <div className="lg:col-span-8 flex flex-col gap-6">
+              <Stepper steps={steps} activeStep={activeStep} setActiveStep={setActiveStep} themeClasses={themeClasses} />
 
-          <StepContent
-            activeStep={activeStep} steps={steps}
-            subject={subject} setSubject={setSubject}
-            isOptimizing={isOptimizing} handleOptimizeSubject={handleOptimizeSubject}
-            isTranslating={isTranslating} handleTranslateSubject={handleTranslateSubject}
-            isAnalyzing={isAnalyzing} handleAnalyzeReference={handleAnalyzeReference}
-            setActiveStep={setActiveStep} getCurrentOptions={getCurrentOptions}
-            handleSelect={handleSelect} selections={selections}
-            setSelections={setSelections}
-            customAspect={customAspect} setCustomAspect={setCustomAspect}
-            theme={theme} themeClasses={themeClasses}
+              <StepContent
+                activeStep={activeStep} steps={steps}
+                subject={subject} setSubject={setSubject}
+                isOptimizing={isOptimizing} handleOptimizeSubject={handleOptimizeSubject}
+                isTranslating={isTranslating} handleTranslateSubject={handleTranslateSubject}
+                isAnalyzing={isAnalyzing} handleAnalyzeReference={handleAnalyzeReference}
+                setActiveStep={setActiveStep} getCurrentOptions={getCurrentOptions}
+                handleSelect={handleSelect} selections={selections}
+                setSelections={setSelections}
+                customAspect={customAspect} setCustomAspect={setCustomAspect}
+                theme={theme} themeClasses={themeClasses}
+                addToast={addToast}
+                customPalettes={customPalettes}
+                onSaveCustomPalette={handleSaveCustomPalette}
+                onDeleteCustomPalette={handleDeleteCustomPalette}
+              />
+
+              <NegativePrompt
+                negativePrompt={negativePrompt} setNegativePrompt={setNegativePrompt}
+                themeClasses={themeClasses}
+              />
+            </div>
+
+            {/* Right Column: Preview & Storage */}
+            <div className="lg:col-span-4 flex flex-col gap-6 sticky top-8 h-fit">
+              <PromptPreview
+                finalPrompt={finalPrompt} copyToClipboard={copyToClipboard} copied={copied}
+                isSaving={isSaving} setIsSaving={setIsSaving}
+                newPresetName={newPresetName} setNewPresetName={setNewPresetName}
+                handleSavePreset={handleSavePreset} themeClasses={themeClasses}
+              />
+
+              <UserPresets
+                userPresets={userPresets} loadUserPreset={(p) => {
+                  setSelections(sanitizeSelections(p.selections));
+                  setSubject(p.subject);
+                  addToast('Preset carregado!', 'info');
+                }}
+                deleteUserPreset={(idx) => {
+                  setUserPresets(prev => prev.filter((_, i) => i !== idx));
+                  addToast('Preset removido.', 'info');
+                }}
+                themeClasses={themeClasses}
+              />
+
+              <History
+                history={history}
+                loadFromHistory={(item) => {
+                  setSubject(item.subject);
+                  if (item.negativePrompt) setNegativePrompt(item.negativePrompt);
+                  addToast('Prompt recuperado do histórico!', 'info');
+                }}
+                removeFromHistory={(id) => setHistory(prev => prev.filter(h => h.id !== id))}
+                clearHistory={() => {
+                  setHistory([]);
+                  addToast('Histórico limpo.');
+                }}
+                themeClasses={themeClasses}
+              />
+            </div>
+          </div>
+        ) : (
+          <Library
+            theme={theme}
+            themeClasses={themeClasses}
+            selections={selections}
+            handleSelect={handleSelect}
+            setCurrentTab={setCurrentTab}
             addToast={addToast}
-            customPalettes={customPalettes}
-            onSaveCustomPalette={handleSaveCustomPalette}
-            onDeleteCustomPalette={handleDeleteCustomPalette}
           />
-
-          <NegativePrompt
-            negativePrompt={negativePrompt} setNegativePrompt={setNegativePrompt}
-            themeClasses={themeClasses}
-          />
-        </div>
-
-        {/* Right Column: Preview & Storage */}
-        <div className="lg:col-span-4 flex flex-col gap-6 sticky top-8 h-fit">
-          <PromptPreview
-            finalPrompt={finalPrompt} copyToClipboard={copyToClipboard} copied={copied}
-            isSaving={isSaving} setIsSaving={setIsSaving}
-            newPresetName={newPresetName} setNewPresetName={setNewPresetName}
-            handleSavePreset={handleSavePreset} themeClasses={themeClasses}
-          />
-
-          <UserPresets
-            userPresets={userPresets} loadUserPreset={(p) => {
-              setSelections(sanitizeSelections(p.selections));
-              setSubject(p.subject);
-              addToast('Preset carregado!', 'info');
-            }}
-            deleteUserPreset={(idx) => {
-              setUserPresets(prev => prev.filter((_, i) => i !== idx));
-              addToast('Preset removido.', 'info');
-            }}
-            themeClasses={themeClasses}
-          />
-
-          <History
-            history={history}
-            loadFromHistory={(item) => {
-              setSubject(item.subject);
-              if (item.negativePrompt) setNegativePrompt(item.negativePrompt);
-              addToast('Prompt recuperado do histórico!', 'info');
-            }}
-            removeFromHistory={(id) => setHistory(prev => prev.filter(h => h.id !== id))}
-            clearHistory={() => {
-              setHistory([]);
-              addToast('Histórico limpo.');
-            }}
-            themeClasses={themeClasses}
-          />
-        </div>
+        )}
       </main>
 
       <footer className={`max-w-7xl mx-auto px-4 py-8 border-t transition-colors text-center text-xs font-medium uppercase tracking-[0.2em] ${themeClasses.footer}`}>
