@@ -414,7 +414,9 @@ export function StepContent({
               {activeStep === 9 || activeStep === 2 || activeStep === 3 || activeStep === 4 || activeStep === 5 || activeStep === 6 || activeStep === 7 || activeStep === 10 ? (
                 <div className="space-y-3">
                   {Array.from(new Set(getCurrentOptions(activeStep).map(s => s.subCategory))).filter(Boolean).map(subCat => (
-                    <div key={subCat} className={`border rounded-2xl overflow-hidden transition-colors ${themeClasses.card}`}>
+                    <div key={subCat} className={`border rounded-2xl transition-colors ${themeClasses.card} ${
+                      expandedCategory === subCat ? 'overflow-visible' : 'overflow-hidden'
+                    }`}>
                       <button
                         onClick={() => setExpandedCategory(expandedCategory === subCat ? null : subCat)}
                         className="w-full px-6 py-4 flex items-center justify-between hover:bg-black/5 transition-colors"
