@@ -445,7 +445,9 @@ export function StepContent({
                                     onMouseEnter={() => setHoveredOption(option.id)}
                                     onMouseLeave={() => setHoveredOption(null)}
                                     onClick={() => handleSelect(option.category, option.id)}
-                                    className={`group relative p-4 rounded-xl border text-left transition-all overflow-hidden ${
+                                    className={`group relative p-4 rounded-xl border text-left transition-all ${
+                                      option.category === 'style' ? '' : 'overflow-hidden'
+                                    } ${
                                       isSelected
                                         ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/10'
                                         : themeClasses.option + ' hover:border-[#8b5a2b]/40'
@@ -461,15 +463,28 @@ export function StepContent({
                                       </div>
                                     )}
                                     {/* Preview Image on Hover */}
-                                    {hoveredOption === option.id && option.image && (
-                                      <motion.div 
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="absolute inset-0 z-10 pointer-events-none"
-                                      >
-                                        <img src={option.image} alt={option.label} className="w-full h-full object-cover brightness-50" />
-                                      </motion.div>
-                                    )}
+                                    <AnimatePresence>
+                                      {hoveredOption === option.id && (option.image || option.category === 'style') && (
+                                        <motion.div 
+                                          initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                                          exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                          transition={{ duration: 0.15 }}
+                                          className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-50 w-48 h-48 rounded-2xl border-4 ${
+                                            theme === 'dark' ? 'border-indigo-500' : 'border-[#8b5a2b]'
+                                          } shadow-2xl pointer-events-none overflow-hidden bg-zinc-950`}
+                                        >
+                                          <img 
+                                            src={option.image || `/images/styles/${option.id}.png`} 
+                                            alt={option.label} 
+                                            className="w-full h-full object-cover" 
+                                            onError={(e) => {
+                                              (e.target as HTMLImageElement).src = '/images/styles/default.png';
+                                            }}
+                                          />
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
                                   </button>
                                 );
                               })}
@@ -494,7 +509,9 @@ export function StepContent({
                             onMouseEnter={() => setHoveredOption(option.id)}
                             onMouseLeave={() => setHoveredOption(null)}
                             onClick={() => handleSelect(option.category, option.id)}
-                            className={`group relative p-4 rounded-2xl border text-left transition-all overflow-hidden ${
+                            className={`group relative p-4 rounded-2xl border text-left transition-all ${
+                              option.category === 'style' ? '' : 'overflow-hidden'
+                            } ${
                               isSelected
                                 ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/10'
                                 : themeClasses.option + ' hover:border-[#8b5a2b]/40'
@@ -510,15 +527,28 @@ export function StepContent({
                               </div>
                             )}
                             {/* Preview Image on Hover */}
-                            {hoveredOption === option.id && option.image && (
-                              <motion.div 
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="absolute inset-0 z-10 pointer-events-none"
-                              >
-                                <img src={option.image} alt={option.label} className="w-full h-full object-cover brightness-50" />
-                              </motion.div>
-                            )}
+                            <AnimatePresence>
+                              {hoveredOption === option.id && (option.image || option.category === 'style') && (
+                                <motion.div 
+                                  initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                                  exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                  transition={{ duration: 0.15 }}
+                                  className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-50 w-48 h-48 rounded-2xl border-4 ${
+                                    theme === 'dark' ? 'border-indigo-500' : 'border-[#8b5a2b]'
+                                  } shadow-2xl pointer-events-none overflow-hidden bg-zinc-950`}
+                                >
+                                  <img 
+                                    src={option.image || `/images/styles/${option.id}.png`} 
+                                    alt={option.label} 
+                                    className="w-full h-full object-cover" 
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).src = '/images/styles/default.png';
+                                    }}
+                                  />
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </button>
                         );
                       })}
