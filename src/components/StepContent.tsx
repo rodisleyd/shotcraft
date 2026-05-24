@@ -456,7 +456,7 @@ export function StepContent({
                                       }
                                     }}
                                     className={`cursor-pointer group relative p-4 rounded-xl border text-left transition-all ${
-                                      option.category === 'style' ? '' : 'overflow-hidden'
+                                      (option.category === 'style' || option.image) ? '' : 'overflow-hidden'
                                     } ${
                                       isSelected
                                         ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/10'
@@ -551,7 +551,7 @@ export function StepContent({
                               }
                             }}
                             className={`cursor-pointer group relative p-4 rounded-2xl border text-left transition-all ${
-                              option.category === 'style' ? '' : 'overflow-hidden'
+                              (option.category === 'style' || option.image) ? '' : 'overflow-hidden'
                             } ${
                               isSelected
                                 ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/10'
