@@ -24,11 +24,11 @@ export const SHOT_TYPES: Option[] = [
   { id: 'cutaway', label: 'Cutaway', prompt: 'cutaway shot, showing secondary action', category: 'framing', subCategory: '1. Enquadramentos Básicos', image: '/images/enquadramentos/cutaway.png' },
 
   // 2. Enquadramentos Cinematográficos
-  { id: 'establishing-shot', label: 'Establishing Shot (Plano de Estabelecimento)', prompt: 'establishing shot, cinematic establishing view', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos' },
-  { id: 'master-shot', label: 'Master Shot (Plano Mestre)', prompt: 'master shot, full scene composition', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos' },
-  { id: 'dutch-angle-framing', label: 'Dutch Angle (Ângulo Inclinado)', prompt: 'dutch angle, tilted camera, canted shot', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos' },
-  { id: 'center-framed', label: 'Center Framed Shot (Centralizado)', prompt: 'center framed composition, symmetrical framing', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos' },
-  { id: 'frame-within-frame', label: 'Frame Within Frame (Moldura Interna)', prompt: 'frame within frame composition, shoot through framing', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos' },
+  { id: 'establishing-shot', label: 'Establishing Shot (Plano de Estabelecimento)', prompt: 'establishing shot, cinematic establishing view', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos', image: '/images/enquadramentos/establishing-shot.png' },
+  { id: 'master-shot', label: 'Master Shot (Plano Mestre)', prompt: 'master shot, full scene composition', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos', image: '/images/enquadramentos/master-shot.png' },
+  { id: 'dutch-angle-framing', label: 'Dutch Angle (Ângulo Inclinado)', prompt: 'dutch angle, tilted camera, canted shot', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos', image: '/images/enquadramentos/dutch-angle-framing.png' },
+  { id: 'center-framed', label: 'Center Framed Shot (Centralizado)', prompt: 'center framed composition, symmetrical framing', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos', image: '/images/enquadramentos/center-framed.png' },
+  { id: 'frame-within-frame', label: 'Frame Within Frame (Moldura Interna)', prompt: 'frame within frame composition, shoot through framing', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos', image: '/images/enquadramentos/frame-within-frame.png' },
 
   // 3. Enquadramentos de Ação (Anime/Mangá)
   { id: 'hero-shot', label: 'Hero Shot (Enquadramento Heroico)', prompt: 'hero shot, dramatic hero framing', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)' },
