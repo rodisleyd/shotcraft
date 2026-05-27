@@ -117,9 +117,13 @@ export function LandingPage({ onStart, onLoginClick, theme, themeClasses }: Land
             <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
             <span className="text-[10px] ml-4 font-mono">shotcraft.app/simulator</span>
           </div>
-          <img 
-            src="/images/enquadramentos/establishing-shot.png" 
-            alt="Shotcraft Interface Preview" 
+          <video 
+            src="/videos/preview.mp4" 
+            poster="/images/enquadramentos/establishing-shot.png"
+            autoPlay 
+            loop 
+            muted 
+            playsInline
             className="w-full h-auto rounded-2xl object-cover aspect-[21/9] brightness-90 group-hover:brightness-100 transition-all"
           />
         </div>
