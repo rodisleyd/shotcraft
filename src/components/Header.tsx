@@ -45,7 +45,9 @@ export function Header({
               className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 currentTab === 'builder'
                   ? theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-[#8b5a2b] text-white'
-                  : themeClasses.textMuted + ' hover:text-black dark:hover:text-white'
+                  : theme === 'dark'
+                  ? 'text-zinc-400 hover:text-zinc-100 hover:bg-white/5'
+                  : 'text-[#8b7e6a] hover:text-[#433422] hover:bg-black/5'
               }`}
             >
               <Sliders size={13} />
@@ -56,7 +58,9 @@ export function Header({
               className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 currentTab === 'library'
                   ? theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-[#8b5a2b] text-white'
-                  : themeClasses.textMuted + ' hover:text-black dark:hover:text-white'
+                  : theme === 'dark'
+                  ? 'text-zinc-400 hover:text-zinc-100 hover:bg-white/5'
+                  : 'text-[#8b7e6a] hover:text-[#433422] hover:bg-black/5'
               }`}
             >
               <BookOpen size={13} />
@@ -73,7 +77,9 @@ export function Header({
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
                 mode === m 
                   ? theme === 'dark' ? 'bg-zinc-100 text-zinc-900' : 'bg-[#8b5a2b] text-white' 
-                  : themeClasses.textMuted + ' hover:text-black/80'
+                  : theme === 'dark'
+                  ? 'text-zinc-400 hover:text-zinc-100 hover:bg-white/5'
+                  : 'text-[#8b7e6a] hover:text-[#433422] hover:bg-black/5'
               }`}
             >
               {m.charAt(0).toUpperCase() + m.slice(1)}
