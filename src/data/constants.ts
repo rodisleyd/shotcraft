@@ -50,10 +50,10 @@ export const SHOT_TYPES: Option[] = [
   { id: 'found-footage', label: 'Found Footage (Câmera Amadora)', prompt: 'found footage shot, home video style, REC interface elements', category: 'framing', subCategory: '5. Enquadramentos Técnicos', image: '/images/enquadramentos/camera-amadora.png' },
 
   // 6. Composições para HQ e Ilustração
-  { id: 'splash-panel', label: 'Splash Panel (Página Inteira)', prompt: 'splash page composition, splash panel layout, dramatic comic page', category: 'framing', subCategory: '6. Composições para HQ e Ilustração' },
-  { id: 'vertical-cinematic', label: 'Vertical Cinematic (Formato Mobile)', prompt: 'vertical cinematic composition, webtoon style framing', category: 'framing', subCategory: '6. Composições para HQ e Ilustração' },
-  { id: 'diagonal-composition', label: 'Diagonal Composition (Composição Diagonal)', prompt: 'diagonal composition lines, dynamic tilted layout', category: 'framing', subCategory: '6. Composições para HQ e Ilustração' },
-  { id: 'layered-depth', label: 'Layered Depth (Profundidade em Camadas)', prompt: 'layered depth composition, strong foreground and background elements, Ghibli style layout', category: 'framing', subCategory: '6. Composições para HQ e Ilustração' },
+  { id: 'splash-panel', label: 'Splash Panel (Página Inteira)', prompt: 'splash page composition, splash panel layout, dramatic comic page', category: 'framing', subCategory: '6. Composições para HQ e Ilustração', image: '/images/enquadramentos/pagina-inteira.png' },
+  { id: 'vertical-cinematic', label: 'Vertical Cinematic (Formato Mobile)', prompt: 'vertical cinematic composition, webtoon style framing', category: 'framing', subCategory: '6. Composições para HQ e Ilustração', image: '/images/enquadramentos/formato-mobile.png' },
+  { id: 'diagonal-composition', label: 'Diagonal Composition (Composição Diagonal)', prompt: 'diagonal composition lines, dynamic tilted layout', category: 'framing', subCategory: '6. Composições para HQ e Ilustração', image: '/images/enquadramentos/composicao-diagonal.png' },
+  { id: 'layered-depth', label: 'Layered Depth (Profundidade em Camadas)', prompt: 'layered depth composition, strong foreground and background elements, Ghibli style layout', category: 'framing', subCategory: '6. Composições para HQ e Ilustração', image: '/images/enquadramentos/profundidade-em-camadas.png' },
 ];
 
 export const ANGLES: Option[] = [
