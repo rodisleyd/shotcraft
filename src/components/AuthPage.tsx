@@ -176,8 +176,15 @@ export function AuthPage({ onBack, onSuccess, theme, themeClasses, addToast }: A
       </div>
 
       {/* Lado Direito: Ilustrativo / Branding */}
-      <div className="hidden lg:flex flex-col justify-between p-20 relative bg-gradient-to-tr from-indigo-900 via-zinc-950 to-amber-950 overflow-hidden border-l border-white/5">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent opacity-50 pointer-events-none" />
+      <div className="hidden lg:flex flex-col justify-between p-20 relative overflow-hidden border-l border-white/5">
+        {/* Imagem de Fundo Cinematográfica */}
+        <img 
+          src="/images/auth-backdrop.png" 
+          alt="Auth Backdrop" 
+          className="absolute inset-0 w-full h-full object-cover z-0 select-none pointer-events-none" 
+        />
+        {/* Overlay Escuro com Gradiente para legibilidade e contraste das letras brancas */}
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/75 to-zinc-950/30 z-0 pointer-events-none" />
         
         <div className="relative z-10 flex items-center gap-2 text-white font-black tracking-widest text-xs uppercase opacity-75">
           <Sparkles size={16} className="text-indigo-400" /> Shotcraft
