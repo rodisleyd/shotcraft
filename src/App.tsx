@@ -26,7 +26,7 @@ import {
 import { GoogleGenAI } from "@google/genai";
 
 // Types
-import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step, ColorPaletteOption } from './types';
+import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step, ColorPaletteOption, UserAccount } from './types';
 
 // Constants
 import {
@@ -34,6 +34,9 @@ import {
   LENSES, LIGHTING, ENVIRONMENTS, STYLES, DETAILS,
   PRESETS, AUTO_COMBINATIONS
 } from './data/constants';
+
+// Services
+import { dataService } from './services/dataService';
 
 // Components
 import { Header } from './components/Header';
@@ -45,6 +48,9 @@ import { NegativePrompt } from './components/NegativePrompt';
 import { History } from './components/History';
 import { Toast } from './components/Toast';
 import { Library } from './components/Library';
+import { LandingPage } from './components/LandingPage';
+import { AuthPage } from './components/AuthPage';
+import { AdminDashboard } from './components/AdminDashboard';
 
 // AI Optimization Service
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -79,6 +85,14 @@ async function translateSubject(subject: string) {
 
 export default function App() {
   // --- States ---
+  const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'app' | 'admin'>('landing');
+  const [user, setUser] = useState<UserAccount | null>(null);
+  
+  // Pix modal states
+  const [showPixModal, setShowPixModal] = useState(false);
+  const [selectedPixPlan, setSelectedPixPlan] = useState<{ credits: number; price: string } | null>(null);
+  const [isSimulatingPixPayment, setIsSimulatingPixPayment] = useState(false);
+
   const [currentTab, setCurrentTab] = useState<'builder' | 'library'>('builder');
   const [subject, setSubject] = useState<string>('A mysterious detective standing in the rain');
   const [negativePrompt, setNegativePrompt] = useState<string>('');
@@ -110,8 +124,18 @@ export default function App() {
   const [toasts, setToasts] = useState<ToastType[]>([]);
   const [customPalettes, setCustomPalettes] = useState<ColorPaletteOption[]>([]);
 
-  // --- Persistence ---
+  // --- Persistence & DB Init ---
   useEffect(() => {
+    // Inicializa o banco de dados simulado
+    dataService.init();
+
+    // Carrega a sessão de login atual
+    const activeUser = dataService.getCurrentUser();
+    if (activeUser) {
+      setUser(activeUser);
+      setCurrentPage('app');
+    }
+
     const savedPresets = localStorage.getItem('shotcraft_user_presets');
     if (savedPresets) try { setUserPresets(JSON.parse(savedPresets)); } catch (e) { }
 
@@ -464,10 +488,20 @@ export default function App() {
   }, [subject, selections, mode, customAspect, negativePrompt]);
 
   const copyToClipboard = () => {
+    const success = dataService.consumeCredit();
+    if (!success) {
+      addToast('Créditos zerados ou período de teste (7 dias) expirado! Compre mais créditos via Pix.', 'error');
+      setSelectedPixPlan({ credits: 300, price: 'R$ 19,90' });
+      setShowPixModal(true);
+      return;
+    }
+
+    setUser(dataService.getCurrentUser());
+
     navigator.clipboard.writeText(finalPrompt);
     setCopied(true);
     addToHistory(finalPrompt);
-    addToast('Prompt copiado e salvo no histórico!', 'success');
+    addToast('Prompt copiado e salvo no histórico! 🪙 1 crédito consumido.', 'success');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -488,6 +522,63 @@ export default function App() {
     footer: theme === 'dark' ? 'border-zinc-900 text-zinc-600' : 'border-[#d3cbb3] text-[#8b7e6a]',
   };
 
+  // Simulador de Pagamento Pix
+  const handleSimulatePixPayment = () => {
+    if (!user || !selectedPixPlan) return;
+    setIsSimulatingPixPayment(true);
+    
+    setTimeout(() => {
+      dataService.addCredits(user.email, selectedPixPlan.credits);
+      setUser(dataService.getCurrentUser());
+      setIsSimulatingPixPayment(false);
+      setShowPixModal(false);
+      addToast(`Pagamento de ${selectedPixPlan.price} confirmado! 🪙 ${selectedPixPlan.credits} créditos adicionados à sua conta.`, 'success');
+    }, 1500);
+  };
+
+  const copyPixKey = () => {
+    navigator.clipboard.writeText("00020101021226870014br.gov.bcb.pix2565shotcraftpixpayloadficticio");
+    addToast('Chave Pix copiada para a área de transferência!', 'success');
+  };
+
+  // Renderização condicional por página
+  if (currentPage === 'landing') {
+    return (
+      <LandingPage 
+        onStart={() => setCurrentPage(user ? 'app' : 'login')} 
+        onLoginClick={() => setCurrentPage('login')} 
+        theme={theme} 
+        themeClasses={themeClasses} 
+      />
+    );
+  }
+
+  if (currentPage === 'login') {
+    return (
+      <AuthPage 
+        onBack={() => setCurrentPage('landing')} 
+        onSuccess={(email) => {
+          setUser(dataService.getCurrentUser());
+          setCurrentPage('app');
+        }} 
+        theme={theme} 
+        themeClasses={themeClasses} 
+        addToast={addToast} 
+      />
+    );
+  }
+
+  if (currentPage === 'admin') {
+    return (
+      <AdminDashboard 
+        onBack={() => setCurrentPage('app')} 
+        theme={theme} 
+        themeClasses={themeClasses} 
+        addToast={addToast} 
+      />
+    );
+  }
+
   return (
     <div className={`min-h-screen transition-colors duration-500 font-sans selection:bg-indigo-500/30 ${themeClasses.bg} ${themeClasses.text}`}>
       <Toast toasts={toasts} removeToast={removeToast} />
@@ -500,6 +591,19 @@ export default function App() {
         themeClasses={themeClasses}
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
+        user={user}
+        onLogout={() => {
+          dataService.setCurrentUser(null);
+          setUser(null);
+          setCurrentPage('landing');
+          addToast('Sessão encerrada.', 'info');
+        }}
+        onAdminClick={() => setCurrentPage('admin')}
+        onBuyCreditsClick={() => {
+          setSelectedPixPlan({ credits: 300, price: 'R$ 19,90' });
+          setShowPixModal(true);
+        }}
+        currentPage={currentPage}
       />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -581,6 +685,96 @@ export default function App() {
           />
         )}
       </main>
+
+      {/* Modal Adquirir Créditos via Pix */}
+      {showPixModal && selectedPixPlan && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowPixModal(false)} />
+          
+          <div className={`relative z-10 max-w-md w-full rounded-3xl p-8 border shadow-2xl ${
+            theme === 'dark' ? 'bg-zinc-900 border-zinc-800 text-zinc-100' : 'bg-white border-[#d3cbb3] text-[#433422]'
+          }`}>
+            <h3 className="text-xl font-black mb-2 flex items-center gap-2">
+              🪙 Comprar Créditos via Pix
+            </h3>
+            <p className={`text-xs mb-6 ${themeClasses.textMuted}`}>Adicione créditos na sua conta instantaneamente e continue usando o simulador.</p>
+
+            {/* Plan Selector em Modal */}
+            <div className="grid grid-cols-3 gap-2 mb-6">
+              {[
+                { credits: 100, price: 'R$ 9,90' },
+                { credits: 300, price: 'R$ 19,90' },
+                { credits: 500, price: 'R$ 29,90' }
+              ].map((plan) => (
+                <button
+                  key={plan.credits}
+                  type="button"
+                  onClick={() => setSelectedPixPlan(plan)}
+                  className={`p-3 rounded-2xl border text-center transition-all ${
+                    selectedPixPlan.credits === plan.credits
+                      ? themeClasses.optionActive
+                      : themeClasses.option + ' hover:border-[#8b5a2b]/30'
+                  }`}
+                >
+                  <div className="text-xs font-bold">{plan.credits}</div>
+                  <div className="text-[10px] opacity-75 mt-0.5">{plan.price}</div>
+                </button>
+              ))}
+            </div>
+
+            {/* Simulação Pix QR Code */}
+            <div className="p-6 bg-zinc-950 rounded-2xl border border-zinc-800 flex flex-col items-center gap-4 text-center">
+              {/* QR Code Concept */}
+              <div className="w-40 h-40 bg-white p-3 rounded-2xl flex items-center justify-center shadow-md relative overflow-hidden">
+                {/* SVG do Pix centralizado */}
+                <div className="absolute inset-0 m-auto w-10 h-10 bg-white border-4 border-indigo-600 rounded-full flex items-center justify-center font-bold text-indigo-600 text-xs shadow">
+                  PIX
+                </div>
+                {/* Linhas simulando QR Code */}
+                <div className="w-full h-full border-4 border-dashed border-zinc-300 rounded-xl" />
+              </div>
+
+              <div>
+                <span className="text-[10px] font-bold text-zinc-500 block mb-1">Pix Copia e Cola</span>
+                <button 
+                  onClick={copyPixKey}
+                  type="button"
+                  className="px-3 py-1 bg-zinc-900 border border-zinc-800 text-[10px] font-black text-indigo-400 rounded-lg hover:bg-zinc-800 transition-colors uppercase tracking-wider"
+                >
+                  Copiar Código Pix
+                </button>
+              </div>
+            </div>
+
+            {/* Ações */}
+            <div className="flex gap-3 mt-6">
+              <button
+                type="button"
+                onClick={() => setShowPixModal(false)}
+                className={`flex-1 py-3 rounded-xl border text-xs font-bold transition-all ${
+                  theme === 'dark' ? 'border-zinc-700 hover:bg-zinc-800' : 'border-[#d3cbb3] hover:bg-black/5'
+                }`}
+              >
+                Voltar
+              </button>
+              <button
+                type="button"
+                onClick={handleSimulatePixPayment}
+                disabled={isSimulatingPixPayment}
+                className={`flex-1 py-3 text-xs font-black uppercase tracking-wider text-white rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${themeClasses.accent}`}
+              >
+                {isSimulatingPixPayment ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" /> Verificando...
+                  </>
+                ) : (
+                  'Confirmar Pix'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <footer className={`max-w-7xl mx-auto px-4 py-8 border-t transition-colors text-center text-xs font-medium uppercase tracking-[0.2em] ${themeClasses.footer}`}>
         ShotCraft &copy; 2026 &mdash; Sistema Profissional de Direção Cinematográfica

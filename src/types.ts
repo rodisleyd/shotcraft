@@ -71,3 +71,16 @@ export interface VisualTag {
   description: string;
   selections: Partial<SelectionState>;
 }
+
+export interface UserAccount {
+  email: string;
+  isAdmin: boolean;
+  createdAt: number;
+  credits: number;
+  trialStartDate: number;
+}
+
+export interface AccessLog {
+  date: string; // YYYY-MM-DD
+  count: number;
+}
