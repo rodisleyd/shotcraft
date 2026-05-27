@@ -37,10 +37,10 @@ export const SHOT_TYPES: Option[] = [
   { id: 'speed-perspective', label: 'Speed Perspective (Perspectiva de Velocidade)', prompt: 'exaggerated speed perspective shot, shonen manga action lines', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)', image: '/images/enquadramentos/manga-velocidade.png' },
 
   // 4. Enquadramentos Dramáticos
-  { id: 'profile-shot', label: 'Profile Shot (Perfil de Lado)', prompt: 'side profile shot, profile view', category: 'framing', subCategory: '4. Enquadramentos Dramáticos' },
-  { id: 'rear-shot', label: 'Rear Shot (Visto de Costas)', prompt: 'rear view shot, back facing character', category: 'framing', subCategory: '4. Enquadramentos Dramáticos' },
-  { id: 'silhouette-shot', label: 'Silhouette Shot (Silhueta)', prompt: 'silhouette shot, backlit silhouette', category: 'framing', subCategory: '4. Enquadramentos Dramáticos' },
-  { id: 'negative-space', label: 'Negative Space (Espaço Negativo)', prompt: 'negative space composition, tiny character in large frame', category: 'framing', subCategory: '4. Enquadramentos Dramáticos' },
+  { id: 'profile-shot', label: 'Profile Shot (Perfil de Lado)', prompt: 'side profile shot, profile view', category: 'framing', subCategory: '4. Enquadramentos Dramáticos', image: '/images/enquadramentos/perfil-de-lado.png' },
+  { id: 'rear-shot', label: 'Rear Shot (Visto de Costas)', prompt: 'rear view shot, back facing character', category: 'framing', subCategory: '4. Enquadramentos Dramáticos', image: '/images/enquadramentos/visto-de-costas.png' },
+  { id: 'silhouette-shot', label: 'Silhouette Shot (Silhueta)', prompt: 'silhouette shot, backlit silhouette', category: 'framing', subCategory: '4. Enquadramentos Dramáticos', image: '/images/enquadramentos/silhueta.png' },
+  { id: 'negative-space', label: 'Negative Space (Espaço Negativo)', prompt: 'negative space composition, tiny character in large frame', category: 'framing', subCategory: '4. Enquadramentos Dramáticos', image: '/images/enquadramentos/espaco-negativo.png' },
 
   // 5. Enquadramentos Técnicos
   { id: 'macro-shot', label: 'Macro Shot (Detalhe Macro)', prompt: 'macro shot, ultra close detail, extreme macro', category: 'framing', subCategory: '5. Enquadramentos Técnicos' },
