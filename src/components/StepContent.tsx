@@ -472,8 +472,8 @@ export function StepContent({
                                         <Check size={12} className="text-white" />
                                       </div>
                                     )}
-                                    {/* Zoom Icon Button for Styles */}
-                                    {option.category === 'style' && (
+                                    {/* Zoom Icon Button for Styles/Images */}
+                                    {(option.image || option.category === 'style') && (
                                       <button
                                         type="button"
                                         onClick={(e) => {
@@ -567,8 +567,8 @@ export function StepContent({
                                 <Check size={14} className="text-white" />
                               </div>
                             )}
-                            {/* Zoom Icon Button for Styles */}
-                            {option.category === 'style' && (
+                            {/* Zoom Icon Button for Styles/Images */}
+                            {(option.image || option.category === 'style') && (
                               <button
                                 type="button"
                                 onClick={(e) => {
