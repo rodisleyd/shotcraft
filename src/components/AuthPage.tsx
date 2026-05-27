@@ -186,13 +186,17 @@ export function AuthPage({ onBack, onSuccess, theme, themeClasses, addToast }: A
         {/* Overlay Escuro com Gradiente para legibilidade e contraste das letras brancas */}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/75 to-zinc-950/30 z-0 pointer-events-none" />
         
-        <div className="relative z-10 flex items-center gap-2 text-white font-black tracking-widest text-xs uppercase opacity-75">
-          <Sparkles size={16} className="text-indigo-400" /> Shotcraft
+        <div className="relative z-10 flex items-center">
+          <img 
+            src="/logotipo negativo.png" 
+            alt="ShotCraft Logo" 
+            className="h-10 w-auto object-contain opacity-90"
+          />
         </div>
 
         <div className="relative z-10 space-y-6 max-w-lg">
           <blockquote className="text-3xl font-light italic leading-tight text-zinc-100">
-            "A ShotCraft transformou totalmente o meu fluxo de trabalho no Midjourney. O simulador de lentes e paletas economiza horas de teste."
+            "A ShotCraft transformou totalmente o meu fluxo de trabalho no Midjourney e Nano Banana. O simulador de lentes e paletas economiza horas de teste."
           </blockquote>
           <div>
             <div className="font-bold text-white text-sm">Felipe Kenji</div>
