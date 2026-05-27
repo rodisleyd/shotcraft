@@ -43,11 +43,11 @@ export const SHOT_TYPES: Option[] = [
   { id: 'negative-space', label: 'Negative Space (Espaço Negativo)', prompt: 'negative space composition, tiny character in large frame', category: 'framing', subCategory: '4. Enquadramentos Dramáticos', image: '/images/enquadramentos/espaco-negativo.png' },
 
   // 5. Enquadramentos Técnicos
-  { id: 'macro-shot', label: 'Macro Shot (Detalhe Macro)', prompt: 'macro shot, ultra close detail, extreme macro', category: 'framing', subCategory: '5. Enquadramentos Técnicos' },
-  { id: 'reflection-shot', label: 'Reflection Shot (Através de Reflexo)', prompt: 'reflection shot, mirror reflection composition', category: 'framing', subCategory: '5. Enquadramentos Técnicos' },
-  { id: 'surveillance-shot', label: 'Surveillance Shot (Câmera de Segurança)', prompt: 'surveillance camera view, CCTV framing', category: 'framing', subCategory: '5. Enquadramentos Técnicos' },
-  { id: 'handheld-shot', label: 'Handheld Shot (Câmera na Mão)', prompt: 'handheld camera shot, shaky footage aesthetic', category: 'framing', subCategory: '5. Enquadramentos Técnicos' },
-  { id: 'found-footage', label: 'Found Footage (Câmera Amadora)', prompt: 'found footage shot, home video style, REC interface elements', category: 'framing', subCategory: '5. Enquadramentos Técnicos' },
+  { id: 'macro-shot', label: 'Macro Shot (Detalhe Macro)', prompt: 'macro shot, ultra close detail, extreme macro', category: 'framing', subCategory: '5. Enquadramentos Técnicos', image: '/images/enquadramentos/detalhe-macro.png' },
+  { id: 'reflection-shot', label: 'Reflection Shot (Através de Reflexo)', prompt: 'reflection shot, mirror reflection composition', category: 'framing', subCategory: '5. Enquadramentos Técnicos', image: '/images/enquadramentos/atraves-de-reflexo.png' },
+  { id: 'surveillance-shot', label: 'Surveillance Shot (Câmera de Segurança)', prompt: 'surveillance camera view, CCTV framing', category: 'framing', subCategory: '5. Enquadramentos Técnicos', image: '/images/enquadramentos/camera-de-seguranca.png' },
+  { id: 'handheld-shot', label: 'Handheld Shot (Câmera na Mão)', prompt: 'handheld camera shot, shaky footage aesthetic', category: 'framing', subCategory: '5. Enquadramentos Técnicos', image: '/images/enquadramentos/camera-na-mao.png' },
+  { id: 'found-footage', label: 'Found Footage (Câmera Amadora)', prompt: 'found footage shot, home video style, REC interface elements', category: 'framing', subCategory: '5. Enquadramentos Técnicos', image: '/images/enquadramentos/camera-amadora.png' },
 
   // 6. Composições para HQ e Ilustração
   { id: 'splash-panel', label: 'Splash Panel (Página Inteira)', prompt: 'splash page composition, splash panel layout, dramatic comic page', category: 'framing', subCategory: '6. Composições para HQ e Ilustração' },
