@@ -31,10 +31,10 @@ export const SHOT_TYPES: Option[] = [
   { id: 'frame-within-frame', label: 'Frame Within Frame (Moldura Interna)', prompt: 'frame within frame composition, shoot through framing', category: 'framing', subCategory: '2. Enquadramentos Cinematográficos', image: '/images/enquadramentos/frame-within-frame.png' },
 
   // 3. Enquadramentos de Ação (Anime/Mangá)
-  { id: 'hero-shot', label: 'Hero Shot (Enquadramento Heroico)', prompt: 'hero shot, dramatic hero framing', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)' },
-  { id: 'transformation-shot', label: 'Transformation Shot (Transformação)', prompt: 'transformation sequence framing, energy power up shot', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)' },
-  { id: 'dynamic-action', label: 'Dynamic Action Shot (Ação Dinâmica)', prompt: 'dynamic action framing, intense perspective shot', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)' },
-  { id: 'speed-perspective', label: 'Speed Perspective (Perspectiva de Velocidade)', prompt: 'exaggerated speed perspective shot, shonen manga action lines', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)' },
+  { id: 'hero-shot', label: 'Hero Shot (Enquadramento Heroico)', prompt: 'hero shot, dramatic hero framing', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)', image: '/images/enquadramentos/pose-heroi.png' },
+  { id: 'transformation-shot', label: 'Transformation Shot (Transformação)', prompt: 'transformation sequence framing, energy power up shot', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)', image: '/images/enquadramentos/manga-transformacao.png' },
+  { id: 'dynamic-action', label: 'Dynamic Action Shot (Ação Dinâmica)', prompt: 'dynamic action framing, intense perspective shot', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)', image: '/images/enquadramentos/manga-acao-dinamica.png' },
+  { id: 'speed-perspective', label: 'Speed Perspective (Perspectiva de Velocidade)', prompt: 'exaggerated speed perspective shot, shonen manga action lines', category: 'framing', subCategory: '3. Enquadramentos de Ação (Anime/Mangá)', image: '/images/enquadramentos/manga-velocidade.png' },
 
   // 4. Enquadramentos Dramáticos
   { id: 'profile-shot', label: 'Profile Shot (Perfil de Lado)', prompt: 'side profile shot, profile view', category: 'framing', subCategory: '4. Enquadramentos Dramáticos' },
