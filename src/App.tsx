@@ -32,7 +32,7 @@ import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, St
 import {
   SHOT_TYPES, ANGLES, PERSPECTIVES, ASPECT_RATIOS,
   LENSES, LIGHTING, ENVIRONMENTS, STYLES, DETAILS,
-  PRESETS, AUTO_COMBINATIONS
+  PRESETS, AUTO_COMBINATIONS, LUTS
 } from './data/constants';
 
 // Services
@@ -109,7 +109,8 @@ export default function App() {
     style: [],
     detail: [],
     colorPalette: [],
-    colorPaletteId: ''
+    colorPaletteId: '',
+    lutId: ''
   });
   const [customAspect, setCustomAspect] = useState('2:1');
   const [copied, setCopied] = useState(false);
@@ -179,7 +180,8 @@ export default function App() {
         ? sel.detail 
         : (typeof sel.detail === 'object' && sel.detail !== null ? Object.values(sel.detail) : [sel.detail].filter(Boolean)),
       colorPalette: Array.isArray(sel?.colorPalette) ? sel.colorPalette : [],
-      colorPaletteId: typeof sel?.colorPaletteId === 'string' ? sel.colorPaletteId : ''
+      colorPaletteId: typeof sel?.colorPaletteId === 'string' ? sel.colorPaletteId : '',
+      lutId: typeof sel?.lutId === 'string' ? sel.lutId : ''
     };
   };
 
@@ -462,6 +464,11 @@ export default function App() {
 
     if (selections.colorPalette && selections.colorPalette.length > 0) {
       parts.push(`using color palette reference (${selections.colorPalette.join(', ')})`);
+    }
+
+    if (selections.lutId) {
+      const lutPrompt = LUTS.find(o => o.id === selections.lutId)?.prompt;
+      if (lutPrompt) parts.push(lutPrompt);
     }
 
     if (mode === 'storyboard') parts.push("professional storyboard sketch, black and white pencil lines, compositional notes, rough sketches");

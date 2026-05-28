@@ -905,3 +905,103 @@ export const VISUAL_TAGS: VisualTag[] = [
   }
 ];
 
+export const LUTS: Option[] = [
+  { 
+    id: 'lut-kodak-gold', 
+    label: 'Kodak Gold 200', 
+    prompt: 'color graded with Kodak Gold 200 film stock LUT, warm nostalgic tones, subtle film grain', 
+    description: 'Película analógica de cor quente, tons dourados e atmosfera nostálgica.',
+    category: 'lut', 
+    subCategory: 'Película Analógica' 
+  },
+  { 
+    id: 'lut-fuji-velvia', 
+    label: 'Fujifilm Velvia 50', 
+    prompt: 'color graded with Fujifilm Velvia LUT, vivid highly saturated colors, rich nature tones', 
+    description: 'Alta saturação, cores vibrantes (especialmente verdes e azuis) e forte contraste.',
+    category: 'lut', 
+    subCategory: 'Película Analógica' 
+  },
+  { 
+    id: 'lut-polaroid', 
+    label: 'Vintage Polaroid', 
+    prompt: 'color graded with Polaroid LUT, faded vintage colors, low contrast matte look', 
+    description: 'Tons desbotados, contraste reduzido e estética retrô de foto instantânea.',
+    category: 'lut', 
+    subCategory: 'Película Analógica' 
+  },
+  { 
+    id: 'lut-teal-orange', 
+    label: 'Teal & Orange', 
+    prompt: 'color graded with Hollywood Teal and Orange movie LUT, cinematic teal shadows and amber highlights', 
+    description: 'O clássico visual de blockbuster de cinema com sombras ciano e luzes laranja quente.',
+    category: 'lut', 
+    subCategory: 'Estilos de Cinema' 
+  },
+  { 
+    id: 'lut-cyberpunk', 
+    label: 'Cyberpunk Neon', 
+    prompt: 'color graded with Cyberpunk Neon LUT, intense magenta and neon cyan color split', 
+    description: 'Estética cibernética e futurista com luzes de neon contrastantes rosa e azul.',
+    category: 'lut', 
+    subCategory: 'Estilos de Cinema' 
+  },
+  { 
+    id: 'lut-blade-runner', 
+    label: 'Blade Runner Look', 
+    prompt: 'color graded with Blade Runner moody sci-fi LUT, cinematic high contrast yellow and blue mist tones', 
+    description: 'Visual sci-fi noir chuvoso com neblina brilhante e sombras profundas.',
+    category: 'lut', 
+    subCategory: 'Estilos de Cinema' 
+  },
+  { 
+    id: 'lut-a24', 
+    label: 'A24 Indie Style', 
+    prompt: 'color graded with A24 indie movie film look LUT, organic warm tones, matte shadows, cinematic atmosphere', 
+    description: 'Cores quentes orgânicas, pretos levemente lavados e estética de cinema cult independente.',
+    category: 'lut', 
+    subCategory: 'Estilos de Cinema' 
+  },
+  { 
+    id: 'lut-noir', 
+    label: 'Film Noir Chiaroscuro', 
+    prompt: 'color graded with Film Noir black and white LUT, high contrast monochromatic chiaroscuro shadows', 
+    description: 'Preto e branco de altíssimo contraste com iluminação dramática inspirada nos anos 40.',
+    category: 'lut', 
+    subCategory: 'Estilos de Cinema' 
+  },
+  { 
+    id: 'lut-vhs', 
+    label: '80s VHS Tape', 
+    prompt: 'color graded with 80s VHS analog tape LUT, vintage retro colors, tracking line distortions', 
+    description: 'Cores dessaturadas de fita magnética antiga com pequenas aberrações de vídeo vintage.',
+    category: 'lut', 
+    subCategory: 'Estilos de Cinema' 
+  },
+  { 
+    id: 'lut-anime-90s', 
+    label: '90s Anime Palette', 
+    prompt: 'color graded with retro 90s hand-drawn anime film LUT, cell color grading, vintage anime aesthetic', 
+    description: 'Cores nostálgicas e textura de acetato clássico de animações clássicas desenhadas à mão.',
+    category: 'lut', 
+    subCategory: 'Estilos de Cinema' 
+  },
+  { 
+    id: 'lut-rec709', 
+    label: 'LOG to Rec.709', 
+    prompt: 'color corrected from flat LOG profile to Rec.709 LUT, natural cinematic contrast and saturation', 
+    description: 'Conversão técnica que recupera cores, contraste e gama realistas a partir de perfis brutos.',
+    category: 'lut', 
+    subCategory: 'Técnicos (Correção)' 
+  },
+  { 
+    id: 'lut-bleach-bypass', 
+    label: 'Bleach Bypass', 
+    prompt: 'color graded with bleach bypass cinema LUT, desaturated movie colors, high contrast silver look', 
+    description: 'Estética crua e militar de revelação química sem branqueamento, com cores frias e alto contraste.',
+    category: 'lut', 
+    subCategory: 'Técnicos (Correção)' 
+  }
+];
+
+

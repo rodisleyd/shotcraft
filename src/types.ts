@@ -30,6 +30,7 @@ export interface SelectionState {
   detail: string[];
   colorPalette: string[];
   colorPaletteId: string;
+  lutId?: string;
 }
 
 export interface UserPreset {

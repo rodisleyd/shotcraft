@@ -6,7 +6,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn } from "lucide-react";
 import { Option, Step, SelectionState, ColorPaletteOption } from "../types";
-import { STYLES, COLOR_PALETTES, VISUAL_TAGS } from "../data/constants";
+import { STYLES, COLOR_PALETTES, VISUAL_TAGS, LUTS } from "../data/constants";
 import React, { useState, useEffect } from "react";
 
 interface StepContentProps {
@@ -87,7 +87,7 @@ export function StepContent({
     }
   }, [activeStep]);
 
-  const [colorMode, setColorMode] = useState<'extract' | 'presets'>('extract');
+  const [colorMode, setColorMode] = useState<'extract' | 'presets' | 'luts'>('extract');
   const [isExtractingColors, setIsExtractingColors] = useState(false);
   const [tempImageSrc, setTempImageSrc] = useState<string | null>(null);
 
@@ -670,28 +670,39 @@ export function StepContent({
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-2 p-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl max-w-sm">
+                <div className="flex gap-2 p-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl max-w-md">
                   <button
                     type="button"
                     onClick={() => setColorMode('extract')}
-                    className={`flex-1 py-2 px-4 rounded-xl font-bold text-sm transition-all ${
+                    className={`flex-1 py-2 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all ${
                       colorMode === 'extract'
                         ? themeClasses.optionActive + ' shadow-md'
                         : 'opacity-60 hover:opacity-100'
                     }`}
                   >
-                    Extrair de Imagem
+                    Extrair
                   </button>
                   <button
                     type="button"
                     onClick={() => setColorMode('presets')}
-                    className={`flex-1 py-2 px-4 rounded-xl font-bold text-sm transition-all ${
+                    className={`flex-1 py-2 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all ${
                       colorMode === 'presets'
                         ? themeClasses.optionActive + ' shadow-md'
                         : 'opacity-60 hover:opacity-100'
                     }`}
                   >
-                    Paletas Prontas
+                    Paletas
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setColorMode('luts')}
+                    className={`flex-1 py-2 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+                      colorMode === 'luts'
+                        ? themeClasses.optionActive + ' shadow-md'
+                        : 'opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    LUTs de Cor
                   </button>
                 </div>
 
@@ -952,6 +963,77 @@ export function StepContent({
                     )}
                   </div>
                 )}
+
+                {colorMode === 'luts' && (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
+                      {LUTS.map((lut) => {
+                        const isSelected = selections.lutId === lut.id;
+                        return (
+                          <div 
+                            key={lut.id}
+                            onClick={() => {
+                              setSelections((prev: any) => ({
+                                ...prev,
+                                lutId: isSelected ? '' : lut.id
+                              }));
+                            }}
+                            className={`p-4 rounded-3xl border text-left cursor-pointer transition-all flex flex-col gap-3 group relative overflow-hidden ${
+                              isSelected
+                                ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/10'
+                                : themeClasses.option + ' hover:border-[#8b5a2b]/40'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-bold text-sm flex items-center gap-2">
+                                  {lut.label}
+                                </h3>
+                                <p className="text-[10px] leading-tight opacity-60 mt-1">{lut.description || lut.prompt}</p>
+                              </div>
+                              {isSelected && (
+                                <div className="p-1 bg-[#8b5a2b] text-white rounded-full">
+                                  <Check size={12} />
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Representação visual colorida do LUT */}
+                            <div className={`h-6 rounded-lg overflow-hidden flex shadow-inner border border-black/5 ${
+                              lut.id === 'lut-kodak-gold' ? 'bg-gradient-to-r from-amber-700 via-amber-600 to-amber-200' :
+                              lut.id === 'lut-fuji-velvia' ? 'bg-gradient-to-r from-emerald-800 via-green-600 to-amber-300' :
+                              lut.id === 'lut-polaroid' ? 'bg-gradient-to-r from-zinc-600 via-zinc-400 to-amber-100' :
+                              lut.id === 'lut-teal-orange' ? 'bg-gradient-to-r from-cyan-800 via-cyan-600 to-orange-500' :
+                              lut.id === 'lut-cyberpunk' ? 'bg-gradient-to-r from-purple-800 via-fuchsia-600 to-cyan-400' :
+                              lut.id === 'lut-blade-runner' ? 'bg-gradient-to-r from-indigo-950 via-zinc-800 to-yellow-600' :
+                              lut.id === 'lut-a24' ? 'bg-gradient-to-r from-stone-800 via-stone-500 to-amber-200' :
+                              lut.id === 'lut-noir' ? 'bg-gradient-to-r from-black via-zinc-500 to-white' :
+                              lut.id === 'lut-vhs' ? 'bg-gradient-to-r from-rose-700 via-violet-600 to-teal-400' :
+                              lut.id === 'lut-anime-90s' ? 'bg-gradient-to-r from-pink-400 via-blue-300 to-yellow-200' :
+                              lut.id === 'lut-rec709' ? 'bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-300' :
+                              lut.id === 'lut-bleach-bypass' ? 'bg-gradient-to-r from-zinc-850 via-stone-600 to-zinc-300' :
+                              'bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-400'
+                            }`} />
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {selections.lutId && (
+                      <div className="flex">
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            setSelections((prev: any) => ({ ...prev, lutId: '' }));
+                          }}
+                          className="px-6 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:bg-rose-500/10 hover:text-rose-500 transition-colors font-bold text-xs"
+                        >
+                          Limpar LUT Selecionado
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Navigation buttons */}
@@ -1002,6 +1084,7 @@ export function StepContent({
                   { key: 'lens', label: 'Lente', options: getCurrentOptions(5) },
                   { key: 'lighting', label: 'Luz', options: getCurrentOptions(6) },
                   { key: 'environment', label: 'Cenário', options: getCurrentOptions(7) },
+                  { key: 'lutId', label: 'LUT de Cor', options: LUTS },
                 ].map((cat) => {
                   const selectionId = selections[cat.key];
                   if (!selectionId) return null;
