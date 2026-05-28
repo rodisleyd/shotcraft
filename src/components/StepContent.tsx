@@ -1011,18 +1011,30 @@ export function StepContent({
                             
                             {/* Representação visual colorida do LUT */}
                             <div className={`h-6 rounded-lg overflow-hidden flex shadow-inner border border-black/5 ${
-                              lut.id === 'lut-kodak-gold' ? 'bg-gradient-to-r from-amber-700 via-amber-600 to-amber-200' :
-                              lut.id === 'lut-fuji-velvia' ? 'bg-gradient-to-r from-emerald-800 via-green-600 to-amber-300' :
+                              lut.id.includes('kodak') ? 'bg-gradient-to-r from-amber-700 via-orange-600 to-amber-200' :
+                              lut.id.includes('fuji') ? 'bg-gradient-to-r from-emerald-800 via-green-600 to-amber-300' :
                               lut.id === 'lut-polaroid' ? 'bg-gradient-to-r from-zinc-600 via-zinc-400 to-amber-100' :
-                              lut.id === 'lut-teal-orange' ? 'bg-gradient-to-r from-cyan-800 via-cyan-600 to-orange-500' :
+                              lut.id.includes('teal-orange') || lut.id.includes('teal-orange-contrast') || lut.id === 'lut-ps-teal-orange' ? 'bg-gradient-to-r from-cyan-900 via-cyan-600 to-orange-500' :
                               lut.id === 'lut-cyberpunk' ? 'bg-gradient-to-r from-purple-800 via-fuchsia-600 to-cyan-400' :
                               lut.id === 'lut-blade-runner' ? 'bg-gradient-to-r from-indigo-950 via-zinc-800 to-yellow-600' :
                               lut.id === 'lut-a24' ? 'bg-gradient-to-r from-stone-800 via-stone-500 to-amber-200' :
                               lut.id === 'lut-noir' ? 'bg-gradient-to-r from-black via-zinc-500 to-white' :
                               lut.id === 'lut-vhs' ? 'bg-gradient-to-r from-rose-700 via-violet-600 to-teal-400' :
                               lut.id === 'lut-anime-90s' ? 'bg-gradient-to-r from-pink-400 via-blue-300 to-yellow-200' :
-                              lut.id === 'lut-rec709' ? 'bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-300' :
+                              lut.id.includes('rec709') || lut.id.includes('v709') ? 'bg-gradient-to-r from-blue-700 via-indigo-500 to-red-400' :
                               lut.id === 'lut-bleach-bypass' ? 'bg-gradient-to-r from-zinc-850 via-stone-600 to-zinc-300' :
+                              lut.id === 'lut-ps-crisp-warm' ? 'bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-300' :
+                              lut.id === 'lut-ps-crisp-winter' ? 'bg-gradient-to-r from-blue-900 via-cyan-700 to-sky-200' :
+                              lut.id === 'lut-ps-futuristic-bleak' ? 'bg-gradient-to-r from-zinc-800 via-slate-700 to-zinc-500' :
+                              lut.id === 'lut-ps-horror-blue' ? 'bg-gradient-to-r from-slate-950 via-teal-900 to-blue-700' :
+                              lut.id === 'lut-ps-moonlight' ? 'bg-gradient-to-r from-indigo-950 via-indigo-800 to-blue-300' :
+                              lut.id === 'lut-ps-night-from-day' ? 'bg-gradient-to-r from-blue-950 via-blue-900 to-indigo-800' :
+                              lut.id === 'lut-ps-fall-colors' ? 'bg-gradient-to-r from-red-700 via-orange-600 to-yellow-500' :
+                              lut.id === 'lut-ps-foggy-night' ? 'bg-gradient-to-r from-slate-900 via-zinc-700 to-slate-500' :
+                              lut.id === 'lut-ps-late-sunset' ? 'bg-gradient-to-r from-purple-800 via-orange-600 to-amber-400' :
+                              lut.id === 'lut-pr-blue-ice' ? 'bg-gradient-to-r from-cyan-800 via-blue-500 to-sky-200' :
+                              lut.id === 'lut-pr-gold-heat' ? 'bg-gradient-to-r from-red-800 via-amber-600 to-yellow-500' :
+                              lut.id === 'lut-filmstock-50' ? 'bg-gradient-to-r from-slate-800 via-slate-600 to-zinc-400' :
                               'bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-400'
                             }`} />
                           </div>
