@@ -31,6 +31,7 @@ export interface SelectionState {
   colorPalette: string[];
   colorPaletteId: string;
   lutId?: string;
+  gradingTechniques: string[];
 }
 
 export interface UserPreset {

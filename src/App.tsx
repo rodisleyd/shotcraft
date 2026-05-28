@@ -32,7 +32,7 @@ import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, St
 import {
   SHOT_TYPES, ANGLES, PERSPECTIVES, ASPECT_RATIOS,
   LENSES, LIGHTING, ENVIRONMENTS, STYLES, DETAILS,
-  PRESETS, AUTO_COMBINATIONS, LUTS
+  PRESETS, AUTO_COMBINATIONS, LUTS, GRADING_TECHNIQUES
 } from './data/constants';
 
 // Services
@@ -110,7 +110,8 @@ export default function App() {
     detail: [],
     colorPalette: [],
     colorPaletteId: '',
-    lutId: ''
+    lutId: '',
+    gradingTechniques: []
   });
   const [customAspect, setCustomAspect] = useState('2:1');
   const [copied, setCopied] = useState(false);
@@ -181,7 +182,8 @@ export default function App() {
         : (typeof sel.detail === 'object' && sel.detail !== null ? Object.values(sel.detail) : [sel.detail].filter(Boolean)),
       colorPalette: Array.isArray(sel?.colorPalette) ? sel.colorPalette : [],
       colorPaletteId: typeof sel?.colorPaletteId === 'string' ? sel.colorPaletteId : '',
-      lutId: typeof sel?.lutId === 'string' ? sel.lutId : ''
+      lutId: typeof sel?.lutId === 'string' ? sel.lutId : '',
+      gradingTechniques: Array.isArray(sel?.gradingTechniques) ? sel.gradingTechniques : []
     };
   };
 
@@ -469,6 +471,13 @@ export default function App() {
     if (selections.lutId) {
       const lutPrompt = LUTS.find(o => o.id === selections.lutId)?.prompt;
       if (lutPrompt) parts.push(lutPrompt);
+    }
+
+    if (selections.gradingTechniques && selections.gradingTechniques.length > 0) {
+      selections.gradingTechniques.forEach(id => {
+        const techPrompt = GRADING_TECHNIQUES.find(o => o.id === id)?.prompt;
+        if (techPrompt) parts.push(techPrompt);
+      });
     }
 
     if (mode === 'storyboard') parts.push("professional storyboard sketch, black and white pencil lines, compositional notes, rough sketches");

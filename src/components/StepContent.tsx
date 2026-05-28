@@ -6,7 +6,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn } from "lucide-react";
 import { Option, Step, SelectionState, ColorPaletteOption } from "../types";
-import { STYLES, COLOR_PALETTES, VISUAL_TAGS, LUTS } from "../data/constants";
+import { STYLES, COLOR_PALETTES, VISUAL_TAGS, LUTS, GRADING_TECHNIQUES } from "../data/constants";
 import React, { useState, useEffect } from "react";
 
 interface StepContentProps {
@@ -87,7 +87,7 @@ export function StepContent({
     }
   }, [activeStep]);
 
-  const [colorMode, setColorMode] = useState<'extract' | 'presets' | 'luts'>('extract');
+  const [colorMode, setColorMode] = useState<'extract' | 'presets' | 'luts' | 'techniques'>('extract');
   const [isExtractingColors, setIsExtractingColors] = useState(false);
   const [tempImageSrc, setTempImageSrc] = useState<string | null>(null);
 
@@ -670,7 +670,7 @@ export function StepContent({
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-2 p-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl max-w-md">
+                <div className="flex flex-wrap gap-2 p-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl max-w-2xl">
                   <button
                     type="button"
                     onClick={() => setColorMode('extract')}
@@ -703,6 +703,17 @@ export function StepContent({
                     }`}
                   >
                     LUTs de Cor
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setColorMode('techniques')}
+                    className={`flex-1 py-2 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+                      colorMode === 'techniques'
+                        ? themeClasses.optionActive + ' shadow-md'
+                        : 'opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    Técnicas de Grading
                   </button>
                 </div>
 
@@ -1034,6 +1045,66 @@ export function StepContent({
                     )}
                   </div>
                 )}
+
+                {colorMode === 'techniques' && (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
+                      {GRADING_TECHNIQUES.map((tech) => {
+                        const isSelected = selections.gradingTechniques?.includes(tech.id);
+                        return (
+                          <div 
+                            key={tech.id}
+                            onClick={() => {
+                              setSelections((prev: any) => {
+                                const current = prev.gradingTechniques || [];
+                                const nextTech = current.includes(tech.id)
+                                  ? current.filter((id: string) => id !== tech.id)
+                                  : [...current, tech.id];
+                                return { ...prev, gradingTechniques: nextTech };
+                              });
+                            }}
+                            className={`p-4 rounded-3xl border text-left cursor-pointer transition-all flex flex-col gap-2 group relative overflow-hidden ${
+                              isSelected
+                                ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/10'
+                                : themeClasses.option + ' hover:border-[#8b5a2b]/40'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-bold text-sm flex items-center gap-2">
+                                  {tech.label}
+                                </h3>
+                                <p className="text-[10px] leading-tight opacity-60 mt-1">{tech.description}</p>
+                              </div>
+                              <div className={`p-1 rounded-full border transition-all ${
+                                isSelected 
+                                  ? 'bg-[#8b5a2b] text-white border-transparent' 
+                                  : 'text-transparent border-zinc-400 dark:border-zinc-700'
+                              }`}>
+                                <Check size={12} />
+                              </div>
+                            </div>
+                            <span className="text-[9px] font-mono opacity-50 truncate max-w-xs block pt-1 border-t border-black/5 dark:border-white/5">{tech.prompt}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {selections.gradingTechniques?.length > 0 && (
+                      <div className="flex">
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            setSelections((prev: any) => ({ ...prev, gradingTechniques: [] }));
+                          }}
+                          className="px-6 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:bg-rose-500/10 hover:text-rose-500 transition-colors font-bold text-xs"
+                        >
+                          Limpar Técnicas Selecionadas
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Navigation buttons */}
@@ -1134,6 +1205,32 @@ export function StepContent({
                           ? 'Extraída de Imagem' 
                           : [...customPalettes, ...COLOR_PALETTES].find(p => p.id === selections.colorPaletteId)?.name || 'Paleta de Cores'}
                       </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Técnicas de Colorização (Múltiplas) */}
+                {selections.gradingTechniques && selections.gradingTechniques.length > 0 && (
+                  <div className={`col-span-full p-4 rounded-2xl border ${themeClasses.card}`}>
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-3 block">Técnicas de Colorização Selecionadas</span>
+                    <div className="flex flex-wrap gap-2">
+                      {selections.gradingTechniques.map((id: string) => {
+                        const option = GRADING_TECHNIQUES.find(o => o.id === id);
+                        return (
+                          <div key={id} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold ${themeClasses.optionActive}`}>
+                            {option?.label || id}
+                            <button 
+                              onClick={() => setSelections((prev: any) => ({
+                                ...prev,
+                                gradingTechniques: (prev.gradingTechniques || []).filter((techId: string) => techId !== id)
+                              }))} 
+                              className="hover:text-rose-200 transition-colors"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

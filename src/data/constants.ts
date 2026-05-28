@@ -906,102 +906,274 @@ export const VISUAL_TAGS: VisualTag[] = [
 ];
 
 export const LUTS: Option[] = [
+  // --- DaVinci Resolve & Cinema Film Looks ---
   { 
-    id: 'lut-kodak-gold', 
-    label: 'Kodak Gold 200', 
-    prompt: 'color graded with Kodak Gold 200 film stock LUT, warm nostalgic tones, subtle film grain', 
-    description: 'Película analógica de cor quente, tons dourados e atmosfera nostálgica.',
+    id: 'lut-kodak-2383', 
+    label: 'Kodak 2383 Print Film', 
+    prompt: 'color graded with Kodak 2383 print film LUT look, cinematic contrast and rich color tones', 
+    description: 'O LUT de impressão cinematográfica mais famoso do DaVinci Resolve. Contraste rico e tons quentes.',
     category: 'lut', 
-    subCategory: 'Película Analógica' 
+    subCategory: 'DaVinci Resolve / Cinema Looks' 
   },
   { 
-    id: 'lut-fuji-velvia', 
-    label: 'Fujifilm Velvia 50', 
-    prompt: 'color graded with Fujifilm Velvia LUT, vivid highly saturated colors, rich nature tones', 
-    description: 'Alta saturação, cores vibrantes (especialmente verdes e azuis) e forte contraste.',
+    id: 'lut-kodak-2393', 
+    label: 'Kodak 2393 Print Film', 
+    prompt: 'color graded with Kodak 2393 film stock LUT, deep shadows contrast, classic theater rendering', 
+    description: 'Contraste denso nas sombras, pretos profundos e projeção teatral clássica.',
     category: 'lut', 
-    subCategory: 'Película Analógica' 
+    subCategory: 'DaVinci Resolve / Cinema Looks' 
   },
   { 
-    id: 'lut-polaroid', 
-    label: 'Vintage Polaroid', 
-    prompt: 'color graded with Polaroid LUT, faded vintage colors, low contrast matte look', 
-    description: 'Tons desbotados, contraste reduzido e estética retrô de foto instantânea.',
+    id: 'lut-kodak-5218', 
+    label: 'Kodak 5218 Negative', 
+    prompt: 'color graded with Kodak 5218 negative film LUT look, natural organic skin tones, smooth latitude', 
+    description: 'Película negativa clássica que oferece tons de pele naturais e transições suaves.',
     category: 'lut', 
-    subCategory: 'Película Analógica' 
+    subCategory: 'DaVinci Resolve / Cinema Looks' 
   },
   { 
-    id: 'lut-teal-orange', 
-    label: 'Teal & Orange', 
-    prompt: 'color graded with Hollywood Teal and Orange movie LUT, cinematic teal shadows and amber highlights', 
-    description: 'O clássico visual de blockbuster de cinema com sombras ciano e luzes laranja quente.',
+    id: 'lut-fuji-3510', 
+    label: 'Fujifilm 3510 Print', 
+    prompt: 'color graded with Fujifilm 3510 print film look LUT, cool green shadows, clean soft highlights', 
+    description: 'Visual clássico da Fuji com sombras verdes frias e realces limpos e suaves.',
     category: 'lut', 
-    subCategory: 'Estilos de Cinema' 
+    subCategory: 'DaVinci Resolve / Cinema Looks' 
   },
   { 
-    id: 'lut-cyberpunk', 
-    label: 'Cyberpunk Neon', 
-    prompt: 'color graded with Cyberpunk Neon LUT, intense magenta and neon cyan color split', 
-    description: 'Estética cibernética e futurista com luzes de neon contrastantes rosa e azul.',
+    id: 'lut-fuji-3513', 
+    label: 'Fujifilm 3513 Print', 
+    prompt: 'color graded with Fujifilm 3513 film stock LUT, rich contrast, classic cinematic analog color profile', 
+    description: 'Cores analógicas ricas com contraste moderno e separação de cores definida.',
     category: 'lut', 
-    subCategory: 'Estilos de Cinema' 
+    subCategory: 'DaVinci Resolve / Cinema Looks' 
   },
   { 
-    id: 'lut-blade-runner', 
-    label: 'Blade Runner Look', 
-    prompt: 'color graded with Blade Runner moody sci-fi LUT, cinematic high contrast yellow and blue mist tones', 
-    description: 'Visual sci-fi noir chuvoso com neblina brilhante e sombras profundas.',
+    id: 'lut-fuji-f125', 
+    label: 'Fujifilm F125 Filmstock', 
+    prompt: 'color graded with Fujifilm F125 film stock LUT look, standard vibrant cinematic rendering', 
+    description: 'Visual clássico de película de cinema da Fuji, com forte presença cromática.',
     category: 'lut', 
-    subCategory: 'Estilos de Cinema' 
+    subCategory: 'DaVinci Resolve / Cinema Looks' 
   },
   { 
-    id: 'lut-a24', 
-    label: 'A24 Indie Style', 
-    prompt: 'color graded with A24 indie movie film look LUT, organic warm tones, matte shadows, cinematic atmosphere', 
-    description: 'Cores quentes orgânicas, pretos levemente lavados e estética de cinema cult independente.',
+    id: 'lut-filmstock-50', 
+    label: 'Filmstock 50', 
+    prompt: 'color graded with Filmstock 50 LUT look, high contrast, desaturated cold colors, dramatic cinematography', 
+    description: 'Visual dramático de alto contraste e cores frias levemente desbotadas.',
     category: 'lut', 
-    subCategory: 'Estilos de Cinema' 
+    subCategory: 'DaVinci Resolve / Cinema Looks' 
+  },
+
+  // --- Perfis de Câmera / Conversões LOG (CST) ---
+  { 
+    id: 'lut-arri-logc', 
+    label: 'ARRI LogC to Rec.709', 
+    prompt: 'shot on ARRI LogC, color converted to Rec.709, cinematic color science, natural organic look', 
+    description: 'Conversão técnica padrão da câmera ARRI Alexa. Cores orgânicas e tom de pele perfeito.',
+    category: 'lut', 
+    subCategory: 'Perfis de Câmera (LOG)' 
   },
   { 
-    id: 'lut-noir', 
-    label: 'Film Noir Chiaroscuro', 
-    prompt: 'color graded with Film Noir black and white LUT, high contrast monochromatic chiaroscuro shadows', 
-    description: 'Preto e branco de altíssimo contraste com iluminação dramática inspirada nos anos 40.',
+    id: 'lut-sony-slog3', 
+    label: 'Sony S-Log3 to Rec.709', 
+    prompt: 'shot on Sony S-Log3, color corrected to Rec.709, high dynamic range cinema look, crisp highlights', 
+    description: 'Perfil profissional das câmeras Sony Venice/FX. Nitidez moderna e grande alcance dinâmico.',
     category: 'lut', 
-    subCategory: 'Estilos de Cinema' 
+    subCategory: 'Perfis de Câmera (LOG)' 
   },
   { 
-    id: 'lut-vhs', 
-    label: '80s VHS Tape', 
-    prompt: 'color graded with 80s VHS analog tape LUT, vintage retro colors, tracking line distortions', 
-    description: 'Cores dessaturadas de fita magnética antiga com pequenas aberrações de vídeo vintage.',
+    id: 'lut-canon-clog', 
+    label: 'Canon C-Log to Rec.709', 
+    prompt: 'shot on Canon C-Log, color graded to Rec.709, organic warm skin tones, clean shadows', 
+    description: 'Conversão clássica da Canon, famosa por seus vermelhos ricos e tons de pele quentes.',
     category: 'lut', 
-    subCategory: 'Estilos de Cinema' 
+    subCategory: 'Perfis de Câmera (LOG)' 
   },
   { 
-    id: 'lut-anime-90s', 
-    label: '90s Anime Palette', 
-    prompt: 'color graded with retro 90s hand-drawn anime film LUT, cell color grading, vintage anime aesthetic', 
-    description: 'Cores nostálgicas e textura de acetato clássico de animações clássicas desenhadas à mão.',
+    id: 'lut-redlogfilm', 
+    label: 'REDLogFilm to Rec.709', 
+    prompt: 'shot on REDLogFilm, color graded to Rec.709, sharp rich cinematic colors, high contrast dynamic look', 
+    description: 'Estética clássica das câmeras RED Digital Cinema. Imagens nítidas e cores impactantes.',
     category: 'lut', 
-    subCategory: 'Estilos de Cinema' 
+    subCategory: 'Perfis de Câmera (LOG)' 
   },
   { 
-    id: 'lut-rec709', 
-    label: 'LOG to Rec.709', 
-    prompt: 'color corrected from flat LOG profile to Rec.709 LUT, natural cinematic contrast and saturation', 
-    description: 'Conversão técnica que recupera cores, contraste e gama realistas a partir de perfis brutos.',
+    id: 'lut-blackmagic-gen5', 
+    label: 'Blackmagic Gen 5 Film to Rec.709', 
+    prompt: 'shot on Blackmagic Design Gen 5 Film, color graded to Rec.709, wide dynamic range, rich grading base', 
+    description: 'Perfil de cores de 5ª geração da Blackmagic Design, com ótimo alcance dinâmico.',
     category: 'lut', 
-    subCategory: 'Técnicos (Correção)' 
+    subCategory: 'Perfis de Câmera (LOG)' 
   },
   { 
-    id: 'lut-bleach-bypass', 
-    label: 'Bleach Bypass', 
-    prompt: 'color graded with bleach bypass cinema LUT, desaturated movie colors, high contrast silver look', 
-    description: 'Estética crua e militar de revelação química sem branqueamento, com cores frias e alto contraste.',
+    id: 'lut-panasonic-vlog', 
+    label: 'Panasonic V-Log to V709', 
+    prompt: 'shot on Panasonic V-Log, color graded to V709, realistic documentary aesthetic, clean natural tones', 
+    description: 'Visual realista e limpo das câmeras Lumix/Varicam, ideal para documentários.',
     category: 'lut', 
-    subCategory: 'Técnicos (Correção)' 
+    subCategory: 'Perfis de Câmera (LOG)' 
+  },
+  { 
+    id: 'lut-dji-dlog', 
+    label: 'DJI D-Log to Rec.709', 
+    prompt: 'shot on DJI D-Log, color corrected to Rec.709, clean aerial landscape look, natural saturation', 
+    description: 'Conversão otimizada para capturas aéreas e drones, com saturação limpa da DJI.',
+    category: 'lut', 
+    subCategory: 'Perfis de Câmera (LOG)' 
+  },
+
+  // --- Photoshop (Adobe Standard) ---
+  { 
+    id: 'lut-ps-crisp-warm', 
+    label: 'Crisp Warm (Photoshop)', 
+    prompt: 'color graded with Photoshop Crisp Warm LUT style, golden tones, warm clear contrast', 
+    description: 'LUT clássico do Photoshop. Realça as altas luzes com um tom dourado aconchegante.',
+    category: 'lut', 
+    subCategory: 'Photoshop Lookups' 
+  },
+  { 
+    id: 'lut-ps-crisp-winter', 
+    label: 'Crisp Winter (Photoshop)', 
+    prompt: 'color graded with Photoshop Crisp Winter LUT style, icy cool tones, clean cold contrast', 
+    description: 'Esfria a imagem dando tons invernais, com realces azuis frios e limpos.',
+    category: 'lut', 
+    subCategory: 'Photoshop Lookups' 
+  },
+  { 
+    id: 'lut-ps-futuristic-bleak', 
+    label: 'Futuristic Bleak (Photoshop)', 
+    prompt: 'color graded with Photoshop Futuristic Bleak LUT look, desaturated post-apocalyptic colors, cold gray cast', 
+    description: 'Visual desbotado, cinzento e pós-apocalíptico ideal para ficção científica dramática.',
+    category: 'lut', 
+    subCategory: 'Photoshop Lookups' 
+  },
+  { 
+    id: 'lut-ps-horror-blue', 
+    label: 'Horror Blue (Photoshop)', 
+    prompt: 'color graded with Photoshop Horror Blue LUT look, eerie green-blue color cast, suspenseful dark shadows', 
+    description: 'Estética fria com tons azul-esverdeados nas sombras, clássico de filmes de terror.',
+    category: 'lut', 
+    subCategory: 'Photoshop Lookups' 
+  },
+  { 
+    id: 'lut-ps-moonlight', 
+    label: 'Moonlight (Photoshop)', 
+    prompt: 'color graded with Photoshop Moonlight LUT, blue night color grade, simulated lunar illumination', 
+    description: 'Simula iluminação noturna fria sob a luz da lua, com forte azulamento.',
+    category: 'lut', 
+    subCategory: 'Photoshop Lookups' 
+  },
+  { 
+    id: 'lut-ps-night-from-day', 
+    label: 'Night From Day (Photoshop)', 
+    prompt: 'color graded with Photoshop Night From Day LUT, day-for-night filter, deep blue underexposed look', 
+    description: 'Efeito "Day-for-Night". Subexpõe a imagem sob uma tonalidade azul profunda.',
+    category: 'lut', 
+    subCategory: 'Photoshop Lookups' 
+  },
+  { 
+    id: 'lut-ps-fall-colors', 
+    label: 'Fall Colors (Photoshop)', 
+    prompt: 'color graded with Photoshop Fall Colors LUT style, rich autumn foliage tones, warm red and yellow saturation', 
+    description: 'Acentua cores outonais, transformando verdes em tons quentes avermelhados e laranjas.',
+    category: 'lut', 
+    subCategory: 'Photoshop Lookups' 
+  },
+  { 
+    id: 'lut-ps-foggy-night', 
+    label: 'Foggy Night (Photoshop)', 
+    prompt: 'color graded with Photoshop Foggy Night LUT look, low contrast desaturated nighttime mist tones', 
+    description: 'Tons noturnos difusos, baixo contraste e atmosfera de neblina urbana.',
+    category: 'lut', 
+    subCategory: 'Photoshop Lookups' 
+  },
+  { 
+    id: 'lut-ps-late-sunset', 
+    label: 'Late Sunset (Photoshop)', 
+    prompt: 'color graded with Photoshop Late Sunset LUT look, warm orange and violet horizon color gradient', 
+    description: 'Gradiente de entardecer tardio com laranjas profundos e tons violeta nas sombras.',
+    category: 'lut', 
+    subCategory: 'Photoshop Lookups' 
+  },
+  { 
+    id: 'lut-ps-teal-orange', 
+    label: 'Teal Orange Contrast (Photoshop)', 
+    prompt: 'color graded with Photoshop Teal Orange Plus Contrast LUT style, heavy cyan shadows and warm skin tone highlights', 
+    description: 'Divisão de tons em ciano e laranja com contraste forte e estilizado nas bordas.',
+    category: 'lut', 
+    subCategory: 'Photoshop Lookups' 
+  },
+
+  // --- Premiere (Lumetri Standard) ---
+  { 
+    id: 'lut-pr-blue-ice', 
+    label: 'SL Blue Ice (Premiere)', 
+    prompt: 'color graded with Premiere Lumetri Blue Ice LUT style, icy silver highlights, cold blue color grading', 
+    description: 'Visual gélido e prateado do Premiere Pro. Dá um aspecto limpo e de ficção científica fria.',
+    category: 'lut', 
+    subCategory: 'Premiere Lumetri Looks' 
+  },
+  { 
+    id: 'lut-pr-gold-heat', 
+    label: 'SL Gold Heat (Premiere)', 
+    prompt: 'color graded with Premiere Lumetri Gold Heat LUT style, burning amber tones, intense hot contrast', 
+    description: 'Visual quente e escaldante. Tons âmbar profundos e contraste de deserto quente.',
+    category: 'lut', 
+    subCategory: 'Premiere Lumetri Looks' 
   }
 ];
+
+export const GRADING_TECHNIQUES: Option[] = [
+  {
+    id: 'cst-transform',
+    label: 'Color Space Transform (CST)',
+    prompt: 'processed with DaVinci Resolve Color Space Transform (CST), accurate gamut mapping and input display color space conversion',
+    description: 'Conversão técnica e científica de espaços de cor (ex: LOG para Rec.709) sem perdas de tons.',
+    category: 'grading_technique'
+  },
+  {
+    id: 'hdr-wheels',
+    label: 'HDR Color Wheels',
+    prompt: 'finely graded with DaVinci Resolve HDR color wheels, precise luminance zoning control over shadows, highlights, and midtones',
+    description: 'Ajuste cirúrgico de brilho e matiz usando as novas rodas HDR (Black, Dark, Shadow, Light, Highlight, Specular).',
+    category: 'grading_technique'
+  },
+  {
+    id: 'qualifiers-masking',
+    label: 'Qualifiers & Masking (Grading Seletivo)',
+    prompt: 'color qualified and tracked mask isolation, selective color grading, professional target skin tones tracking',
+    description: 'Mascaramento e isolamento de cores específicas (ex: manter apenas os tons de pele quentes e dessaturar o fundo).',
+    category: 'grading_technique'
+  },
+  {
+    id: 'film-emulation',
+    label: 'Film Halation Emulation',
+    prompt: 'emulated film halation look, glowing red edges around bright light zones, retro chemical film simulation',
+    description: 'Simulação química analógica que cria um brilho avermelhado suave nas bordas de alta exposição de luz.',
+    category: 'grading_technique'
+  },
+  {
+    id: 'film-grain-resolve',
+    label: 'Film Grain Emulation',
+    prompt: 'authentic film grain texture integration, natural organic film noise, physical 35mm film stock simulation',
+    description: 'Adiciona granulação orgânica de película física de cinema 35mm para quebrar a textura digital limpa.',
+    category: 'grading_technique'
+  },
+  {
+    id: 'power-grade',
+    label: 'Power Grades (Resolve)',
+    prompt: 'applied professional Hollywood industry-standard Power Grade node tree, complex multi-node color pipeline grading',
+    description: 'Estrutura profissional de nós interligados do Resolve para criar uma atmosfera de cinema de alto nível.',
+    category: 'grading_technique'
+  },
+  {
+    id: 'dctl-shifters',
+    label: 'DCTL Color Shifters',
+    prompt: 'mathematical DCTL color space transformations, high-fidelity custom color shifting, professional grade precision',
+    description: 'Transformadores matemáticos via código para realizar ajustes e distorções cromáticas perfeitas.',
+    category: 'grading_technique'
+  }
+];
+
 
 
