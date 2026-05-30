@@ -835,7 +835,7 @@ export default function App() {
       )}
 
       <footer className={`max-w-7xl mx-auto px-4 py-8 border-t transition-colors text-center text-xs font-medium uppercase tracking-[0.2em] ${themeClasses.footer}`}>
-        ShotCraft &copy; 2026 &mdash; Sistema Profissional de Direção Cinematográfica
+        ShotCraft &copy; 2026 &mdash; Sistema profissional de prompts de direção de arte
       </footer>
     </div>
   );
