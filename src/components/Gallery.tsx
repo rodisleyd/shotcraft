@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { GalleryItem, UserAccount, Theme } from '../types';
-import { Plus, X, Copy, Check, Trash2, Image as ImageIcon, Cpu, Sparkles, AlertCircle, Upload } from 'lucide-react';
+import { Plus, X, Copy, Check, Trash2, Image as ImageIcon, Cpu, Sparkles, AlertCircle, Upload, Edit } from 'lucide-react';
 
 interface GalleryProps {
   items: GalleryItem[];
@@ -9,6 +9,7 @@ interface GalleryProps {
   themeClasses: any;
   onAddItem: (item: Omit<GalleryItem, 'id' | 'createdAt'>) => void;
   onDeleteItem: (id: string) => void;
+  onUpdateItem: (item: GalleryItem) => void;
   addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
 }
 
@@ -19,11 +20,13 @@ export function Gallery({
   themeClasses,
   onAddItem,
   onDeleteItem,
+  onUpdateItem,
   addToast
 }: GalleryProps) {
   const [activeItem, setActiveItem] = useState<GalleryItem | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form states
@@ -81,23 +84,19 @@ export function Gallery({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !url.trim()) {
-      addToast('Preencha os campos obrigatórios (Título e URL/Imagem)!', 'error');
-      return;
-    }
+  const handleStartEdit = (item: GalleryItem) => {
+    setEditingItem(item);
+    setTitle(item.title);
+    setUrl(item.url);
+    setPrompt(item.prompt === 'Processo iterativo de geração (Prompt não especificado pelo autor)' ? '' : item.prompt);
+    setGeneratorIA(item.generatorIA || '');
+    setPostProcessing(item.postProcessing || '');
+    setAuthor(item.author);
+    setShowAddModal(true);
+  };
 
-    onAddItem({
-      title: title.trim(),
-      url: url.trim(),
-      prompt: prompt.trim() || 'Processo iterativo de geração (Prompt não especificado pelo autor)',
-      generatorIA: generatorIA.trim() || undefined,
-      postProcessing: postProcessing.trim() || undefined,
-      author: author.trim() || 'Admin'
-    });
-
-    // Reset form states
+  const handleCloseModal = () => {
+    setEditingItem(null);
     setTitle('');
     setUrl('');
     setPrompt('');
@@ -105,6 +104,41 @@ export function Gallery({
     setPostProcessing('');
     setAuthor(user?.email || '');
     setShowAddModal(false);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim() || !url.trim()) {
+      addToast('Preencha os campos obrigatórios (Título e URL/Imagem)!', 'error');
+      return;
+    }
+
+    const itemPrompt = prompt.trim() || 'Processo iterativo de geração (Prompt não especificado pelo autor)';
+
+    if (editingItem) {
+      const updated: GalleryItem = {
+        ...editingItem,
+        title: title.trim(),
+        url: url.trim(),
+        prompt: itemPrompt,
+        generatorIA: generatorIA.trim() || undefined,
+        postProcessing: postProcessing.trim() || undefined,
+        author: author.trim()
+      };
+      onUpdateItem(updated);
+      setActiveItem(updated); // Atualiza os dados no lightbox aberto
+    } else {
+      onAddItem({
+        title: title.trim(),
+        url: url.trim(),
+        prompt: itemPrompt,
+        generatorIA: generatorIA.trim() || undefined,
+        postProcessing: postProcessing.trim() || undefined,
+        author: author.trim() || 'Admin'
+      });
+    }
+
+    handleCloseModal();
   };
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
@@ -299,14 +333,22 @@ export function Gallery({
                 </div>
 
                 {user?.isAdmin && (
-                  <button
-                    onClick={(e) => {
-                      handleDelete(activeItem.id, e);
-                    }}
-                    className="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
-                  >
-                    <Trash2 size={14} /> Excluir Arte
-                  </button>
+                  <div className="flex gap-2 w-full">
+                    <button
+                      onClick={() => handleStartEdit(activeItem)}
+                      className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                    >
+                      <Edit size={14} /> Editar Arte
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        handleDelete(activeItem.id, e);
+                      }}
+                      className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shrink-0"
+                    >
+                      <Trash2 size={14} /> Excluir
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -317,7 +359,7 @@ export function Gallery({
       {/* Modal Administrativo para Adicionar Nova Arte */}
       {showAddModal && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowAddModal(false)} />
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={handleCloseModal} />
           <div
             className={`relative z-10 max-w-lg w-full rounded-3xl p-8 border shadow-2xl overflow-y-auto max-h-[90vh] ${
               theme === 'dark' ? 'bg-zinc-900 border-zinc-800 text-zinc-100' : 'bg-white border-[#d3cbb3] text-[#433422]'
@@ -325,17 +367,17 @@ export function Gallery({
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-black flex items-center gap-2">
-                <span>➕</span> Postar Nova Arte
+                <span>{editingItem ? '📝' : '➕'}</span> {editingItem ? 'Editar Arte' : 'Postar Nova Arte'}
               </h3>
               <button
-                onClick={() => setShowAddModal(false)}
+                onClick={handleCloseModal}
                 className={`p-2 rounded-xl border transition-all ${themeClasses.card} ${themeClasses.textMuted} hover:text-red-500`}
               >
                 <X size={16} />
               </button>
             </div>
             <p className={`text-xs ${themeClasses.textMuted} mb-6`}>
-              Alimente a galeria com as melhores artes e seus prompts. Como as artes são hospedadas fora, utilize URLs públicas de imagem.
+              {editingItem ? 'Ajuste os dados da arte cadastrada abaixo.' : 'Alimente a galeria com as melhores artes e seus prompts. Como as artes são hospedadas fora, utilize URLs públicas de imagem.'}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -440,7 +482,7 @@ export function Gallery({
               <div className="flex gap-3 pt-4 border-t border-black/5 dark:border-white/5">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
+                  onClick={handleCloseModal}
                   className={`flex-1 py-3 rounded-xl border text-xs font-bold transition-all ${
                     theme === 'dark' ? 'border-zinc-700 hover:bg-zinc-800' : 'border-[#d3cbb3] hover:bg-black/5'
                   }`}
@@ -451,7 +493,7 @@ export function Gallery({
                   type="submit"
                   className={`flex-1 py-3 text-xs font-black uppercase tracking-wider text-white rounded-xl shadow-lg transition-all active:scale-[0.98] ${themeClasses.accent}`}
                 >
-                  Postar Arte
+                  {editingItem ? 'Salvar Alterações' : 'Postar Arte'}
                 </button>
               </div>
             </form>

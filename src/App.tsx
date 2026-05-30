@@ -339,6 +339,11 @@ export default function App() {
     addToast('Arte removida da galeria.', 'info');
   };
 
+  const handleUpdateGalleryItem = (updatedItem: GalleryItem) => {
+    setGalleryItems(prev => prev.map(item => item.id === updatedItem.id ? updatedItem : item));
+    addToast(`Arte "${updatedItem.title}" atualizada com sucesso!`, 'success');
+  };
+
   const fileToGenerativePart = async (file: File) => {
     return new Promise<{ inlineData: { data: string, mimeType: string } }>((resolve, reject) => {
       const reader = new FileReader();
@@ -730,6 +735,7 @@ export default function App() {
             themeClasses={themeClasses}
             onAddItem={handleAddGalleryItem}
             onDeleteItem={handleDeleteGalleryItem}
+            onUpdateItem={handleUpdateGalleryItem}
             addToast={addToast}
           />
         ) : (
