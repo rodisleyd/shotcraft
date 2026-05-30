@@ -26,13 +26,14 @@ import {
 import { GoogleGenAI } from "@google/genai";
 
 // Types
-import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step, ColorPaletteOption, UserAccount } from './types';
+import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step, ColorPaletteOption, UserAccount, GalleryItem } from './types';
 
 // Constants
 import {
   SHOT_TYPES, ANGLES, PERSPECTIVES, ASPECT_RATIOS,
   LENSES, LIGHTING, ENVIRONMENTS, STYLES, DETAILS,
-  PRESETS, AUTO_COMBINATIONS, LUTS, GRADING_TECHNIQUES
+  PRESETS, AUTO_COMBINATIONS, LUTS, GRADING_TECHNIQUES,
+  INITIAL_GALLERY
 } from './data/constants';
 
 // Services
@@ -51,6 +52,7 @@ import { Library } from './components/Library';
 import { LandingPage } from './components/LandingPage';
 import { AuthPage } from './components/AuthPage';
 import { AdminDashboard } from './components/AdminDashboard';
+import { Gallery } from './components/Gallery';
 
 // AI Optimization Service
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -93,7 +95,8 @@ export default function App() {
   const [selectedPixPlan, setSelectedPixPlan] = useState<{ credits: number; price: string } | null>(null);
   const [isSimulatingPixPayment, setIsSimulatingPixPayment] = useState(false);
 
-  const [currentTab, setCurrentTab] = useState<'builder' | 'library'>('builder');
+  const [currentTab, setCurrentTab] = useState<'builder' | 'library' | 'gallery'>('builder');
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [subject, setSubject] = useState<string>('A mysterious detective standing in the rain');
   const [negativePrompt, setNegativePrompt] = useState<string>('');
   const [mode, setMode] = useState<ShotMode>('cinematic');
@@ -146,6 +149,14 @@ export default function App() {
 
     const savedCustomPalettes = localStorage.getItem('shotcraft_custom_palettes');
     if (savedCustomPalettes) try { setCustomPalettes(JSON.parse(savedCustomPalettes)); } catch (e) { }
+
+    const savedGallery = localStorage.getItem('shotcraft_gallery_items');
+    if (savedGallery) {
+      try { setGalleryItems(JSON.parse(savedGallery)); } catch (e) { setGalleryItems(INITIAL_GALLERY); }
+    } else {
+      setGalleryItems(INITIAL_GALLERY);
+      localStorage.setItem('shotcraft_gallery_items', JSON.stringify(INITIAL_GALLERY));
+    }
   }, []);
 
   useEffect(() => {
@@ -159,6 +170,12 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('shotcraft_custom_palettes', JSON.stringify(customPalettes));
   }, [customPalettes]);
+
+  useEffect(() => {
+    if (galleryItems.length > 0) {
+      localStorage.setItem('shotcraft_gallery_items', JSON.stringify(galleryItems));
+    }
+  }, [galleryItems]);
 
   // --- Helpers ---
   const addToast = (message: string, type: ToastType['type'] = 'info') => {
@@ -305,6 +322,21 @@ export default function App() {
     setCustomPalettes(prev => prev.filter(p => p.id !== id));
     setSelections(prev => prev.colorPaletteId === id ? { ...prev, colorPalette: [], colorPaletteId: '' } : prev);
     addToast('Paleta personalizada excluída.', 'info');
+  };
+
+  const handleAddGalleryItem = (item: Omit<GalleryItem, 'id' | 'createdAt'>) => {
+    const newItem: GalleryItem = {
+      ...item,
+      id: `gallery-${Date.now()}`,
+      createdAt: Date.now()
+    };
+    setGalleryItems(prev => [newItem, ...prev]);
+    addToast(`Arte "${item.title}" postada com sucesso!`, 'success');
+  };
+
+  const handleDeleteGalleryItem = (id: string) => {
+    setGalleryItems(prev => prev.filter(item => item.id !== id));
+    addToast('Arte removida da galeria.', 'info');
   };
 
   const fileToGenerativePart = async (file: File) => {
@@ -690,6 +722,16 @@ export default function App() {
               />
             </div>
           </div>
+        ) : currentTab === 'gallery' ? (
+          <Gallery
+            items={galleryItems}
+            user={user}
+            theme={theme}
+            themeClasses={themeClasses}
+            onAddItem={handleAddGalleryItem}
+            onDeleteItem={handleDeleteGalleryItem}
+            addToast={addToast}
+          />
         ) : (
           <Library
             theme={theme}

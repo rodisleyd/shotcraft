@@ -86,3 +86,14 @@ export interface AccessLog {
   date: string; // YYYY-MM-DD
   count: number;
 }
+
+export interface GalleryItem {
+  id: string;
+  url: string;
+  title: string;
+  prompt: string;
+  author: string;
+  generatorIA?: string;
+  postProcessing?: string;
+  createdAt: number;
+}

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Option, ColorPaletteOption, VisualTag } from "../types";
+import { Option, ColorPaletteOption, VisualTag, GalleryItem } from "../types";
 
 export const SHOT_TYPES: Option[] = [
   // 1. Enquadramentos Básicos
@@ -1188,6 +1188,69 @@ export const GRADING_TECHNIQUES: Option[] = [
     prompt: 'mathematical DCTL color space transformations, high-fidelity custom color shifting, professional grade precision',
     description: 'Transformadores matemáticos via código para realizar ajustes e distorções cromáticas perfeitas.',
     category: 'grading_technique'
+  }
+];
+
+export const INITIAL_GALLERY: GalleryItem[] = [
+  {
+    id: 'art-origami-monk',
+    url: '/images/styles/origami-low-poly.png',
+    title: 'Monge Guerreiro em Dobradura',
+    prompt: 'origami low poly fusion style, polygonal folded paper construction, sharp geometric edges, stylized paper sculpture aesthetic, paper fibers visible, realistic fold tension, layered paper thickness, subtle paper imperfections, extreme wide shot, golden hour sunset lighting, fantasy forest environment',
+    author: 'admin@shotcraft.com',
+    generatorIA: 'Midjourney v6',
+    postProcessing: 'Photoshop (Correção de cores e iluminação)',
+    createdAt: Date.now() - 5 * 24 * 60 * 60 * 1000
+  },
+  {
+    id: 'art-plasticine-clay',
+    url: '/images/styles/massinha-modelar.png',
+    title: 'Mundo de Massinha',
+    prompt: 'made of colorful soft plasticine clay, charming handcrafted look, smooth rounded shapes, visible handmade imperfections, stop motion style, cute expressive forms, soft cinematic lighting, cozy atmosphere, detailed clay texture, full body shot, whimsical fantasy kingdom environment',
+    author: 'admin@shotcraft.com',
+    generatorIA: 'DALL-E 3',
+    postProcessing: 'Lightroom (Ajuste de contraste e nitidez)',
+    createdAt: Date.now() - 4 * 24 * 60 * 60 * 1000
+  },
+  {
+    id: 'art-lego-castle',
+    url: '/images/styles/lego.png',
+    title: 'Reino de Blocos',
+    prompt: 'Transform the image into a realistic LEGO-style scene, entirely constructed from authentic LEGO bricks and pieces, visible studs on every block, plastic toy material, modular brick construction, realistic interlocking pieces, LEGO minifigure aesthetic, detailed brick-built textures, vibrant toy colors, cinematic lighting, realistic plastic reflections, handcrafted LEGO assembly look',
+    author: 'admin@shotcraft.com',
+    generatorIA: 'Midjourney v6',
+    postProcessing: 'Photoshop (Composição de fumaça e brilhos adicionais)',
+    createdAt: Date.now() - 3 * 24 * 60 * 60 * 1000
+  },
+  {
+    id: 'art-noir-detective',
+    url: '/images/styles/noir-pb-master.png',
+    title: 'O Último Detetive',
+    prompt: 'extreme noir black and white illustration, pure black shadows, heavy black spotting, dramatic chiaroscuro lighting, bold silhouette rendering, graphic ink composition, strong negative space, hard rim lighting, minimal grayscale, white highlights only, sin city aesthetic, frank miller inspired noir, close-up shot, rainy neon alley environment',
+    author: 'admin@shotcraft.com',
+    generatorIA: 'Flux.1 Pro',
+    postProcessing: 'Photoshop (Remoção de ruído digital)',
+    createdAt: Date.now() - 2 * 24 * 60 * 60 * 1000
+  },
+  {
+    id: 'art-pixel-retro',
+    url: '/images/styles/Pixel-art.png',
+    title: 'Arcade Nostalgia',
+    prompt: 'Transform the image into detailed pixel art, authentic retro videogame aesthetic, visible square pixels, limited color palette, crisp pixel edges, handcrafted sprite style, 16-bit era visual, retro arcade graphics, clean dithering, low-resolution appearance, pixel-perfect shading, nostalgic game art style, wide shot, modern city environment',
+    author: 'admin@shotcraft.com',
+    generatorIA: 'Stable Diffusion XL',
+    postProcessing: 'Nenhum (Saída direta da IA)',
+    createdAt: Date.now() - 1 * 24 * 60 * 60 * 1000
+  },
+  {
+    id: 'art-ice-sculpture',
+    url: '/images/styles/congelando.png',
+    title: 'Alma de Gelo',
+    prompt: 'Ultra realistic smooth translucent ice sculpture made of premium clear frozen crystal glass, very soft and elegant rounded contours, minimal surface imperfections, beautiful light refraction with gentle caustics, smooth glossy surface with subtle melting details, soft thickness and depth, almost no cracks, delicate air bubbles, soft diffused studio lighting, standard lens, standard perspective',
+    author: 'admin@shotcraft.com',
+    generatorIA: 'Midjourney v6',
+    postProcessing: 'Lightroom (Gradação de azul e cian)',
+    createdAt: Date.now()
   }
 ];
 

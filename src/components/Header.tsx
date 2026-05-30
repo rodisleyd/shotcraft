@@ -1,4 +1,4 @@
-import { Film, Lightbulb, Zap, Check, Copy, Monitor, Layout, Sparkles, RotateCcw, BookOpen, Sliders, LogOut, ShieldAlert, Coins } from 'lucide-react';
+import { Film, Lightbulb, Zap, Check, Copy, Monitor, Layout, Sparkles, RotateCcw, BookOpen, Sliders, LogOut, ShieldAlert, Coins, Image as ImageIcon } from 'lucide-react';
 import { ShotMode, Theme, UserAccount } from '../types';
 
 interface HeaderProps {
@@ -10,8 +10,8 @@ interface HeaderProps {
   handleReset: () => void;
   copied: boolean;
   themeClasses: any;
-  currentTab: 'builder' | 'library';
-  setCurrentTab: (tab: 'builder' | 'library') => void;
+  currentTab: 'builder' | 'library' | 'gallery';
+  setCurrentTab: (tab: 'builder' | 'library' | 'gallery') => void;
   user: UserAccount | null;
   onLogout: () => void;
   onAdminClick: () => void;
@@ -63,6 +63,19 @@ export function Header({
               >
                 <Sliders size={13} />
                 Simulador
+              </button>
+              <button
+                onClick={() => setCurrentTab('gallery')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                  currentTab === 'gallery'
+                    ? theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-[#8b5a2b] text-white'
+                    : theme === 'dark'
+                    ? 'text-zinc-400 hover:text-zinc-100 hover:bg-white/5'
+                    : 'text-[#8b7e6a] hover:text-[#433422] hover:bg-black/5'
+                }`}
+              >
+                <ImageIcon size={13} />
+                Galeria
               </button>
               <button
                 onClick={() => setCurrentTab('library')}
