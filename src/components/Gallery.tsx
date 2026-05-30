@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { GalleryItem, UserAccount, Theme } from '../types';
-import { Plus, X, Copy, Check, Trash2, Image as ImageIcon, Cpu, Sparkles, AlertCircle } from 'lucide-react';
+import { Plus, X, Copy, Check, Trash2, Image as ImageIcon, Cpu, Sparkles, AlertCircle, Upload } from 'lucide-react';
 
 interface GalleryProps {
   items: GalleryItem[];
@@ -24,6 +24,7 @@ export function Gallery({
   const [activeItem, setActiveItem] = useState<GalleryItem | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [copied, setCopied] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form states
   const [title, setTitle] = useState('');
@@ -32,6 +33,46 @@ export function Gallery({
   const [generatorIA, setGeneratorIA] = useState('');
   const [postProcessing, setPostProcessing] = useState('');
   const [author, setAuthor] = useState(user?.email || '');
+
+  const handleImageUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxWidth = 1024;
+        const maxHeight = 1024;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          setUrl(compressedBase64);
+          addToast('Imagem carregada e comprimida com sucesso!', 'success');
+        } else {
+          setUrl(e.target?.result as string);
+        }
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleCopyPrompt = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -42,15 +83,15 @@ export function Gallery({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !url.trim() || !prompt.trim()) {
-      addToast('Preencha os campos obrigatórios (Título, URL e Prompt)!', 'error');
+    if (!title.trim() || !url.trim()) {
+      addToast('Preencha os campos obrigatórios (Título e URL/Imagem)!', 'error');
       return;
     }
 
     onAddItem({
       title: title.trim(),
       url: url.trim(),
-      prompt: prompt.trim(),
+      prompt: prompt.trim() || 'Processo iterativo de geração (Prompt não especificado pelo autor)',
       generatorIA: generatorIA.trim() || undefined,
       postProcessing: postProcessing.trim() || undefined,
       author: author.trim() || 'Admin'
@@ -311,18 +352,39 @@ export function Gallery({
                 />
               </div>
 
-              {/* URL */}
+              {/* URL ou Arquivo Local */}
               <div className="space-y-1.5">
-                <label className="block text-[10px] font-black uppercase tracking-wider opacity-60">URL Pública da Imagem *</label>
-                <input
-                  type="url"
-                  required
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="Ex: https://i.imgur.com/seuid.png"
-                  className={`w-full px-4 py-3 rounded-xl border outline-none text-sm focus:ring-2 focus:ring-indigo-500/20 ${themeClasses.input}`}
-                />
-                <span className="text-[9px] opacity-60 block">Recomendado utilizar links diretos do Imgur, PostImages, Flickr ou similares.</span>
+                <label className="block text-[10px] font-black uppercase tracking-wider opacity-60">URL da Imagem ou Arquivo local *</label>
+                <div className="flex gap-2 items-end">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      required
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="Cole a URL da imagem ou selecione um arquivo..."
+                      className={`w-full px-4 py-3 rounded-xl border outline-none text-sm focus:ring-2 focus:ring-indigo-500/20 ${themeClasses.input}`}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`px-4 py-3 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 h-[46px] ${themeClasses.card} hover:bg-black/5 dark:hover:bg-white/5`}
+                  >
+                    <Upload size={14} /> Upload
+                  </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(file);
+                    }}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </div>
+                <span className="text-[9px] opacity-60 block">Utilize URLs públicas (Imgur, etc.) ou faça upload do computador (comprimido automaticamente).</span>
               </div>
 
               {/* IA Geradora */}
@@ -364,13 +426,12 @@ export function Gallery({
 
               {/* Prompt */}
               <div className="space-y-1.5">
-                <label className="block text-[10px] font-black uppercase tracking-wider opacity-60">Prompt Completo *</label>
+                <label className="block text-[10px] font-black uppercase tracking-wider opacity-60">Prompt Utilizado (Opcional)</label>
                 <textarea
-                  required
                   rows={4}
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Cole aqui o prompt utilizado..."
+                  placeholder="Cole o prompt aqui. Se a arte usou múltiplos prompts ou sessões, você pode descrever o processo ou deixar vazio."
                   className={`w-full px-4 py-3 rounded-xl border outline-none text-sm focus:ring-2 focus:ring-indigo-500/20 resize-none ${themeClasses.input}`}
                 />
               </div>
