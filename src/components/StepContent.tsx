@@ -90,6 +90,7 @@ export function StepContent({
   const [colorMode, setColorMode] = useState<'extract' | 'presets' | 'luts' | 'techniques'>('extract');
   const [isExtractingColors, setIsExtractingColors] = useState(false);
   const [tempImageSrc, setTempImageSrc] = useState<string | null>(null);
+  const [colorCount, setColorCount] = useState<number>(5);
 
   const hexToRgb = (hex: string) => {
     const cleanHex = hex.replace('#', '');
@@ -149,84 +150,90 @@ export function StepContent({
     );
   };
 
+  const extractColorsFromImage = (src: string, count: number, showToast = false) => {
+    setIsExtractingColors(true);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        setIsExtractingColors(false);
+        return;
+      }
+
+      canvas.width = 50;
+      canvas.height = 50;
+      ctx.drawImage(img, 0, 0, 50, 50);
+      const imgData = ctx.getImageData(0, 0, 50, 50).data;
+
+      const colors: { r: number, g: number, b: number, count: number }[] = [];
+      const threshold = 40;
+
+      for (let i = 0; i < imgData.length; i += 4) {
+        const r = imgData[i];
+        const g = imgData[i + 1];
+        const b = imgData[i + 2];
+        const a = imgData[i + 3];
+        if (a < 128) continue;
+
+        let found = false;
+        for (const c of colors) {
+          const dist = Math.sqrt(
+            Math.pow(c.r - r, 2) +
+            Math.pow(c.g - g, 2) +
+            Math.pow(c.b - b, 2)
+          );
+          if (dist < threshold) {
+            c.r = (c.r * c.count + r) / (c.count + 1);
+            c.g = (c.g * c.count + g) / (c.count + 1);
+            c.b = (c.b * c.count + b) / (c.count + 1);
+            c.count++;
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          colors.push({ r, g, b, count: 1 });
+        }
+      }
+
+      colors.sort((a, b) => b.count - a.count);
+
+      const rgbToHexStr = (r: number, g: number, b: number) => {
+        const toHex = (n: number) => {
+          const hex = Math.round(n).toString(16);
+          return hex.length === 1 ? '0' + hex : hex;
+        };
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+      };
+
+      const extractedHexColors = colors.slice(0, count).map(c => rgbToHexStr(c.r, c.g, c.b));
+
+      setSelections((prev: any) => ({
+        ...prev,
+        colorPalette: extractedHexColors,
+        colorPaletteId: 'custom'
+      }));
+      
+      setIsExtractingColors(false);
+      if (showToast) {
+        addToast('Paleta extraída com sucesso da imagem!', 'success');
+      }
+    };
+    img.onerror = () => {
+      setIsExtractingColors(false);
+      addToast('Erro ao carregar imagem para extração de cores.', 'error');
+    };
+    img.src = src;
+  };
+
   const handleColorImageUpload = (file: File) => {
     setIsExtractingColors(true);
     const reader = new FileReader();
     reader.onload = (e) => {
       const src = e.target?.result as string;
       setTempImageSrc(src);
-
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          setIsExtractingColors(false);
-          return;
-        }
-
-        canvas.width = 50;
-        canvas.height = 50;
-        ctx.drawImage(img, 0, 0, 50, 50);
-        const imgData = ctx.getImageData(0, 0, 50, 50).data;
-
-        const colors: { r: number, g: number, b: number, count: number }[] = [];
-        const threshold = 40;
-
-        for (let i = 0; i < imgData.length; i += 4) {
-          const r = imgData[i];
-          const g = imgData[i + 1];
-          const b = imgData[i + 2];
-          const a = imgData[i + 3];
-          if (a < 128) continue;
-
-          let found = false;
-          for (const c of colors) {
-            const dist = Math.sqrt(
-              Math.pow(c.r - r, 2) +
-              Math.pow(c.g - g, 2) +
-              Math.pow(c.b - b, 2)
-            );
-            if (dist < threshold) {
-              c.r = (c.r * c.count + r) / (c.count + 1);
-              c.g = (c.g * c.count + g) / (c.count + 1);
-              c.b = (c.b * c.count + b) / (c.count + 1);
-              c.count++;
-              found = true;
-              break;
-            }
-          }
-          if (!found) {
-            colors.push({ r, g, b, count: 1 });
-          }
-        }
-
-        colors.sort((a, b) => b.count - a.count);
-
-        const rgbToHexStr = (r: number, g: number, b: number) => {
-          const toHex = (n: number) => {
-            const hex = Math.round(n).toString(16);
-            return hex.length === 1 ? '0' + hex : hex;
-          };
-          return '#' + toHex(r) + toHex(g) + toHex(b);
-        };
-
-        const extractedHexColors = colors.slice(0, 5).map(c => rgbToHexStr(c.r, c.g, c.b));
-
-        setSelections(prev => ({
-          ...prev,
-          colorPalette: extractedHexColors,
-          colorPaletteId: 'custom'
-        }));
-        
-        setIsExtractingColors(false);
-        addToast('Paleta extraída com sucesso da imagem!', 'success');
-      };
-      img.onerror = () => {
-        setIsExtractingColors(false);
-        addToast('Erro ao carregar imagem para extração de cores.', 'error');
-      };
-      img.src = src;
+      extractColorsFromImage(src, colorCount, true);
     };
     reader.onerror = () => {
       setIsExtractingColors(false);
@@ -234,6 +241,12 @@ export function StepContent({
     };
     reader.readAsDataURL(file);
   };
+
+  useEffect(() => {
+    if (tempImageSrc) {
+      extractColorsFromImage(tempImageSrc, colorCount, false);
+    }
+  }, [colorCount, tempImageSrc]);
 
   const copyPaletteAsImage = async (colors: string[]) => {
     if (colors.length === 0) return;
@@ -772,6 +785,50 @@ export function StepContent({
                             </div>
                           </>
                         )}
+                      </div>
+
+                      {/* Selector for the number of colors */}
+                      <div className={`p-4 rounded-2xl border ${themeClasses.card} space-y-3`}>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-bold uppercase tracking-wider opacity-70">
+                            Quantidade de Cores a Extrair
+                          </span>
+                          <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border border-indigo-500/20 font-mono">
+                            {colorCount} {colorCount === 1 ? 'cor' : 'cores'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <button
+                            type="button"
+                            onClick={() => setColorCount(prev => Math.max(1, prev - 1))}
+                            disabled={colorCount <= 1}
+                            className={`w-8 h-8 rounded-lg border flex items-center justify-center font-bold text-sm transition-all hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 disabled:opacity-40 disabled:pointer-events-none ${themeClasses.option}`}
+                          >
+                            -
+                          </button>
+                          <input
+                            type="range"
+                            min="1"
+                            max="16"
+                            value={colorCount}
+                            onChange={(e) => setColorCount(parseInt(e.target.value))}
+                            className="flex-1 accent-indigo-500 cursor-pointer h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-lg appearance-none"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setColorCount(prev => Math.min(16, prev + 1))}
+                            disabled={colorCount >= 16}
+                            className={`w-8 h-8 rounded-lg border flex items-center justify-center font-bold text-sm transition-all hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 disabled:opacity-40 disabled:pointer-events-none ${themeClasses.option}`}
+                          >
+                            +
+                          </button>
+                        </div>
+                        <div className="flex justify-between text-[9px] text-zinc-400 font-mono">
+                          <span>1 cor</span>
+                          <span>5</span>
+                          <span>10</span>
+                          <span>16 cores max</span>
+                        </div>
                       </div>
                     </div>
 
