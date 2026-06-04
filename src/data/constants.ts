@@ -59,8 +59,8 @@ export const SHOT_TYPES: Option[] = [
 export const ANGLES: Option[] = [
   // 1. Ângulos Básicos
   { id: 'eye-level', label: 'Nível do Olhar', prompt: 'eye-level angle', category: 'angle', subCategory: '1. Ângulos Básicos' },
-  { id: 'low', label: 'Ângulo Baixo (Plongée)', prompt: 'extreme low-angle shot, dynamic Dutch angle, dramatic worm's-eye view, intense visual foreshortening, action-oriented perspective looking up, radiating motion lines, wide-angle cinematic framing', category: 'angle', subCategory: '1. Ângulos Básicos' },
-  { id: 'high', label: 'Ângulo Alto (Contra-Plongée)', prompt: 'high angle, looking down', category: 'angle', subCategory: '1. Ângulos Básicos' },
+  { id: 'low', label: 'Ângulo Baixo (Contra-Plongée)', prompt: 'extreme low-angle shot, dynamic Dutch angle, dramatic worm\'s-eye view, intense visual foreshortening, action-oriented perspective looking up, radiating motion lines, wide-angle cinematic framing', category: 'angle', subCategory: '1. Ângulos Básicos' },
+  { id: 'high', label: 'Ângulo Alto (Plongée)', prompt: 'high angle, looking down', category: 'angle', subCategory: '1. Ângulos Básicos' },
   { id: 'shoulder-level', label: 'Nível do Ombro', prompt: 'shoulder level camera angle', category: 'angle', subCategory: '1. Ângulos Básicos' },
   { id: 'hip-level', label: 'Nível do Quadril', prompt: 'hip level camera angle', category: 'angle', subCategory: '1. Ângulos Básicos' },
 
