@@ -333,6 +333,8 @@ export const STYLES: Option[] = [
 
   // 2. Desenho Tradicional
   { id: 'grafite', label: 'Grafite', prompt: 'detailed graphite pencil drawing, realistic shading', category: 'style', subCategory: '2. Desenho Tradicional' },
+  { id: 'traco-lapis-grafite', label: 'Traço de Lápis (Grafite)', prompt: 'refined clean graphite pencil sketch style, delicate fine pencil linework, soft pencil cross-hatching, light pencil construction marks, hand-drawn on off-white paper, pure grey lead texture, organic line weight variation, artistic sketch, no colors, no ink lines, no digital painting', category: 'style', subCategory: '2. Desenho Tradicional', image: '/images/styles/traco-lapis-grafite.png' },
+  { id: 'traco-lapis-aplicado', label: 'Traço de Lápis Aplicado', prompt: 'strictly convert the image into a refined clean graphite pencil sketch style, delicate pencil linework, soft pencil cross-hatching, light construction sketch marks, pure grey lead texture, preserving original pose and composition, no colors, no ink lines', category: 'style', subCategory: '2. Desenho Tradicional', image: '/images/styles/traco-lapis-aplicado.png' },
   { id: 'carvao', label: 'Carvão', prompt: 'charcoal drawing, smudged textures, deep blacks, rough paper', category: 'style', subCategory: '2. Desenho Tradicional' },
   { id: 'lapis-cor', label: 'Lápis de cor', prompt: 'colored pencil drawing, layered wax texture, fine details', category: 'style', subCategory: '2. Desenho Tradicional' },
   { id: 'giz-cera', label: 'Giz de cera', prompt: 'wax crayon drawing, heavy texture, vibrant waxy colors', category: 'style', subCategory: '2. Desenho Tradicional' },
