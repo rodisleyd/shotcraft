@@ -64,6 +64,7 @@ export function StepContent({
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
   const [customPaletteName, setCustomPaletteName] = useState('');
   const [selectedZoomImage, setSelectedZoomImage] = useState<{ src: string; label: string; prompt: string } | null>(null);
+  const [imageUrl, setImageUrl] = useState('');
 
   // --- 60-30-10 Color Rule Helpers & Effects ---
   const handleToggleColorRule = () => {
@@ -210,6 +211,9 @@ export function StepContent({
   const extractColorsFromImage = (src: string, count: number, showToast = false) => {
     setIsExtractingColors(true);
     const img = new Image();
+    if (src.startsWith('http') || src.startsWith('//')) {
+      img.crossOrigin = 'anonymous';
+    }
     img.onload = () => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -220,66 +224,75 @@ export function StepContent({
 
       canvas.width = 50;
       canvas.height = 50;
-      ctx.drawImage(img, 0, 0, 50, 50);
-      const imgData = ctx.getImageData(0, 0, 50, 50).data;
 
-      const colors: { r: number, g: number, b: number, count: number }[] = [];
-      const threshold = 40;
+      try {
+        ctx.drawImage(img, 0, 0, 50, 50);
+        const imgData = ctx.getImageData(0, 0, 50, 50).data;
 
-      for (let i = 0; i < imgData.length; i += 4) {
-        const r = imgData[i];
-        const g = imgData[i + 1];
-        const b = imgData[i + 2];
-        const a = imgData[i + 3];
-        if (a < 128) continue;
+        const colors: { r: number, g: number, b: number, count: number }[] = [];
+        const threshold = 40;
 
-        let found = false;
-        for (const c of colors) {
-          const dist = Math.sqrt(
-            Math.pow(c.r - r, 2) +
-            Math.pow(c.g - g, 2) +
-            Math.pow(c.b - b, 2)
-          );
-          if (dist < threshold) {
-            c.r = (c.r * c.count + r) / (c.count + 1);
-            c.g = (c.g * c.count + g) / (c.count + 1);
-            c.b = (c.b * c.count + b) / (c.count + 1);
-            c.count++;
-            found = true;
-            break;
+        for (let i = 0; i < imgData.length; i += 4) {
+          const r = imgData[i];
+          const g = imgData[i + 1];
+          const b = imgData[i + 2];
+          const a = imgData[i + 3];
+          if (a < 128) continue;
+
+          let found = false;
+          for (const c of colors) {
+            const dist = Math.sqrt(
+              Math.pow(c.r - r, 2) +
+              Math.pow(c.g - g, 2) +
+              Math.pow(c.b - b, 2)
+            );
+            if (dist < threshold) {
+              c.r = (c.r * c.count + r) / (c.count + 1);
+              c.g = (c.g * c.count + g) / (c.count + 1);
+              c.b = (c.b * c.count + b) / (c.count + 1);
+              c.count++;
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            colors.push({ r, g, b, count: 1 });
           }
         }
-        if (!found) {
-          colors.push({ r, g, b, count: 1 });
-        }
-      }
 
-      colors.sort((a, b) => b.count - a.count);
+        colors.sort((a, b) => b.count - a.count);
 
-      const rgbToHexStr = (r: number, g: number, b: number) => {
-        const toHex = (n: number) => {
-          const hex = Math.round(n).toString(16);
-          return hex.length === 1 ? '0' + hex : hex;
+        const rgbToHexStr = (r: number, g: number, b: number) => {
+          const toHex = (n: number) => {
+            const hex = Math.round(n).toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+          };
+          return '#' + toHex(r) + toHex(g) + toHex(b);
         };
-        return '#' + toHex(r) + toHex(g) + toHex(b);
-      };
 
-      const extractedHexColors = colors.slice(0, count).map(c => rgbToHexStr(c.r, c.g, c.b));
+        const extractedHexColors = colors.slice(0, count).map(c => rgbToHexStr(c.r, c.g, c.b));
 
-      setSelections((prev: any) => ({
-        ...prev,
-        colorPalette: extractedHexColors,
-        colorPaletteId: 'custom'
-      }));
-      
-      setIsExtractingColors(false);
-      if (showToast) {
-        addToast('Paleta extraída com sucesso da imagem!', 'success');
+        setSelections((prev: any) => ({
+          ...prev,
+          colorPalette: extractedHexColors,
+          colorPaletteId: 'custom'
+        }));
+        
+        setIsExtractingColors(false);
+        if (showToast) {
+          addToast('Paleta extraída com sucesso da imagem!', 'success');
+        }
+      } catch (err) {
+        console.error('Erro de CORS:', err);
+        setIsExtractingColors(false);
+        addToast('Erro de segurança (CORS): A imagem externa impede a leitura direta de pixels. Baixe a imagem e faça o upload local.', 'error');
+        setTempImageSrc(null);
       }
     };
     img.onerror = () => {
       setIsExtractingColors(false);
-      addToast('Erro ao carregar imagem para extração de cores.', 'error');
+      addToast('Erro ao carregar imagem para extração de cores. Verifique a URL ou o arquivo.', 'error');
+      setTempImageSrc(null);
     };
     img.src = src;
   };
@@ -843,6 +856,41 @@ export function StepContent({
                           </>
                         )}
                       </div>
+
+                      {/* URL de imagem alternativa */}
+                      {!tempImageSrc && (
+                        <div className="space-y-2">
+                          <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-500">
+                            Ou use a URL de uma imagem
+                          </label>
+                          <div className="flex gap-2">
+                            <input
+                              type="url"
+                              value={imageUrl}
+                              onChange={(e) => setImageUrl(e.target.value)}
+                              placeholder="Cole o link da imagem (ex: https://site.com/foto.jpg)"
+                              className={`flex-1 px-4 py-3 text-xs rounded-xl border outline-none focus:ring-2 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (!imageUrl.trim()) {
+                                  addToast('Por favor, insira uma URL válida.', 'error');
+                                  return;
+                                }
+                                setIsExtractingColors(true);
+                                setTempImageSrc(imageUrl.trim());
+                                extractColorsFromImage(imageUrl.trim(), colorCount, true);
+                                setImageUrl(''); // Limpa o campo
+                              }}
+                              disabled={isExtractingColors || !imageUrl.trim()}
+                              className={`px-4 py-3 rounded-xl text-xs font-bold text-white transition-all ${themeClasses.accent} disabled:opacity-50`}
+                            >
+                              Carregar
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Selector for the number of colors */}
                       <div className={`p-4 rounded-2xl border ${themeClasses.card} space-y-3`}>
