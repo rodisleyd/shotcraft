@@ -32,6 +32,12 @@ export interface SelectionState {
   colorPaletteId: string;
   lutId?: string;
   gradingTechniques: string[];
+  useColorRule603010?: boolean;
+  colorRule603010?: {
+    dominant: string;
+    secondary: string;
+    accent: string;
+  };
 }
 
 export interface UserPreset {

@@ -114,7 +114,13 @@ export default function App() {
     colorPalette: [],
     colorPaletteId: '',
     lutId: '',
-    gradingTechniques: []
+    gradingTechniques: [],
+    useColorRule603010: false,
+    colorRule603010: {
+      dominant: '',
+      secondary: '',
+      accent: ''
+    }
   });
   const [customAspect, setCustomAspect] = useState('2:1');
   const [copied, setCopied] = useState(false);
@@ -200,7 +206,13 @@ export default function App() {
       colorPalette: Array.isArray(sel?.colorPalette) ? sel.colorPalette : [],
       colorPaletteId: typeof sel?.colorPaletteId === 'string' ? sel.colorPaletteId : '',
       lutId: typeof sel?.lutId === 'string' ? sel.lutId : '',
-      gradingTechniques: Array.isArray(sel?.gradingTechniques) ? sel.gradingTechniques : []
+      gradingTechniques: Array.isArray(sel?.gradingTechniques) ? sel.gradingTechniques : [],
+      useColorRule603010: typeof sel?.useColorRule603010 === 'boolean' ? sel.useColorRule603010 : false,
+      colorRule603010: sel?.colorRule603010 ? {
+        dominant: typeof sel.colorRule603010.dominant === 'string' ? sel.colorRule603010.dominant : '',
+        secondary: typeof sel.colorRule603010.secondary === 'string' ? sel.colorRule603010.secondary : '',
+        accent: typeof sel.colorRule603010.accent === 'string' ? sel.colorRule603010.accent : '',
+      } : { dominant: '', secondary: '', accent: '' }
     };
   };
 
@@ -457,7 +469,15 @@ export default function App() {
       style: [],
       detail: [],
       colorPalette: [],
-      colorPaletteId: ''
+      colorPaletteId: '',
+      lutId: '',
+      gradingTechniques: [],
+      useColorRule603010: false,
+      colorRule603010: {
+        dominant: '',
+        secondary: '',
+        accent: ''
+      }
     });
     setActiveStep(0);
     addToast('Todas as configurações foram resetadas.', 'info');
@@ -502,7 +522,11 @@ export default function App() {
     });
 
     if (selections.colorPalette && selections.colorPalette.length > 0) {
-      parts.push(`using color palette reference (${selections.colorPalette.join(', ')})`);
+      if (selections.useColorRule603010 && selections.colorRule603010?.dominant && selections.colorRule603010?.secondary && selections.colorRule603010?.accent) {
+        parts.push(`using 60-30-10 color rule hierarchy (Dominant Color 60%: ${selections.colorRule603010.dominant}, Secondary Color 30%: ${selections.colorRule603010.secondary}, Accent Color 10%: ${selections.colorRule603010.accent}). The dominant color dominates the environment and mood. The secondary color supports secondary elements and characters. The accent color is strictly reserved for key focal points to guide the viewer's eye. Avoid equal color distribution`);
+      } else {
+        parts.push(`using color palette reference (${selections.colorPalette.join(', ')})`);
+      }
     }
 
     if (selections.lutId) {

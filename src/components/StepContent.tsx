@@ -65,6 +65,63 @@ export function StepContent({
   const [customPaletteName, setCustomPaletteName] = useState('');
   const [selectedZoomImage, setSelectedZoomImage] = useState<{ src: string; label: string; prompt: string } | null>(null);
 
+  // --- 60-30-10 Color Rule Helpers & Effects ---
+  const handleToggleColorRule = () => {
+    const isActivating = !selections.useColorRule603010;
+    setSelections((prev: any) => ({
+      ...prev,
+      useColorRule603010: isActivating,
+      colorRule603010: isActivating ? {
+        dominant: prev.colorPalette[0] || '',
+        secondary: prev.colorPalette[1] || prev.colorPalette[0] || '',
+        accent: prev.colorPalette[2] || prev.colorPalette[1] || prev.colorPalette[0] || ''
+      } : prev.colorRule603010
+    }));
+  };
+
+  const handleSetRuleColor = (role: 'dominant' | 'secondary' | 'accent', color: string) => {
+    setSelections((prev: any) => ({
+      ...prev,
+      colorRule603010: {
+        ...prev.colorRule603010,
+        [role]: color
+      }
+    }));
+  };
+
+  const getContrastColor = (hexColor: string) => {
+    if (!hexColor || !hexColor.startsWith('#')) return '#ffffff';
+    try {
+      const rgb = hexToRgb(hexColor);
+      const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+      return brightness > 128 ? '#1c1917' : '#ffffff';
+    } catch (e) {
+      return '#ffffff';
+    }
+  };
+
+  useEffect(() => {
+    if (selections.colorPalette && selections.colorPalette.length > 0) {
+      const currentPalette = selections.colorPalette;
+      const rule = selections.colorRule603010 || { dominant: '', secondary: '', accent: '' };
+      
+      const isDomValid = currentPalette.includes(rule.dominant);
+      const isSecValid = currentPalette.includes(rule.secondary);
+      const isAccValid = currentPalette.includes(rule.accent);
+      
+      if (!isDomValid || !isSecValid || !isAccValid || !rule.dominant || !rule.secondary || !rule.accent) {
+        setSelections((prev: any) => ({
+          ...prev,
+          colorRule603010: {
+            dominant: currentPalette[0] || '',
+            secondary: currentPalette[1] || currentPalette[0] || '',
+            accent: currentPalette[2] || currentPalette[1] || currentPalette[0] || ''
+          }
+        }));
+      }
+    }
+  }, [selections.colorPalette]);
+
   useEffect(() => {
     if (activeStep === 9) {
       setExpandedCategory('1. Pintura Tradicional');
@@ -1170,6 +1227,221 @@ export function StepContent({
                         >
                           Limpar Técnicas Selecionadas
                         </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Painel da Regra de Cores 60-30-10 */}
+                {selections.colorPalette && selections.colorPalette.length > 0 && (
+                  <div className={`mt-6 p-6 rounded-3xl border ${themeClasses.card} space-y-6 animate-in fade-in duration-300`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <h3 className="font-black text-sm uppercase tracking-wider flex items-center gap-2">
+                          <span>🎨</span> Regra de Cores 60-30-10 (Equilíbrio Visual)
+                        </h3>
+                        <p className={`${themeClasses.textMuted} text-xs mt-1`}>
+                          Distribua as cores da sua paleta em proporções estratégicas para guiar o olhar do observador.
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={!!selections.useColorRule603010} 
+                          onChange={handleToggleColorRule}
+                          className="sr-only peer" 
+                        />
+                        <div className="w-11 h-6 bg-zinc-200 dark:bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                        <span className="ml-3 text-xs font-bold uppercase tracking-wider select-none">
+                          {selections.useColorRule603010 ? 'Ativo' : 'Inativo'}
+                        </span>
+                      </label>
+                    </div>
+
+                    {selections.useColorRule603010 && (
+                      <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                        
+                        {/* Barra de Proporção Visual */}
+                        <div className="space-y-2">
+                          <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-500">
+                            Visualização da Proporção na Cena (Mockup)
+                          </label>
+                          <div className="flex h-16 w-full rounded-2xl overflow-hidden shadow-lg border border-black/10 transition-all duration-500">
+                            {/* Dominante 60% */}
+                            <div 
+                              className="h-full flex flex-col justify-center px-4 transition-all duration-500 relative group"
+                              style={{ 
+                                width: '60%', 
+                                backgroundColor: selections.colorRule603010?.dominant || '#000',
+                                color: getContrastColor(selections.colorRule603010?.dominant || '#000') 
+                              }}
+                            >
+                              <span className="text-[10px] font-black tracking-widest uppercase opacity-75">Principal</span>
+                              <span className="text-lg font-black font-mono">60%</span>
+                              <span className="absolute bottom-1 right-2 text-[8px] font-mono opacity-50">
+                                {selections.colorRule603010?.dominant}
+                              </span>
+                            </div>
+
+                            {/* Secundária 30% */}
+                            <div 
+                              className="h-full flex flex-col justify-center px-4 transition-all duration-500 relative group border-l border-black/10"
+                              style={{ 
+                                width: '30%', 
+                                backgroundColor: selections.colorRule603010?.secondary || '#555',
+                                color: getContrastColor(selections.colorRule603010?.secondary || '#555') 
+                              }}
+                            >
+                              <span className="text-[10px] font-black tracking-widest uppercase opacity-75">Apoio</span>
+                              <span className="text-base font-black font-mono">30%</span>
+                              <span className="absolute bottom-1 right-2 text-[8px] font-mono opacity-50">
+                                {selections.colorRule603010?.secondary}
+                              </span>
+                            </div>
+
+                            {/* Destaque 10% */}
+                            <div 
+                              className="h-full flex flex-col justify-center px-2 transition-all duration-500 relative group border-l border-black/10"
+                              style={{ 
+                                width: '10%', 
+                                backgroundColor: selections.colorRule603010?.accent || '#aaa',
+                                color: getContrastColor(selections.colorRule603010?.accent || '#aaa') 
+                              }}
+                            >
+                              <span className="text-[8px] font-black tracking-wider uppercase opacity-75 truncate">Foco</span>
+                              <span className="text-xs font-black font-mono">10%</span>
+                              <span className="absolute bottom-1 right-1 text-[7px] font-mono opacity-50 truncate">
+                                {selections.colorRule603010?.accent}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Seletores de Função de Cor */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          
+                          {/* Card Dominante */}
+                          <div className={`p-4 rounded-2xl border ${themeClasses.card} flex flex-col justify-between gap-4 transition-all`}>
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs font-black uppercase tracking-wider text-indigo-500 dark:text-indigo-400">Dominante (60%)</span>
+                                <div 
+                                  className="w-5 h-5 rounded-md border border-black/15 shadow-sm"
+                                  style={{ backgroundColor: selections.colorRule603010?.dominant }}
+                                />
+                              </div>
+                              <p className="text-[10px] leading-tight text-zinc-400">
+                                Ocupa o ambiente geral, fundo e a atmosfera principal da imagem.
+                              </p>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-1.5">
+                              {selections.colorPalette.map((color: string) => {
+                                const isActive = selections.colorRule603010?.dominant === color;
+                                return (
+                                  <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => handleSetRuleColor('dominant', color)}
+                                    className={`w-7 h-7 rounded-full border transition-all ${
+                                      isActive 
+                                        ? 'ring-2 ring-indigo-500 scale-110 shadow-md border-white' 
+                                        : 'border-black/15 hover:scale-105'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                    title={color}
+                                  />
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Card Secundária */}
+                          <div className={`p-4 rounded-2xl border ${themeClasses.card} flex flex-col justify-between gap-4 transition-all`}>
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs font-black uppercase tracking-wider text-emerald-500 dark:text-emerald-400">Secundária (30%)</span>
+                                <div 
+                                  className="w-5 h-5 rounded-md border border-black/15 shadow-sm"
+                                  style={{ backgroundColor: selections.colorRule603010?.secondary }}
+                                />
+                              </div>
+                              <p className="text-[10px] leading-tight text-zinc-400">
+                                Ocupa elementos de apoio, roupas, objetos secundários e profundidade.
+                              </p>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-1.5">
+                              {selections.colorPalette.map((color: string) => {
+                                const isActive = selections.colorRule603010?.secondary === color;
+                                return (
+                                  <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => handleSetRuleColor('secondary', color)}
+                                    className={`w-7 h-7 rounded-full border transition-all ${
+                                      isActive 
+                                        ? 'ring-2 ring-indigo-500 scale-110 shadow-md border-white' 
+                                        : 'border-black/15 hover:scale-105'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                    title={color}
+                                  />
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Card Destaque */}
+                          <div className={`p-4 rounded-2xl border ${themeClasses.card} flex flex-col justify-between gap-4 transition-all`}>
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs font-black uppercase tracking-wider text-amber-500 dark:text-amber-400">Destaque (10%)</span>
+                                <div 
+                                  className="w-5 h-5 rounded-md border border-black/15 shadow-sm"
+                                  style={{ backgroundColor: selections.colorRule603010?.accent }}
+                                />
+                              </div>
+                              <p className="text-[10px] leading-tight text-zinc-400">
+                                Reservada estritamente para o ponto focal ou ação principal para atrair o olhar.
+                              </p>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-1.5">
+                              {selections.colorPalette.map((color: string) => {
+                                const isActive = selections.colorRule603010?.accent === color;
+                                return (
+                                  <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => handleSetRuleColor('accent', color)}
+                                    className={`w-7 h-7 rounded-full border transition-all ${
+                                      isActive 
+                                        ? 'ring-2 ring-indigo-500 scale-110 shadow-md border-white' 
+                                        : 'border-black/15 hover:scale-105'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                    title={color}
+                                  />
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                        </div>
+
+                        {/* Bloco de Ajuda / Dica */}
+                        <div className="p-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 text-xs leading-relaxed space-y-2">
+                          <div className="font-bold text-indigo-400 flex items-center gap-1.5">
+                            <span>💡</span> Por que usar a Regra 60-30-10?
+                          </div>
+                          <p>
+                            Esta regra ajuda o gerador de imagem da IA a entender a <strong>hierarquia de importância</strong> das cores. 
+                            Em vez de misturar as cores igualmente (o que gera competição visual), a IA usará a cor de <strong>60% para o clima geral</strong>, 
+                            a de <strong>30% para equilibrar</strong> e a de <strong>10% estritamente para o ponto focal</strong> (como o casaco do protagonista ou luzes mágicas).
+                          </p>
+                        </div>
+
                       </div>
                     )}
                   </div>

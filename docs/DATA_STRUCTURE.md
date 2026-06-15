@@ -43,6 +43,12 @@ interface SelectionState {
   colorPaletteId: string;     // ID da paleta selecionada
   lutId?: string;             // ID de LUT ativo
   gradingTechniques: string[];// IDs de técnicas de grading ativas
+  useColorRule603010?: boolean; // Se a regra 60-30-10 está ativa
+  colorRule603010?: {         // Mapeamento de papéis de cores para a regra 60-30-10
+    dominant: string;
+    secondary: string;
+    accent: string;
+  };
 }
 ```
 
