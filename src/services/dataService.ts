@@ -11,11 +11,11 @@ const CURRENT_USER_KEY = "shotcraft_current_user";
 
 // Dados simulados iniciais para demonstrar o painel administrativo imediatamente
 const INITIAL_USERS: UserAccount[] = [
-  { email: "admin@shotcraft.com", isAdmin: true, createdAt: Date.now() - 10 * 24 * 60 * 60 * 1000, credits: 9999, trialStartDate: Date.now() - 10 * 24 * 60 * 60 * 1000 },
-  { email: "lucas.manga@art.com", isAdmin: false, createdAt: Date.now() - 6 * 24 * 60 * 60 * 1000, credits: 15, trialStartDate: Date.now() - 6 * 24 * 60 * 60 * 1000 },
-  { email: "carla.storyboard@film.io", isAdmin: false, createdAt: Date.now() - 4 * 24 * 60 * 60 * 1000, credits: 120, trialStartDate: Date.now() - 4 * 24 * 60 * 60 * 1000 },
-  { email: "pedro.diretor@cinema.com.br", isAdmin: false, createdAt: Date.now() - 2 * 24 * 60 * 60 * 1000, credits: 0, trialStartDate: Date.now() - 9 * 24 * 60 * 60 * 1000 }, // Trial Expirado e créditos 0
-  { email: "mariana.ilustra@design.net", isAdmin: false, createdAt: Date.now() - 1 * 24 * 60 * 60 * 1000, credits: 45, trialStartDate: Date.now() - 1 * 24 * 60 * 60 * 1000 },
+  { email: "admin@shotcraft.com", isAdmin: true, isPremium: true, createdAt: Date.now() - 10 * 24 * 60 * 60 * 1000, credits: 9999, trialStartDate: Date.now() - 10 * 24 * 60 * 60 * 1000 },
+  { email: "lucas.manga@art.com", isAdmin: false, isPremium: false, createdAt: Date.now() - 6 * 24 * 60 * 60 * 1000, credits: 15, trialStartDate: Date.now() - 6 * 24 * 60 * 60 * 1000 },
+  { email: "carla.storyboard@film.io", isAdmin: false, isPremium: true, createdAt: Date.now() - 4 * 24 * 60 * 60 * 1000, credits: 120, trialStartDate: Date.now() - 4 * 24 * 60 * 60 * 1000 }, // Carla Premium para teste
+  { email: "pedro.diretor@cinema.com.br", isAdmin: false, isPremium: false, createdAt: Date.now() - 2 * 24 * 60 * 60 * 1000, credits: 0, trialStartDate: Date.now() - 9 * 24 * 60 * 60 * 1000 }, // Trial Expirado e créditos 0
+  { email: "mariana.ilustra@design.net", isAdmin: false, isPremium: false, createdAt: Date.now() - 1 * 24 * 60 * 60 * 1000, credits: 45, trialStartDate: Date.now() - 1 * 24 * 60 * 60 * 1000 },
 ];
 
 const INITIAL_LOGS: AccessLog[] = [
@@ -83,6 +83,7 @@ export const dataService = {
     const newUser: UserAccount = {
       email,
       isAdmin: email.toLowerCase() === "admin@shotcraft.com",
+      isPremium: email.toLowerCase() === "admin@shotcraft.com",
       createdAt: Date.now(),
       credits: 30, // 30 créditos grátis no trial
       trialStartDate: Date.now(),
@@ -93,6 +94,22 @@ export const dataService = {
     this.setCurrentUser(newUser);
     this.logAccess();
     return newUser;
+  },
+
+  // Define se um usuário é premium ou comum
+  setPremiumStatus(email: string, isPremium: boolean) {
+    const users = this.getUsers();
+    const userIndex = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+    if (userIndex >= 0) {
+      users[userIndex].isPremium = isPremium;
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+
+      // Se for o próprio usuário ativo, atualiza a sessão
+      const current = this.getCurrentUser();
+      if (current && current.email.toLowerCase() === email.toLowerCase()) {
+        this.setCurrentUser(users[userIndex]);
+      }
+    }
   },
 
   // Login de usuário
@@ -191,10 +208,10 @@ export const dataService = {
   // Gera e-mails cadastrados em formato CSV
   exportEmailsToCSV(): string {
     const users = this.getUsers();
-    const headers = "Email,Data Cadastro,Creditos,Admin?\n";
+    const headers = "Email,Data Cadastro,Creditos,Admin?,Premium?\n";
     const rows = users.map(u => {
       const date = new Date(u.createdAt).toLocaleDateString("pt-BR");
-      return `"${u.email}","${date}",${u.credits},${u.isAdmin ? "Sim" : "Nao"}`;
+      return `"${u.email}","${date}",${u.credits},${u.isAdmin ? "Sim" : "Nao"},${u.isPremium ? "Sim" : "Nao"}`;
     }).join("\n");
     return headers + rows;
   }

@@ -83,10 +83,33 @@ export interface VisualTag {
 export interface UserAccount {
   email: string;
   isAdmin: boolean;
+  isPremium?: boolean;
   createdAt: number;
   credits: number;
   trialStartDate: number;
 }
+
+export interface MasterDirectorResponse {
+  concept: string;
+  subject: string;
+  framing: string;
+  angle: string;
+  perspective: string;
+  aspect: string;
+  lens: string;
+  lighting: string;
+  environment: string;
+  style: string[];
+  detail: string[];
+  colorPalette: string[];
+  colorRule603010: {
+    dominant: string;
+    secondary: string;
+    accent: string;
+  };
+  explanation: string;
+}
+
 
 export interface AccessLog {
   date: string; // YYYY-MM-DD

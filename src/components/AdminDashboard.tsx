@@ -46,6 +46,12 @@ export function AdminDashboard({ onBack, theme, themeClasses, addToast }: AdminD
     addToast(`Adicionados ${amount} créditos para ${email}!`, 'success');
   };
 
+  const handleTogglePremium = (email: string, currentStatus: boolean) => {
+    dataService.setPremiumStatus(email, !currentStatus);
+    setUsers(dataService.getUsers()); // Recarrega
+    addToast(`Usuário ${email} agora é ${!currentStatus ? 'Premium 🎬' : 'Comum'}!`, 'success');
+  };
+
   const handleManualAddCreditsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!creditEmail.trim()) {
@@ -214,6 +220,7 @@ export function AdminDashboard({ onBack, theme, themeClasses, addToast }: AdminD
                   <th className="pb-3 pr-4 font-bold uppercase tracking-wider text-[9px]">E-mail do Usuário</th>
                   <th className="pb-3 pr-4 font-bold uppercase tracking-wider text-[9px]">Data de Cadastro</th>
                   <th className="pb-3 pr-4 font-bold uppercase tracking-wider text-[9px]">Trial Válido?</th>
+                  <th className="pb-3 pr-4 font-bold uppercase tracking-wider text-[9px]">Plano</th>
                   <th className="pb-3 pr-4 font-bold uppercase tracking-wider text-[9px]">Créditos</th>
                   <th className="pb-3 text-right font-bold uppercase tracking-wider text-[9px]">Ações Rápidas</th>
                 </tr>
@@ -245,12 +252,31 @@ export function AdminDashboard({ onBack, theme, themeClasses, addToast }: AdminD
                           {trialRemainingText}
                         </span>
                       </td>
+                      <td className="py-3.5 pr-4">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                          u.isPremium 
+                            ? 'bg-amber-500/10 text-amber-500 border border-amber-500/25' 
+                            : 'bg-zinc-500/10 text-zinc-400'
+                        }`}>
+                          {u.isPremium ? "Premium 🎬" : "Comum"}
+                        </span>
+                      </td>
                       <td className="py-3.5 pr-4 font-mono font-bold text-sm">
                         {u.isAdmin ? '∞' : u.credits}
                       </td>
                       <td className="py-3.5 text-right space-x-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         {!u.isAdmin && (
                           <>
+                            <button
+                              onClick={() => handleTogglePremium(u.email, !!u.isPremium)}
+                              className={`px-2.5 py-1 rounded text-[10px] font-bold transition-all ${
+                                u.isPremium 
+                                  ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200 border border-zinc-650' 
+                                  : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-black'
+                              }`}
+                            >
+                              {u.isPremium ? "Remover Premium" : "Tornar Premium"}
+                            </button>
                             <button
                               onClick={() => handleAddCredits(u.email, 50)}
                               className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold transition-all"

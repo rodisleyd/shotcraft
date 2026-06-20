@@ -134,6 +134,10 @@ export default function App() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [toasts, setToasts] = useState<ToastType[]>([]);
   const [customPalettes, setCustomPalettes] = useState<ColorPaletteOption[]>([]);
+  const [masterExplanation, setMasterExplanation] = useState<any | null>(null);
+  const [isAnalyzingMaster, setIsAnalyzingMaster] = useState(false);
+  const [showPremiumUpgradeModal, setShowPremiumUpgradeModal] = useState(false);
+  const [isPayingPremium, setIsPayingPremium] = useState(false);
 
   // --- Persistence & DB Init ---
   useEffect(() => {
@@ -442,6 +446,112 @@ export default function App() {
     }
   };
 
+  const handleAskMasterDirector = async (userInput: string) => {
+    if (!userInput.trim()) return;
+    if (!user) {
+      addToast('Faça login para utilizar o Especialista.', 'error');
+      return;
+    }
+    if (!user.isPremium) {
+      setShowPremiumUpgradeModal(true);
+      return;
+    }
+
+    setIsAnalyzingMaster(true);
+    addToast('Invocando o Diretor Master do ShotCraft... 🎬', 'info');
+
+    try {
+      const promptText = `
+        Você é o SHOTCRAFT MASTER CINEMATIC DIRECTOR. Sua missão é atuar como Diretor de Fotografia e Diretor de Arte de nível cinematográfico de elite mundial.
+        
+        Você receberá a ideia simples do usuário: "${userInput}".
+        Deverá traduzi-la, expandi-la e detalhá-la de forma espetacular.
+        
+        Decida todas as opções técnicas e estéticas adequadas escolhendo APENAS os IDs válidos listados abaixo de cada categoria:
+        
+        Opções disponíveis e seus IDs válidos:
+        1. Enquadramento (framing): ${SHOT_TYPES.map(o => `${o.id} (${o.label})`).join(', ')}
+        2. Ângulo (angle): ${ANGLES.map(o => `${o.id} (${o.label})`).join(', ')}
+        3. Perspectiva (perspective): ${PERSPECTIVES.map(o => `${o.id} (${o.label})`).join(', ')}
+        4. Formato (aspect): ${ASPECT_RATIOS.map(o => `${o.id} (${o.label})`).join(', ')}
+        5. Lente (lens): ${LENSES.map(o => `${o.id} (${o.label})`).join(', ')}
+        6. Iluminação (lighting): ${LIGHTING.map(o => `${o.id} (${o.label})`).join(', ')}
+        7. Cenário (environment): ${ENVIRONMENTS.map(o => `${o.id} (${o.label})`).join(', ')}
+        8. Estilos (style): ${STYLES.map(o => `${o.id} (${o.label})`).join(', ')}
+        9. Detalhes (detail): ${DETAILS.map(o => `${o.id} (${o.label})`).join(', ')}
+        
+        Regras de Escolha:
+        - Escolha EXATAMENTE 1 ID para cada uma das categorias: framing, angle, perspective, aspect, lens, lighting, environment.
+        - Escolha de 1 a 3 IDs para style.
+        - Escolha de 1 a 3 IDs para detail.
+        - Crie uma paleta de cores harmoniosa baseada em teoria das cores (monocromática, complementar, triádica, análoga ou tetrádica) de acordo com a psicologia cromática da cena (por exemplo, vermelho para poder ou perigo, azul para solidão, verde para natureza ou toxicidade, etc.). Defina a paleta usando a regra 60-30-10 (Dominante 60%, Secundária 30%, Destaque/Acento 10%) especificando cores em formato HEX.
+        
+        Sua resposta deve ser estritamente no formato JSON válido.
+        O JSON deve possuir exatamente estas chaves:
+        {
+          "concept": "Uma descrição conceitual curta e poética do clima, emoção e subtexto visual da cena.",
+          "subject": "A descrição rica, cinematográfica e detalhada do assunto em inglês (sem comandos imperativos, apenas descrevendo a cena fisicamente, ex: 'A rugged 40-year-old warrior in battle-worn steel armor, standing under a heavy rain in the middle of a muddy battlefield, tired but determined expression...')",
+          "framing": "ID escolhido",
+          "angle": "ID escolhido",
+          "perspective": "ID escolhido",
+          "aspect": "ID escolhido",
+          "lens": "ID escolhido",
+          "lighting": "ID chosen",
+          "environment": "ID escolhido",
+          "style": ["ID1", "ID2"],
+          "detail": ["ID1", "ID2"],
+          "colorPalette": ["#hex1", "#hex2", "#hex3", ...],
+          "colorRule603010": {
+            "dominant": "#hexDominante",
+            "secondary": "#hexSecundario",
+            "accent": "#hexDestaque"
+          },
+          "explanation": "Uma explicação didática super detalhada e explicativa em português (do Brasil) sobre POR QUE cada escolha técnica (enquadramento, ângulo, lente, iluminação, cores) foi feita para contar esta história específica e como cada elemento contribui para a narrativa."
+        }
+        
+        Retorne APENAS o JSON limpo, sem markdown, sem trecho extra de texto.
+      `;
+
+      const result = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: promptText
+      });
+
+      const responseText = result.text || "";
+      const cleanJson = responseText.replace(/```json|```/g, '').trim();
+      const analysis = JSON.parse(cleanJson);
+      
+      if (analysis.subject) setSubject(analysis.subject);
+
+      const sanitized = sanitizeSelections({
+        framing: analysis.framing || '',
+        angle: analysis.angle || '',
+        perspective: analysis.perspective || '',
+        aspect: analysis.aspect || '',
+        lens: analysis.lens || '',
+        lighting: analysis.lighting || '',
+        environment: analysis.environment || '',
+        style: analysis.style || [],
+        detail: analysis.detail || [],
+        colorPalette: analysis.colorPalette || [],
+        colorPaletteId: 'custom',
+        useColorRule603010: true,
+        colorRule603010: analysis.colorRule603010
+      });
+
+      setSelections(sanitized);
+      setMasterExplanation(analysis);
+
+      addToast('O Diretor Master organizou sua cena com perfeição! 🎬', 'success');
+      setActiveStep(11); // Pular diretamente para a revisão
+    } catch (error) {
+      console.error('Erro ao invocar o Diretor Master:', error);
+      addToast('Erro ao processar instrução com o Diretor Master.', 'error');
+    } finally {
+      setIsAnalyzingMaster(false);
+    }
+  };
+
   const handleSavePreset = () => {
     if (!newPresetName.trim()) return;
     const newPreset: UserPreset = {
@@ -690,7 +800,7 @@ export default function App() {
             <div className="lg:col-span-8 flex flex-col gap-6">
               <Stepper steps={steps} activeStep={activeStep} setActiveStep={setActiveStep} themeClasses={themeClasses} />
 
-              <StepContent
+               <StepContent
                 activeStep={activeStep} steps={steps}
                 subject={subject} setSubject={setSubject}
                 isOptimizing={isOptimizing} handleOptimizeSubject={handleOptimizeSubject}
@@ -705,6 +815,12 @@ export default function App() {
                 customPalettes={customPalettes}
                 onSaveCustomPalette={handleSaveCustomPalette}
                 onDeleteCustomPalette={handleDeleteCustomPalette}
+                isPremium={!!user?.isPremium}
+                isAnalyzingMaster={isAnalyzingMaster}
+                masterExplanation={masterExplanation}
+                handleAskMasterDirector={handleAskMasterDirector}
+                setShowPremiumUpgradeModal={setShowPremiumUpgradeModal}
+                setMasterExplanation={setMasterExplanation}
               />
 
               <NegativePrompt
@@ -863,6 +979,81 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Modal Upgrade Premium via Pix */}
+      {showPremiumUpgradeModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowPremiumUpgradeModal(false)} />
+          
+          <div className={`relative z-10 max-w-md w-full rounded-3xl p-8 border shadow-2xl ${
+            theme === 'dark' ? 'bg-zinc-900 border-zinc-800 text-zinc-100' : 'bg-white border-[#d3cbb3] text-[#433422]'
+          }`}>
+            <h3 className="text-xl font-black mb-2 flex items-center gap-2">
+              💎 Ativar ShotCraft Premium
+            </h3>
+            <p className={`text-xs mb-6 ${themeClasses.textMuted}`}>Adquira acesso vitalício ao Especialista Master (System Prompt) para criar direções de fotografia e arte automatizadas por apenas R$ 29,90.</p>
+
+            {/* Simulação Pix QR Code */}
+            <div className="p-6 bg-zinc-950 rounded-2xl border border-zinc-800 flex flex-col items-center gap-4 text-center">
+              <div className="w-40 h-40 bg-white p-3 rounded-2xl flex items-center justify-center shadow-md relative overflow-hidden">
+                <div className="absolute inset-0 m-auto w-10 h-10 bg-white border-4 border-amber-500 rounded-full flex items-center justify-center font-bold text-amber-500 text-xs shadow animate-pulse">
+                  PIX
+                </div>
+                <div className="w-full h-full border-4 border-dashed border-zinc-300 rounded-xl" />
+              </div>
+
+              <div>
+                <span className="text-[10px] font-bold text-zinc-500 block mb-1">Pix Copia e Cola</span>
+                <button 
+                  onClick={copyPixKey}
+                  type="button"
+                  className="px-3 py-1 bg-zinc-900 border border-zinc-800 text-[10px] font-black text-amber-500 rounded-lg hover:bg-zinc-800 transition-colors uppercase tracking-wider"
+                >
+                  Copiar Código Pix
+                </button>
+              </div>
+            </div>
+
+            {/* Ações */}
+            <div className="flex gap-3 mt-6">
+              <button
+                type="button"
+                onClick={() => setShowPremiumUpgradeModal(false)}
+                className={`flex-1 py-3 rounded-xl border text-xs font-bold transition-all ${
+                  theme === 'dark' ? 'border-zinc-700 hover:bg-zinc-800' : 'border-[#d3cbb3] hover:bg-black/5'
+                }`}
+              >
+                Voltar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!user) return;
+                  setIsPayingPremium(true);
+                  setTimeout(() => {
+                    dataService.setPremiumStatus(user.email, true);
+                    setUser(dataService.getCurrentUser());
+                    setIsPayingPremium(false);
+                    setShowPremiumUpgradeModal(false);
+                    addToast(`Sua conta agora é PREMIUM! Especialista Master ativado. 💎🎬`, 'success');
+                  }, 1500);
+                }}
+                disabled={isPayingPremium}
+                className="flex-1 py-3 text-xs font-black uppercase tracking-wider text-white rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500"
+              >
+                {isPayingPremium ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" /> Verificando...
+                  </>
+                ) : (
+                  'Confirmar Pix'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       <footer className={`max-w-7xl mx-auto px-4 py-8 border-t transition-colors text-center text-xs font-medium uppercase tracking-[0.2em] ${themeClasses.footer}`}>
         ShotCraft &copy; 2026 &mdash; Sistema profissional de prompts de direção de arte

@@ -33,6 +33,12 @@ interface StepContentProps {
   customPalettes: ColorPaletteOption[];
   onSaveCustomPalette: (name: string, colors: string[]) => void;
   onDeleteCustomPalette: (id: string) => void;
+  isPremium?: boolean;
+  isAnalyzingMaster?: boolean;
+  masterExplanation?: any;
+  handleAskMasterDirector?: (val: string) => void;
+  setShowPremiumUpgradeModal?: (val: boolean) => void;
+  setMasterExplanation?: (val: any) => void;
 }
 
 export function StepContent({
@@ -58,13 +64,20 @@ export function StepContent({
   addToast,
   customPalettes,
   onSaveCustomPalette,
-  onDeleteCustomPalette
+  onDeleteCustomPalette,
+  isPremium = false,
+  isAnalyzingMaster = false,
+  masterExplanation = null,
+  handleAskMasterDirector = () => {},
+  setShowPremiumUpgradeModal = () => {},
+  setMasterExplanation = () => {}
 }: StepContentProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>('1. Pintura Tradicional');
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
   const [customPaletteName, setCustomPaletteName] = useState('');
   const [selectedZoomImage, setSelectedZoomImage] = useState<{ src: string; label: string; prompt: string } | null>(null);
   const [imageUrl, setImageUrl] = useState('');
+  const [masterInputText, setMasterInputText] = useState('');
 
   // --- 60-30-10 Color Rule Helpers & Effects ---
   const handleToggleColorRule = () => {
@@ -443,6 +456,75 @@ export function StepContent({
                     )}
                   </div>
                 </div>
+              </div>
+
+              {/* Diretor Master Premium */}
+              <div className={`p-6 rounded-3xl border relative overflow-hidden ${
+                theme === 'dark' 
+                  ? 'bg-zinc-900/60 border-amber-500/30' 
+                  : 'bg-white/70 border-amber-500/40 shadow-md'
+              }`}>
+                {/* Background Glow */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🎬</span>
+                    <div>
+                      <h3 className="font-bold text-base flex items-center gap-1.5">
+                        Master Cinematic Director 
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-600 text-zinc-950 font-black tracking-wider uppercase">
+                          Premium
+                        </span>
+                      </h3>
+                      <p className={`${themeClasses.textMuted} text-xs`}>
+                        O Diretor de Fotografia e Arte automatiza todo o setup do app baseado na sua ideia.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {!isPremium ? (
+                  <div className="relative p-6 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/30 flex flex-col items-center gap-4 text-center">
+                    <p className={`text-xs max-w-md ${themeClasses.textMuted}`}>
+                      Escreva um conceito simples (como "guerreiro medieval na neve") e o Especialista Master configurará todo o aplicativo (câmera, lente, iluminação, paleta 60-30-10, estilos e texturas) de forma otimizada para você, além de explicar detalhadamente cada decisão.
+                    </p>
+                    <button
+                      onClick={() => setShowPremiumUpgradeModal(true)}
+                      className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-zinc-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg hover:from-amber-400 hover:to-amber-500 transition-all transform active:scale-95 flex items-center gap-2"
+                    >
+                      <span>💎</span> Ativar Acesso Premium (R$ 29,90)
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <input 
+                        type="text"
+                        value={masterInputText}
+                        onChange={(e) => setMasterInputText(e.target.value)}
+                        placeholder="Ex: Um astronauta caminhando em uma floresta rosa alienígena ao pôr do sol..."
+                        className={`flex-1 px-4 py-3 rounded-xl border outline-none text-sm ${themeClasses.input}`}
+                        disabled={isAnalyzingMaster}
+                      />
+                      <button
+                        onClick={() => handleAskMasterDirector(masterInputText)}
+                        disabled={isAnalyzingMaster || !masterInputText.trim()}
+                        className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {isAnalyzingMaster ? (
+                          <>
+                            <Loader2 size={14} className="animate-spin text-zinc-950" /> Invocando...
+                          </>
+                        ) : (
+                          <>
+                            Invocar Diretor 🎬
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Clima & Sensações Rápidas (Tags Visuais) */}
@@ -1522,6 +1604,55 @@ export function StepContent({
                 <h2 className="text-2xl font-bold mb-2">Revisão Final</h2>
                 <p className={`${themeClasses.textMuted} text-sm`}>Confira todas as suas escolhas técnicas. Remova o que não deseja clicando no ícone.</p>
               </div>
+
+              {/* Card Didático do Diretor Master */}
+              {masterExplanation && (
+                <div className={`p-6 rounded-3xl border relative overflow-hidden animate-in fade-in slide-in-from-top-4 ${
+                  theme === 'dark' 
+                    ? 'bg-zinc-900/60 border-amber-500/40 text-zinc-100' 
+                    : 'bg-white/80 border-amber-500/50 text-[#433422] shadow-lg'
+                }`}>
+                  {/* Selo Dourado Flutuante */}
+                  <div className="absolute top-4 right-4 flex items-center gap-1 bg-gradient-to-r from-amber-500 to-yellow-600 text-zinc-950 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
+                    <span>🎬</span> Master Config
+                  </div>
+
+                  <h3 className="text-lg font-bold flex items-center gap-2 mb-3">
+                    <span>✨</span> Direção e Concept Art
+                  </h3>
+
+                  <div className="space-y-4">
+                    {/* Conceito de Direção */}
+                    <div className="p-4 rounded-2xl bg-zinc-950/20 dark:bg-black/20 border border-black/5 dark:border-white/5">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-amber-500 mb-1.5">Conceito Visual e Narrativo</h4>
+                      <p className="text-sm italic leading-relaxed">"{masterExplanation.concept}"</p>
+                    </div>
+
+                    {/* Decisões Didáticas */}
+                    <div>
+                      <h4 className="text-xs font-black uppercase tracking-wider text-amber-500 mb-2">Análise Técnica e Didática</h4>
+                      <p className="text-xs leading-relaxed whitespace-pre-wrap opacity-90">{masterExplanation.explanation}</p>
+                    </div>
+
+                    {/* Excluir Configurações do Diretor Master para voltar ao modo manual */}
+                    <div className="flex justify-end pt-2">
+                      <button
+                        onClick={() => {
+                          setMasterExplanation(null);
+                          addToast('Configurações do Especialista removidas. Você agora está no modo manual!', 'info');
+                        }}
+                        className={`text-[10px] font-bold uppercase tracking-wider px-3.5 py-2 rounded-lg border transition-all ${
+                          theme === 'dark' 
+                            ? 'border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-white' 
+                            : 'border-zinc-200 text-[#8b7e6a] hover:bg-black/5 hover:text-black'
+                        }`}
+                      >
+                        Limpar Decisões do Diretor e Ajustar Manualmente
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Sujeito */}
