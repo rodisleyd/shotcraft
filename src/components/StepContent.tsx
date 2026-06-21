@@ -78,6 +78,8 @@ export function StepContent({
   const [selectedZoomImage, setSelectedZoomImage] = useState<{ src: string; label: string; prompt: string } | null>(null);
   const [imageUrl, setImageUrl] = useState('');
   const [masterInputText, setMasterInputText] = useState('');
+  const [masterMode, setMasterMode] = useState<'text' | 'image'>('text');
+
 
   // --- 60-30-10 Color Rule Helpers & Effects ---
   const handleToggleColorRule = () => {
@@ -382,14 +384,14 @@ export function StepContent({
                 <h2 className="text-2xl font-bold mb-2">O que vamos filmar?</h2>
                 <p className={`${themeClasses.textMuted} text-sm`}>Descreva o sujeito e a ação principal da cena.</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <textarea 
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
-                    placeholder="Ex: A young detective sitting alone in a crowded bar..."
-                    className={`w-full h-48 rounded-2xl p-6 transition-all text-lg resize-none border outline-none focus:ring-2 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
-                  />
+              <div className="space-y-4">
+                <textarea 
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Ex: A young detective sitting alone in a crowded bar..."
+                  className={`w-full h-48 rounded-2xl p-6 transition-all text-lg resize-none border outline-none focus:ring-2 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
+                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <button 
                     onClick={handleOptimizeSubject}
                     disabled={isOptimizing || !subject.trim()}
@@ -415,47 +417,6 @@ export function StepContent({
                     {isTranslating ? 'Traduzindo...' : 'Traduzir para Inglês'}
                   </button>
                 </div>
-
-                <div className="relative group h-full min-h-[200px]">
-                  <input 
-                    type="file" 
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleAnalyzeReference(file);
-                    }}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                    disabled={isAnalyzing}
-                  />
-                  <div className={`h-full p-8 rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-4 text-center ${
-                    isAnalyzing 
-                      ? 'border-indigo-500 bg-indigo-500/5' 
-                      : 'border-zinc-200 hover:border-indigo-400 hover:bg-zinc-50/50'
-                  }`}>
-                    {isAnalyzing ? (
-                      <>
-                        <div className="relative">
-                          <Loader2 size={48} className="text-indigo-500 animate-spin" />
-                          <ImageIcon size={24} className="absolute inset-0 m-auto text-indigo-300" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-indigo-500 text-lg">Mestre IA Analisando...</div>
-                          <p className="text-xs text-zinc-400 mt-1">Identificando estilos, luz e composição</p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="w-20 h-20 rounded-3xl bg-zinc-100 flex items-center justify-center group-hover:scale-110 transition-all shadow-inner">
-                          <Upload size={32} className="text-zinc-400 group-hover:text-indigo-500 transition-colors" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-zinc-600 text-lg">Modo Mestre</div>
-                          <p className="text-xs text-zinc-400 mt-1">Suba uma imagem para que o IA <br/> marque as opções automaticamente</p>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
               </div>
 
               {/* Diretor Master Premium */}
@@ -478,50 +439,121 @@ export function StepContent({
                         </span>
                       </h3>
                       <p className={`${themeClasses.textMuted} text-xs`}>
-                        O Diretor de Fotografia e Arte automatiza todo o setup do app baseado na sua ideia.
+                        O Diretor de Fotografia e Arte automatiza todo o setup do app baseado na sua ideia ou imagem de referência.
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {!isPremium ? (
-                  <div className="relative p-6 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/30 flex flex-col items-center gap-4 text-center">
-                    <p className={`text-xs max-w-md ${themeClasses.textMuted}`}>
-                      Escreva um conceito simples (como "guerreiro medieval na neve") e o Especialista Master configurará todo o aplicativo (câmera, lente, iluminação, paleta 60-30-10, estilos e texturas) de forma otimizada para você, além de explicar detalhadamente cada decisão.
-                    </p>
-                    <button
-                      onClick={() => setShowPremiumUpgradeModal(true)}
-                      className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-zinc-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg hover:from-amber-400 hover:to-amber-500 transition-all transform active:scale-95 flex items-center gap-2"
-                    >
-                      <span>💎</span> Ativar Acesso Premium (R$ 29,90)
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <input 
-                        type="text"
-                        value={masterInputText}
-                        onChange={(e) => setMasterInputText(e.target.value)}
-                        placeholder="Ex: Um astronauta caminhando em uma floresta rosa alienígena ao pôr do sol..."
-                        className={`flex-1 px-4 py-3 rounded-xl border outline-none text-sm ${themeClasses.input}`}
-                        disabled={isAnalyzingMaster}
-                      />
+                {/* Seleção de Modo do Diretor Master */}
+                <div className="flex gap-2 border-b border-zinc-200/40 dark:border-zinc-800/40 pb-2 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setMasterMode('text')}
+                    className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                      masterMode === 'text'
+                        ? 'bg-amber-500 text-zinc-950 shadow-sm'
+                        : `${themeClasses.textMuted} hover:text-zinc-200`
+                    }`}
+                  >
+                    💡 Descrever Ideia (Texto)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMasterMode('image')}
+                    className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                      masterMode === 'image'
+                        ? 'bg-amber-500 text-zinc-950 shadow-sm'
+                        : `${themeClasses.textMuted} hover:text-zinc-200`
+                    }`}
+                  >
+                    📸 Imagem de Referência (Modo Mestre)
+                  </button>
+                </div>
+
+                {masterMode === 'text' ? (
+                  // Aba Texto (Premium)
+                  !isPremium ? (
+                    <div className="relative p-6 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/30 flex flex-col items-center gap-4 text-center">
+                      <p className={`text-xs max-w-md ${themeClasses.textMuted}`}>
+                        Escreva um conceito simples (como "guerreiro medieval na neve") e o Especialista Master configurará todo o aplicativo (câmera, lente, iluminação, paleta 60-30-10, estilos e texturas) de forma otimizada para você, além de explicar detalhadamente cada decisão.
+                      </p>
                       <button
-                        onClick={() => handleAskMasterDirector(masterInputText)}
-                        disabled={isAnalyzingMaster || !masterInputText.trim()}
-                        className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                        onClick={() => setShowPremiumUpgradeModal(true)}
+                        className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-zinc-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg hover:from-amber-400 hover:to-amber-500 transition-all transform active:scale-95 flex items-center gap-2"
                       >
-                        {isAnalyzingMaster ? (
-                          <>
-                            <Loader2 size={14} className="animate-spin text-zinc-950" /> Invocando...
-                          </>
-                        ) : (
-                          <>
-                            Invocar Diretor 🎬
-                          </>
-                        )}
+                        <span>💎</span> Ativar Acesso Premium (R$ 29,90)
                       </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <input 
+                          type="text"
+                          value={masterInputText}
+                          onChange={(e) => setMasterInputText(e.target.value)}
+                          placeholder="Ex: Um astronauta caminhando em uma floresta rosa alienígena ao pôr do sol..."
+                          className={`flex-1 px-4 py-3 rounded-xl border outline-none text-sm ${themeClasses.input}`}
+                          disabled={isAnalyzingMaster}
+                        />
+                        <button
+                          onClick={() => handleAskMasterDirector(masterInputText)}
+                          disabled={isAnalyzingMaster || !masterInputText.trim()}
+                          className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                          {isAnalyzingMaster ? (
+                            <>
+                              <Loader2 size={14} className="animate-spin text-zinc-950" /> Invocando...
+                            </>
+                          ) : (
+                            <>
+                              Invocar Diretor 🎬
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                ) : (
+                  // Aba Imagem (Modo Mestre) - Liberada para todos
+                  <div className="relative group min-h-[160px]">
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleAnalyzeReference(file);
+                      }}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      disabled={isAnalyzing}
+                    />
+                    <div className={`p-6 rounded-2xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-3 text-center ${
+                      isAnalyzing 
+                        ? 'border-indigo-500 bg-indigo-500/5' 
+                        : 'border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 hover:bg-zinc-900/10'
+                    }`}>
+                      {isAnalyzing ? (
+                        <>
+                          <div className="relative">
+                            <Loader2 size={36} className="text-indigo-500 animate-spin" />
+                            <ImageIcon size={18} className="absolute inset-0 m-auto text-indigo-300" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-indigo-500 text-sm">Mestre IA Analisando...</div>
+                            <p className="text-[10px] text-zinc-400 mt-0.5">Identificando estilos, luz e composição da imagem</p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:scale-105 transition-all shadow-inner">
+                            <Upload size={20} className="text-zinc-400 group-hover:text-indigo-500 transition-colors" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-zinc-300 text-sm">Upload de Imagem de Referência</div>
+                            <p className="text-[10px] text-zinc-400 mt-0.5">Suba uma imagem para que o Mestre IA configure as opções automaticamente</p>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
