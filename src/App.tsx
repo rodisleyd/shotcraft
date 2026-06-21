@@ -384,28 +384,38 @@ export default function App() {
     try {
       let imagePart;
       if (typeof fileOrUrl === 'string') {
+        let response;
         try {
-          const response = await fetch(fileOrUrl);
-          if (!response.ok) throw new Error('Falha ao baixar imagem');
-          const blob = await response.blob();
-          imagePart = await new Promise<{ inlineData: { data: string, mimeType: string } }>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              const base64data = (reader.result as string).split(',')[1];
-              resolve({
-                inlineData: {
-                  data: base64data,
-                  mimeType: blob.type
-                }
-              });
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-        } catch (fetchErr) {
-          console.error('Erro ao baixar imagem da URL:', fetchErr);
-          throw new Error('CORS_OR_NETWORK_ERROR');
+          response = await fetch(fileOrUrl);
+        } catch (e) {
+          console.log('Erro de CORS/rede direto. Tentando com proxy de imagem...');
         }
+
+        if (!response || !response.ok) {
+          try {
+            response = await fetch(`https://images.weserv.nl/?url=${encodeURIComponent(fileOrUrl)}`);
+            if (!response.ok) throw new Error('Falha no download via proxy');
+          } catch (proxyErr) {
+            console.error('Erro de fetch/CORS mesmo com proxy:', proxyErr);
+            throw new Error('CORS_OR_NETWORK_ERROR');
+          }
+        }
+
+        const blob = await response.blob();
+        imagePart = await new Promise<{ inlineData: { data: string, mimeType: string } }>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64data = (reader.result as string).split(',')[1];
+            resolve({
+              inlineData: {
+                data: base64data,
+                mimeType: blob.type
+              }
+            });
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
       } else {
         imagePart = await fileToGenerativePart(fileOrUrl);
       }
