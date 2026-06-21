@@ -377,12 +377,38 @@ export default function App() {
     });
   };
 
-  const handleAnalyzeReference = async (file: File) => {
+  const handleAnalyzeReference = async (fileOrUrl: File | string) => {
     setIsAnalyzing(true);
     addToast('Mestre IA analisando sua referência...', 'info');
 
     try {
-      const imagePart = await fileToGenerativePart(file);
+      let imagePart;
+      if (typeof fileOrUrl === 'string') {
+        try {
+          const response = await fetch(fileOrUrl);
+          if (!response.ok) throw new Error('Falha ao baixar imagem');
+          const blob = await response.blob();
+          imagePart = await new Promise<{ inlineData: { data: string, mimeType: string } }>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const base64data = (reader.result as string).split(',')[1];
+              resolve({
+                inlineData: {
+                  data: base64data,
+                  mimeType: blob.type
+                }
+              });
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch (fetchErr) {
+          console.error('Erro ao baixar imagem da URL:', fetchErr);
+          throw new Error('CORS_OR_NETWORK_ERROR');
+        }
+      } else {
+        imagePart = await fileToGenerativePart(fileOrUrl);
+      }
 
       const allOptionsPrompt = `
         Aja como um especialista em direção cinematográfica e ShotCraft. 
@@ -438,9 +464,13 @@ export default function App() {
 
       addToast('Mestre IA concluiu a análise!', 'success');
       setActiveStep(1); // Mover para o próximo passo para ver os resultados
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro na análise:', error);
-      addToast('Erro ao analisar imagem.', 'error');
+      if (error.message === 'CORS_OR_NETWORK_ERROR') {
+        addToast('Erro de CORS ou rede: A URL da imagem bloqueou o acesso. Baixe a imagem e faça o upload local.', 'error');
+      } else {
+        addToast('Erro ao analisar imagem.', 'error');
+      }
     } finally {
       setIsAnalyzing(false);
     }

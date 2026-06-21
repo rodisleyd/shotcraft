@@ -19,7 +19,7 @@ interface StepContentProps {
   isTranslating: boolean;
   handleTranslateSubject: () => void;
   isAnalyzing: boolean;
-  handleAnalyzeReference: (file: File) => void;
+  handleAnalyzeReference: (fileOrUrl: File | string) => void;
   setActiveStep: (step: number) => void;
   getCurrentOptions: (step: number) => Option[];
   handleSelect: (category: string, id: string) => void;
@@ -79,6 +79,7 @@ export function StepContent({
   const [imageUrl, setImageUrl] = useState('');
   const [masterInputText, setMasterInputText] = useState('');
   const [masterMode, setMasterMode] = useState<'text' | 'image'>('text');
+  const [imageUrlInput, setImageUrlInput] = useState('');
 
 
   // --- 60-30-10 Color Rule Helpers & Effects ---
@@ -516,44 +517,83 @@ export function StepContent({
                   )
                 ) : (
                   // Aba Imagem (Modo Mestre) - Liberada para todos
-                  <div className="relative group min-h-[160px]">
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleAnalyzeReference(file);
-                      }}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                      disabled={isAnalyzing}
-                    />
-                    <div className={`p-6 rounded-2xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-3 text-center ${
-                      isAnalyzing 
-                        ? 'border-indigo-500 bg-indigo-500/5' 
-                        : 'border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 hover:bg-zinc-900/10'
-                    }`}>
-                      {isAnalyzing ? (
-                        <>
-                          <div className="relative">
-                            <Loader2 size={36} className="text-indigo-500 animate-spin" />
-                            <ImageIcon size={18} className="absolute inset-0 m-auto text-indigo-300" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-indigo-500 text-sm">Mestre IA Analisando...</div>
-                            <p className="text-[10px] text-zinc-400 mt-0.5">Identificando estilos, luz e composição da imagem</p>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:scale-105 transition-all shadow-inner">
-                            <Upload size={20} className="text-zinc-400 group-hover:text-indigo-500 transition-colors" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-zinc-300 text-sm">Upload de Imagem de Referência</div>
-                            <p className="text-[10px] text-zinc-400 mt-0.5">Suba uma imagem para que o Mestre IA configure as opções automaticamente</p>
-                          </div>
-                        </>
-                      )}
+                  <div className="space-y-4">
+                    <div className="relative group min-h-[140px]">
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleAnalyzeReference(file);
+                        }}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        disabled={isAnalyzing}
+                      />
+                      <div className={`p-6 rounded-2xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-3 text-center ${
+                        isAnalyzing 
+                          ? 'border-indigo-500 bg-indigo-500/5' 
+                          : 'border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 hover:bg-zinc-900/10'
+                      }`}>
+                        {isAnalyzing ? (
+                          <>
+                            <div className="relative">
+                              <Loader2 size={32} className="text-indigo-500 animate-spin" />
+                              <ImageIcon size={16} className="absolute inset-0 m-auto text-indigo-300" />
+                            </div>
+                            <div>
+                              <div className="font-bold text-indigo-500 text-sm">Mestre IA Analisando...</div>
+                              <p className="text-[10px] text-zinc-400 mt-0.5">Identificando estilos, luz e composição da imagem</p>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:scale-105 transition-all shadow-inner">
+                              <Upload size={18} className="text-zinc-400 group-hover:text-indigo-500 transition-colors" />
+                            </div>
+                            <div>
+                              <div className="font-bold text-zinc-300 text-xs">Arraste ou clique para upload</div>
+                              <p className="text-[9px] text-zinc-500 mt-0.5">Formatos suportados: PNG, JPG, WEBP</p>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="h-[1px] bg-zinc-200 dark:bg-zinc-800/60 flex-1" />
+                      <span className="text-[10px] uppercase font-bold text-zinc-500">ou insira a URL da imagem</span>
+                      <div className="h-[1px] bg-zinc-200 dark:bg-zinc-800/60 flex-1" />
+                    </div>
+
+                    <div className="flex gap-2">
+                      <input 
+                        type="text"
+                        placeholder="Insira o link da imagem (ex: https://site.com/imagem.jpg)"
+                        value={imageUrlInput}
+                        onChange={(e) => setImageUrlInput(e.target.value)}
+                        className={`flex-1 px-4 py-2.5 rounded-xl border outline-none text-xs ${themeClasses.input}`}
+                        disabled={isAnalyzing}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (imageUrlInput.trim()) {
+                            handleAnalyzeReference(imageUrlInput.trim());
+                          }
+                        }}
+                        disabled={isAnalyzing || !imageUrlInput.trim()}
+                        className="px-5 py-2.5 bg-zinc-800 dark:bg-zinc-700 hover:bg-zinc-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1.5"
+                      >
+                        {isAnalyzing ? (
+                          <>
+                            <Loader2 size={12} className="animate-spin" /> Analisando
+                          </>
+                        ) : (
+                          <>
+                            Analisar
+                          </>
+                        )}
+                      </button>
                     </div>
                   </div>
                 )}
