@@ -74,6 +74,7 @@ export const ANGLES: Option[] = [
   { id: 'dutch', label: 'Ângulo Holandês (Dutch Angle)', prompt: 'dutch angle, tilted frame', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
   { id: 'dynamic-tilt', label: 'Dynamic Tilt (Inclinação Dinâmica)', prompt: 'dynamic tilt angle, extremely canted framing, dramatic skewed camera', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
   { id: 'extreme-low', label: 'Extreme Low Angle (Câmera no Chão)', prompt: 'extreme low angle shot, ground level camera angle', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
+  { id: 'contra-plongee-extremo', label: 'Contra-Plongée Extremo', prompt: 'extreme low-angle shot, shot from a very low ground-level perspective looking up, dramatic upward camera angle, vertical perspective convergence, dynamic perspective pointing up', category: 'angle', subCategory: '3. Ângulos Dramáticos', image: '/images/enquadramentos/contra-plongee-extremo.png' },
   { id: 'extreme-high', label: 'Extreme High Angle (Câmera Muito Alta)', prompt: 'extreme high angle view, looking straight down from high altitude', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
 
   // 4. Ângulos de Personagem
