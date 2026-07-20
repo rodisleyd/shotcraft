@@ -502,15 +502,8 @@ export function StepContent({
                           disabled={isAnalyzingMaster || !masterInputText.trim()}
                           className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                         >
-                          {isAnalyzingMaster ? (
-                            <>
-                              <Loader2 size={14} className="animate-spin text-zinc-950" /> Invocando...
-                            </>
-                          ) : (
-                            <>
-                              Invocar Diretor 🎬
-                            </>
-                          )}
+                          {isAnalyzingMaster && <Loader2 size={14} className="animate-spin text-zinc-950" />}
+                          <span>{isAnalyzingMaster ? 'Invocando...' : 'Invocar Diretor 🎬'}</span>
                         </button>
                       </div>
                     </div>
@@ -535,7 +528,7 @@ export function StepContent({
                           : 'border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 hover:bg-zinc-900/10'
                       }`}>
                         {isAnalyzing ? (
-                          <>
+                          <div key="analyzing" className="contents">
                             <div className="relative">
                               <Loader2 size={32} className="text-indigo-500 animate-spin" />
                               <ImageIcon size={16} className="absolute inset-0 m-auto text-indigo-300" />
@@ -544,9 +537,9 @@ export function StepContent({
                               <div className="font-bold text-indigo-500 text-sm">Mestre IA Analisando...</div>
                               <p className="text-[10px] text-zinc-400 mt-0.5">Identificando estilos, luz e composição da imagem</p>
                             </div>
-                          </>
+                          </div>
                         ) : (
-                          <>
+                          <div key="idle" className="contents">
                             <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:scale-105 transition-all shadow-inner">
                               <Upload size={18} className="text-zinc-400 group-hover:text-indigo-500 transition-colors" />
                             </div>
@@ -554,7 +547,7 @@ export function StepContent({
                               <div className="font-bold text-zinc-300 text-xs">Arraste ou clique para upload</div>
                               <p className="text-[9px] text-zinc-500 mt-0.5">Formatos suportados: PNG, JPG, WEBP</p>
                             </div>
-                          </>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -584,15 +577,8 @@ export function StepContent({
                         disabled={isAnalyzing || !imageUrlInput.trim()}
                         className="px-5 py-2.5 bg-zinc-800 dark:bg-zinc-700 hover:bg-zinc-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1.5"
                       >
-                        {isAnalyzing ? (
-                          <>
-                            <Loader2 size={12} className="animate-spin" /> Analisando
-                          </>
-                        ) : (
-                          <>
-                            Analisar
-                          </>
-                        )}
+                        {isAnalyzing && <Loader2 size={12} className="animate-spin" />}
+                        <span>{isAnalyzing ? 'Analisando' : 'Analisar'}</span>
                       </button>
                     </div>
                   </div>

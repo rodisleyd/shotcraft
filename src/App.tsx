@@ -473,16 +473,16 @@ export default function App() {
       setSelections(sanitized);
 
       addToast('Mestre IA concluiu a análise!', 'success');
+      setIsAnalyzing(false);
       setActiveStep(1); // Mover para o próximo passo para ver os resultados
     } catch (error: any) {
       console.error('Erro na análise:', error);
+      setIsAnalyzing(false);
       if (error.message === 'CORS_OR_NETWORK_ERROR') {
         addToast('Erro de CORS ou rede: A URL da imagem bloqueou o acesso. Baixe a imagem e faça o upload local.', 'error');
       } else {
         addToast('Erro ao analisar imagem.', 'error');
       }
-    } finally {
-      setIsAnalyzing(false);
     }
   };
 
@@ -583,12 +583,12 @@ export default function App() {
       setMasterExplanation(analysis);
 
       addToast('O Diretor Master organizou sua cena com perfeição! 🎬', 'success');
+      setIsAnalyzingMaster(false);
       setActiveStep(11); // Pular diretamente para a revisão
     } catch (error) {
       console.error('Erro ao invocar o Diretor Master:', error);
-      addToast('Erro ao processar instrução com o Diretor Master.', 'error');
-    } finally {
       setIsAnalyzingMaster(false);
+      addToast('Erro ao processar instrução com o Diretor Master.', 'error');
     }
   };
 
