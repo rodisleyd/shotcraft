@@ -87,10 +87,11 @@ export function PromptPreview({
 
       <button 
         onClick={copyToClipboard}
-        className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all shadow-lg active:scale-[0.98] ${themeClasses.accent} text-white`}
+        translate="no"
+        className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all shadow-lg active:scale-[0.98] ${themeClasses.accent} text-white notranslate`}
       >
         {copied ? <Check size={20} /> : <Copy size={20} />}
-        {copied ? 'Prompt Copiado!' : 'Copiar Prompt'}
+        <span>{copied ? 'Prompt Copiado!' : 'Copiar Prompt'}</span>
       </button>
       
       <p className={`text-center text-[10px] mt-4 uppercase tracking-widest font-bold opacity-40 ${themeClasses.textMuted}`}>

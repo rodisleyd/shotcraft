@@ -714,6 +714,24 @@ export default function App() {
     return parts.filter(Boolean).join(', ');
   }, [subject, selections, mode, customAspect, negativePrompt]);
 
+  const fallbackCopyTextToClipboard = (text: string) => {
+    try {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    } catch (err) {
+      console.error('Fallback copy error:', err);
+    }
+  };
+
   const copyToClipboard = () => {
     const success = dataService.consumeCredit();
     if (!success) {
@@ -725,7 +743,19 @@ export default function App() {
 
     setUser(dataService.getCurrentUser());
 
-    navigator.clipboard.writeText(finalPrompt);
+    const doCopy = async () => {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(finalPrompt);
+        } else {
+          fallbackCopyTextToClipboard(finalPrompt);
+        }
+      } catch (err) {
+        fallbackCopyTextToClipboard(finalPrompt);
+      }
+    };
+
+    doCopy();
     setCopied(true);
     addToHistory(finalPrompt);
     addToast('Prompt copiado e salvo no histórico! 🪙 1 crédito consumido.', 'success');

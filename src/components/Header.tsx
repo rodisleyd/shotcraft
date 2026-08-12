@@ -181,7 +181,8 @@ export function Header({
               </button>
               <button 
                 onClick={copyToClipboard}
-                className={`flex items-center gap-2 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-lg active:scale-95 ${themeClasses.accent}`}
+                translate="no"
+                className={`flex items-center gap-2 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-lg active:scale-95 ${themeClasses.accent} notranslate`}
               >
                 {copied ? <Check size={16} /> : <Copy size={16} />}
                 <span className="hidden sm:inline">{copied ? 'Copiado' : 'Copiar Prompt'}</span>
