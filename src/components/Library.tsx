@@ -67,8 +67,34 @@ export function Library({
     });
   }, [currentCategoryData, searchQuery, selectedSubCategory]);
 
-  const handleCopyPrompt = (prompt: string, id: string) => {
-    navigator.clipboard.writeText(prompt);
+  const fallbackCopyTextToClipboard = (text: string) => {
+    try {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    } catch (err) {
+      console.error('Fallback copy error:', err);
+    }
+  };
+
+  const handleCopyPrompt = async (prompt: string, id: string) => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(prompt);
+      } else {
+        fallbackCopyTextToClipboard(prompt);
+      }
+    } catch (err) {
+      fallbackCopyTextToClipboard(prompt);
+    }
     setCopiedId(id);
     addToast('Prompt de estilo copiado!', 'success');
     setTimeout(() => setCopiedId(null), 2000);
@@ -252,22 +278,26 @@ export function Library({
                   {/* Actions */}
                   <div className="flex gap-2 pt-2 border-t border-black/5 dark:border-white/5">
                     <button
+                      type="button"
+                      translate="no"
                       onClick={() => handleCopyPrompt(item.prompt, item.id)}
-                      className={`p-2 rounded-xl border flex-1 text-[10px] font-bold flex items-center justify-center gap-1 transition-all ${
+                      className={`p-2 rounded-xl border flex-1 text-[10px] font-bold flex items-center justify-center gap-1 transition-all notranslate ${
                         themeClasses.option + ' hover:border-indigo-500/20'
                       }`}
                     >
                       {copiedId === item.id ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
-                      {copiedId === item.id ? 'Copiado' : 'Copiar'}
+                      <span className="notranslate" translate="no">{copiedId === item.id ? 'Copiado' : 'Copiar'}</span>
                     </button>
                     <button
+                      type="button"
+                      translate="no"
                       onClick={() => handleApplyAndGo(item.category, item.id)}
-                      className={`p-2 rounded-xl text-[10px] font-bold flex-1 flex items-center justify-center gap-1 transition-all text-white ${
+                      className={`p-2 rounded-xl text-[10px] font-bold flex-1 flex items-center justify-center gap-1 transition-all text-white notranslate ${
                         themeClasses.accent
                       }`}
                     >
                       <Sparkles size={12} />
-                      {isSelected ? 'Remover' : 'Aplicar'}
+                      <span className="notranslate" translate="no">{isSelected ? 'Remover' : 'Aplicar'}</span>
                     </button>
                   </div>
                 </div>

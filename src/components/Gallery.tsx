@@ -77,8 +77,34 @@ export function Gallery({
     reader.readAsDataURL(file);
   };
 
-  const handleCopyPrompt = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const fallbackCopyTextToClipboard = (text: string) => {
+    try {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    } catch (err) {
+      console.error('Fallback copy error:', err);
+    }
+  };
+
+  const handleCopyPrompt = async (text: string) => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        fallbackCopyTextToClipboard(text);
+      }
+    } catch (err) {
+      fallbackCopyTextToClipboard(text);
+    }
     setCopied(true);
     addToast('Prompt copiado com sucesso!', 'success');
     setTimeout(() => setCopied(false), 2000);
@@ -306,15 +332,17 @@ export function Gallery({
                   <div className="flex justify-between items-center">
                     <label className="text-[10px] font-black uppercase tracking-wider opacity-60">Prompt Utilizado</label>
                     <button
+                      type="button"
+                      translate="no"
                       onClick={() => handleCopyPrompt(activeItem.prompt)}
-                      className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                      className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all notranslate ${
                         theme === 'dark'
                           ? 'border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-indigo-400'
                           : 'border-zinc-200 bg-white hover:bg-zinc-50 text-[#8b5a2b]'
                       }`}
                     >
                       {copied ? <Check size={11} /> : <Copy size={11} />}
-                      {copied ? 'Copiado' : 'Copiar'}
+                      <span className="notranslate" translate="no">{copied ? 'Copiado' : 'Copiar'}</span>
                     </button>
                   </div>
                   <div className={`p-4 rounded-2xl border text-xs font-mono leading-relaxed max-h-48 overflow-y-auto select-all ${themeClasses.input}`}>
