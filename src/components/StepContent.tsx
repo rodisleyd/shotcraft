@@ -4,11 +4,12 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette } from "lucide-react";
 import { Option, Step, SelectionState, ColorPaletteOption } from "../types";
 import { STYLES, COLOR_PALETTES, VISUAL_TAGS, LUTS, GRADING_TECHNIQUES } from "../data/constants";
 import React, { useState, useEffect } from "react";
 import { fetchImageAsDataUrl } from "../services/imageService";
+import { ColorPickerModal } from "./ColorPickerModal";
 
 interface StepContentProps {
   activeStep: number;
@@ -166,6 +167,7 @@ export function StepContent({
   const [isExtractingColors, setIsExtractingColors] = useState(false);
   const [tempImageSrc, setTempImageSrc] = useState<string | null>(null);
   const [colorCount, setColorCount] = useState<number>(5);
+  const [isPickerModalOpen, setIsPickerModalOpen] = useState<boolean>(false);
 
   const hexToRgb = (hex: string) => {
     const cleanHex = hex.replace('#', '');
@@ -988,22 +990,51 @@ export function StepContent({
                       >
                         {tempImageSrc ? (
                           <>
-                            <img src={tempImageSrc} alt="Preview" className="absolute inset-0 w-full h-full object-cover brightness-50" />
-                            <div className="relative z-10 flex flex-col items-center gap-3">
-                              <button 
-                                type="button"
-                                onClick={() => {
-                                  setTempImageSrc(null);
-                                  setSelections((prev: any) => ({ ...prev, colorPalette: [], colorPaletteId: '' }));
-                                }}
-                                className="p-3 bg-rose-500 hover:bg-rose-600 text-white rounded-full transition-colors shadow-lg"
-                                title="Remover imagem"
-                              >
-                                <Trash2 size={18} />
-                              </button>
-                              <span className="text-white text-xs font-bold bg-black/60 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                            <img 
+                              src={tempImageSrc} 
+                              alt="Preview" 
+                              className="absolute inset-0 w-full h-full object-cover brightness-50 cursor-pointer transition-transform duration-300 hover:scale-105" 
+                              onClick={() => setIsPickerModalOpen(true)}
+                              title="Clique para abrir o conta-gotas interativo"
+                            />
+                            <div className="relative z-10 flex flex-col items-center gap-2.5 p-4">
+                              <span className="text-white text-xs font-bold bg-black/70 px-3 py-1 rounded-full backdrop-blur-md border border-white/10 flex items-center gap-1.5 shadow-md">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                                 Imagem Carregada
                               </span>
+
+                              <div className="flex items-center gap-2 mt-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setIsPickerModalOpen(true)}
+                                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-xl flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 border border-indigo-400/30"
+                                  title="Abrir conta-gotas para inspecionar e escolher cores"
+                                >
+                                  <Pipette size={14} />
+                                  <span>Conta-gotas</span>
+                                </button>
+                                
+                                <button 
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setTempImageSrc(null);
+                                    setSelections((prev: any) => ({ ...prev, colorPalette: [], colorPaletteId: '' }));
+                                  }}
+                                  className="p-2 bg-rose-500/80 hover:bg-rose-600 text-white rounded-xl transition-colors shadow-lg"
+                                  title="Remover imagem"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => setIsPickerModalOpen(true)}
+                                className="text-[11px] text-zinc-300 hover:text-white underline underline-offset-2 transition-colors cursor-pointer mt-0.5"
+                              >
+                                Clique para inspecionar com a lupa
+                              </button>
                             </div>
                           </>
                         ) : (
@@ -1218,6 +1249,27 @@ export function StepContent({
                       )}
                     </div>
                   </div>
+                )}
+
+                {/* Modal do Conta-gotas Interativo */}
+                {tempImageSrc && (
+                  <ColorPickerModal
+                    isOpen={isPickerModalOpen}
+                    onClose={() => setIsPickerModalOpen(false)}
+                    imageSrc={tempImageSrc}
+                    currentPalette={selections.colorPalette || []}
+                    maxColors={16}
+                    onApplyPalette={(newPalette) => {
+                      setSelections((prev: any) => ({
+                        ...prev,
+                        colorPalette: newPalette,
+                        colorPaletteId: 'custom'
+                      }));
+                    }}
+                    theme={theme}
+                    themeClasses={themeClasses}
+                    addToast={addToast}
+                  />
                 )}
 
                 {colorMode === 'presets' && (
