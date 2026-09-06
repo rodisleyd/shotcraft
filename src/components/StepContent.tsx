@@ -8,6 +8,7 @@ import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as 
 import { Option, Step, SelectionState, ColorPaletteOption } from "../types";
 import { STYLES, COLOR_PALETTES, VISUAL_TAGS, LUTS, GRADING_TECHNIQUES } from "../data/constants";
 import React, { useState, useEffect } from "react";
+import { fetchImageAsDataUrl } from "../services/imageService";
 
 interface StepContentProps {
   activeStep: number;
@@ -227,8 +228,10 @@ export function StepContent({
   const extractColorsFromImage = (src: string, count: number, showToast = false) => {
     setIsExtractingColors(true);
     const img = new Image();
-    if (src.startsWith('http') || src.startsWith('//')) {
-      img.crossOrigin = 'anonymous';
+    if (!src.startsWith('data:')) {
+      if (src.startsWith('http') || src.startsWith('//')) {
+        img.crossOrigin = 'anonymous';
+      }
     }
     img.onload = () => {
       const canvas = document.createElement('canvas');
@@ -326,6 +329,31 @@ export function StepContent({
       addToast('Erro ao ler o arquivo de imagem.', 'error');
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleLoadColorImageUrl = async () => {
+    const trimmed = imageUrl.trim();
+    if (!trimmed) {
+      addToast('Por favor, insira uma URL válida.', 'error');
+      return;
+    }
+
+    setIsExtractingColors(true);
+    addToast('Buscando e processando imagem da URL...', 'info');
+
+    try {
+      const dataUrl = await fetchImageAsDataUrl(trimmed);
+      setTempImageSrc(dataUrl);
+      extractColorsFromImage(dataUrl, colorCount, true);
+      setImageUrl('');
+    } catch (err: any) {
+      console.error('Erro ao carregar imagem por URL:', err);
+      setIsExtractingColors(false);
+      addToast(
+        err?.message || 'Não foi possível carregar a imagem desta URL. Verifique se o link está acessível ou faça upload direto do arquivo.',
+        'error'
+      );
+    }
   };
 
   useEffect(() => {
@@ -564,6 +592,11 @@ export function StepContent({
                         placeholder="Insira o link da imagem (ex: https://site.com/imagem.jpg)"
                         value={imageUrlInput}
                         onChange={(e) => setImageUrlInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && imageUrlInput.trim() && !isAnalyzing) {
+                            handleAnalyzeReference(imageUrlInput.trim());
+                          }
+                        }}
                         className={`flex-1 px-4 py-2.5 rounded-xl border outline-none text-xs ${themeClasses.input}`}
                         disabled={isAnalyzing}
                       />
@@ -1008,25 +1041,29 @@ export function StepContent({
                               type="url"
                               value={imageUrl}
                               onChange={(e) => setImageUrl(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && imageUrl.trim() && !isExtractingColors) {
+                                  handleLoadColorImageUrl();
+                                }
+                              }}
                               placeholder="Cole o link da imagem (ex: https://site.com/foto.jpg)"
+                              disabled={isExtractingColors}
                               className={`flex-1 px-4 py-3 text-xs rounded-xl border outline-none focus:ring-2 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
                             />
                             <button
                               type="button"
-                              onClick={() => {
-                                if (!imageUrl.trim()) {
-                                  addToast('Por favor, insira uma URL válida.', 'error');
-                                  return;
-                                }
-                                setIsExtractingColors(true);
-                                setTempImageSrc(imageUrl.trim());
-                                extractColorsFromImage(imageUrl.trim(), colorCount, true);
-                                setImageUrl(''); // Limpa o campo
-                              }}
+                              onClick={handleLoadColorImageUrl}
                               disabled={isExtractingColors || !imageUrl.trim()}
-                              className={`px-4 py-3 rounded-xl text-xs font-bold text-white transition-all ${themeClasses.accent} disabled:opacity-50`}
+                              className={`px-4 py-3 rounded-xl text-xs font-bold text-white transition-all flex items-center gap-2 ${themeClasses.accent} disabled:opacity-50`}
                             >
-                              Carregar
+                              {isExtractingColors ? (
+                                <>
+                                  <Loader2 className="animate-spin" size={14} />
+                                  <span>Carregando...</span>
+                                </>
+                              ) : (
+                                <span>Carregar</span>
+                              )}
                             </button>
                           </div>
                         </div>

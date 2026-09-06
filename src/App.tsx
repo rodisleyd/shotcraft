@@ -38,6 +38,7 @@ import {
 
 // Services
 import { dataService } from './services/dataService';
+import { fetchImageAsDataUrl } from './services/imageService';
 
 // Components
 import { Header } from './components/Header';
@@ -384,38 +385,25 @@ export default function App() {
     try {
       let imagePart;
       if (typeof fileOrUrl === 'string') {
-        let response;
+        let dataUrl: string;
         try {
-          response = await fetch(fileOrUrl);
-        } catch (e) {
-          console.log('Erro de CORS/rede direto. Tentando com proxy de imagem...');
+          dataUrl = await fetchImageAsDataUrl(fileOrUrl);
+        } catch (downloadErr) {
+          console.error('Erro ao baixar imagem da URL:', downloadErr);
+          throw new Error('CORS_OR_NETWORK_ERROR');
         }
 
-        if (!response || !response.ok) {
-          try {
-            response = await fetch(`https://images.weserv.nl/?url=${encodeURIComponent(fileOrUrl)}`);
-            if (!response.ok) throw new Error('Falha no download via proxy');
-          } catch (proxyErr) {
-            console.error('Erro de fetch/CORS mesmo com proxy:', proxyErr);
-            throw new Error('CORS_OR_NETWORK_ERROR');
+        const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+        if (!match) {
+          throw new Error('CORS_OR_NETWORK_ERROR');
+        }
+
+        imagePart = {
+          inlineData: {
+            mimeType: match[1],
+            data: match[2]
           }
-        }
-
-        const blob = await response.blob();
-        imagePart = await new Promise<{ inlineData: { data: string, mimeType: string } }>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64data = (reader.result as string).split(',')[1];
-            resolve({
-              inlineData: {
-                data: base64data,
-                mimeType: blob.type
-              }
-            });
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
+        };
       } else {
         imagePart = await fileToGenerativePart(fileOrUrl);
       }
