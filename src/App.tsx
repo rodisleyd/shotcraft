@@ -322,17 +322,20 @@ export default function App() {
     }
   };
 
-  const handleSaveCustomPalette = (name: string, colors: string[]) => {
+  const handleSaveCustomPalette = (name: string, colors: string[], category?: string) => {
     const id = `custom-${Date.now()}`;
+    const cleanCategory = category?.trim() || 'Minhas Paletas';
     const newPalette: ColorPaletteOption = {
       id,
       name,
       colors,
-      description: 'Paleta personalizada extraída.'
+      description: 'Paleta personalizada.',
+      category: cleanCategory,
+      createdAt: Date.now()
     };
     setCustomPalettes(prev => [newPalette, ...prev]);
     setSelections(prev => ({ ...prev, colorPalette: colors, colorPaletteId: id }));
-    addToast(`Paleta "${name}" salva com sucesso!`, 'success');
+    addToast(`Paleta "${name}" salva na categoria "${cleanCategory}"!`, 'success');
   };
 
   const handleDeleteCustomPalette = (id: string) => {

@@ -70,6 +70,9 @@ export interface ColorPaletteOption {
   name: string;
   colors: string[]; // Códigos HEX
   description: string;
+  category?: string;
+  createdAt?: number;
+  isFavorite?: boolean;
 }
 
 export interface VisualTag {

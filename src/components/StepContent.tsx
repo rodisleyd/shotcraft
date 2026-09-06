@@ -4,10 +4,10 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette, Search, Filter, ArrowUpDown, Tag } from "lucide-react";
 import { Option, Step, SelectionState, ColorPaletteOption } from "../types";
 import { STYLES, COLOR_PALETTES, VISUAL_TAGS, LUTS, GRADING_TECHNIQUES } from "../data/constants";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { fetchImageAsDataUrl } from "../services/imageService";
 import { ColorPickerModal } from "./ColorPickerModal";
 
@@ -33,7 +33,7 @@ interface StepContentProps {
   themeClasses: any;
   addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   customPalettes: ColorPaletteOption[];
-  onSaveCustomPalette: (name: string, colors: string[]) => void;
+  onSaveCustomPalette: (name: string, colors: string[], category?: string) => void;
   onDeleteCustomPalette: (id: string) => void;
   isPremium?: boolean;
   isAnalyzingMaster?: boolean;
@@ -77,11 +77,63 @@ export function StepContent({
   const [expandedCategory, setExpandedCategory] = useState<string | null>('1. Pintura Tradicional');
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
   const [customPaletteName, setCustomPaletteName] = useState('');
+  const [customPaletteCategory, setCustomPaletteCategory] = useState('Minhas Paletas');
+  const [paletteSearchQuery, setPaletteSearchQuery] = useState('');
+  const [selectedPaletteCategory, setSelectedPaletteCategory] = useState('all');
+  const [paletteSortMode, setPaletteSortMode] = useState<'recent' | 'name'>('recent');
   const [selectedZoomImage, setSelectedZoomImage] = useState<{ src: string; label: string; prompt: string } | null>(null);
   const [imageUrl, setImageUrl] = useState('');
   const [masterInputText, setMasterInputText] = useState('');
   const [masterMode, setMasterMode] = useState<'text' | 'image'>('text');
   const [imageUrlInput, setImageUrlInput] = useState('');
+
+  // Paletas combinadas e filtros por categoria/busca
+  const allPalettes = useMemo(() => {
+    return [...customPalettes, ...COLOR_PALETTES];
+  }, [customPalettes]);
+
+  const availableCategories = useMemo(() => {
+    const cats = new Set<string>();
+    COLOR_PALETTES.forEach(p => {
+      if (p.category) cats.add(p.category);
+    });
+    customPalettes.forEach(p => {
+      if (p.category && p.category !== 'Minhas Paletas') cats.add(p.category);
+    });
+    return Array.from(cats);
+  }, [customPalettes]);
+
+  const filteredPalettes = useMemo(() => {
+    let list = [...allPalettes];
+
+    if (selectedPaletteCategory === 'custom') {
+      list = list.filter(p => p.id.startsWith('custom-'));
+    } else if (selectedPaletteCategory !== 'all') {
+      list = list.filter(p => p.category === selectedPaletteCategory);
+    }
+
+    if (paletteSearchQuery.trim()) {
+      const q = paletteSearchQuery.toLowerCase().trim();
+      list = list.filter(p => 
+        p.name.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q) ||
+        p.category?.toLowerCase().includes(q) ||
+        p.colors.some(c => c.toLowerCase().includes(q))
+      );
+    }
+
+    if (paletteSortMode === 'name') {
+      list.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+    } else {
+      list.sort((a, b) => {
+        const timeA = a.createdAt || 0;
+        const timeB = b.createdAt || 0;
+        return timeB - timeA;
+      });
+    }
+
+    return list;
+  }, [allPalettes, selectedPaletteCategory, paletteSearchQuery, paletteSortMode]);
 
 
   // --- 60-30-10 Color Rule Helpers & Effects ---
@@ -1197,31 +1249,64 @@ export function StepContent({
 
                       {selections.colorPalette && selections.colorPalette.length > 0 && (
                         <div className="mt-4 p-4 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl bg-black/5 dark:bg-white/5 space-y-3">
-                          <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-500">
-                            Salvar Paleta Personalizada
-                          </label>
-                          <div className="flex gap-2">
+                          <div className="flex justify-between items-center">
+                            <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-500">
+                              Salvar Paleta Personalizada
+                            </label>
+                            <span className="text-[10px] text-zinc-400 font-mono">
+                              {selections.colorPalette.length} cores
+                            </span>
+                          </div>
+                          
+                          <div className="space-y-2">
                             <input 
                               type="text"
                               value={customPaletteName}
                               onChange={(e) => setCustomPaletteName(e.target.value)}
-                              placeholder="Dê um nome para a paleta..."
-                              className={`flex-1 px-3 py-2 text-xs rounded-xl border outline-none focus:ring-1 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
+                              placeholder="Nome da paleta (ex: Poster Infantil, Noite Neon...)"
+                              className={`w-full px-3.5 py-2.5 text-xs rounded-xl border outline-none focus:ring-1 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
                             />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (!customPaletteName.trim()) {
-                                  addToast('Por favor, digite um nome para a paleta.', 'error');
-                                  return;
-                                }
-                                onSaveCustomPalette(customPaletteName.trim(), selections.colorPalette);
-                                setCustomPaletteName('');
-                              }}
-                              className={`px-4 py-2 rounded-xl text-xs font-bold text-white transition-all ${themeClasses.accent}`}
-                            >
-                              Salvar
-                            </button>
+                            
+                            <div className="flex gap-2">
+                              <div className="relative flex-1">
+                                <input
+                                  type="text"
+                                  list="category-suggestions"
+                                  value={customPaletteCategory}
+                                  onChange={(e) => setCustomPaletteCategory(e.target.value)}
+                                  placeholder="Categoria (ex: Animação, Terror, Meus Projetos...)"
+                                  className={`w-full px-3.5 py-2.5 text-xs rounded-xl border outline-none focus:ring-1 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
+                                />
+                                <datalist id="category-suggestions">
+                                  <option value="Minhas Paletas" />
+                                  <option value="Animação & Infantil" />
+                                  <option value="Terror & Suspense" />
+                                  <option value="Sci-Fi & Futurista" />
+                                  <option value="Cinema & Drama" />
+                                  <option value="Fantasia & Clássicos" />
+                                  <option value="Natureza & Paisagens" />
+                                  <option value="Retrô & Épocas" />
+                                </datalist>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!customPaletteName.trim()) {
+                                    addToast('Por favor, digite um nome para a paleta.', 'error');
+                                    return;
+                                  }
+                                  onSaveCustomPalette(
+                                    customPaletteName.trim(), 
+                                    selections.colorPalette,
+                                    customPaletteCategory.trim() || 'Minhas Paletas'
+                                  );
+                                  setCustomPaletteName('');
+                                }}
+                                className={`px-5 py-2.5 rounded-xl text-xs font-bold text-white transition-all ${themeClasses.accent} shadow-md`}
+                              >
+                                Salvar
+                              </button>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -1273,75 +1358,203 @@ export function StepContent({
                 )}
 
                 {colorMode === 'presets' && (
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
-                      {[...customPalettes, ...COLOR_PALETTES].map((preset) => {
-                        const isSelected = selections.colorPaletteId === preset.id;
+                  <div className="space-y-4">
+                    {/* Barra de Busca e Ordenação */}
+                    <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+                      {/* Campo de Busca */}
+                      <div className="relative flex-1">
+                        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" />
+                        <input
+                          type="text"
+                          value={paletteSearchQuery}
+                          onChange={(e) => setPaletteSearchQuery(e.target.value)}
+                          placeholder="Buscar paleta por nome, categoria ou cor (#HEX)..."
+                          className={`w-full pl-9 pr-9 py-2.5 text-xs rounded-xl border outline-none focus:ring-2 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
+                        />
+                        {paletteSearchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => setPaletteSearchQuery('')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 p-0.5 rounded-full hover:bg-zinc-800 transition-colors"
+                            title="Limpar busca"
+                          >
+                            <X size={14} />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Botão de Ordenação */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setPaletteSortMode(prev => prev === 'recent' ? 'name' : 'recent')}
+                          className={`px-3 py-2.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-colors ${themeClasses.option} hover:bg-zinc-800/40`}
+                          title={paletteSortMode === 'recent' ? 'Ordenando por Mais Recentes' : 'Ordenando de A-Z'}
+                        >
+                          <ArrowUpDown size={13} className="text-indigo-400" />
+                          <span className="text-[11px]">
+                            {paletteSortMode === 'recent' ? 'Mais Recentes' : 'Nome (A-Z)'}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Pílulas de Filtro de Categorias */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 select-none scrollbar-thin">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPaletteCategory('all')}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 shrink-0 ${
+                          selectedPaletteCategory === 'all'
+                            ? themeClasses.optionActive + ' shadow-sm'
+                            : 'bg-zinc-800/40 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800'
+                        }`}
+                      >
+                        <span>Todas</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30 font-mono">
+                          {allPalettes.length}
+                        </span>
+                      </button>
+
+                      {customPalettes.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPaletteCategory('custom')}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 shrink-0 ${
+                            selectedPaletteCategory === 'custom'
+                              ? themeClasses.optionActive + ' shadow-sm'
+                              : 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20'
+                          }`}
+                        >
+                          <span>⭐ Minhas Salvas</span>
+                          <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-500/20 font-mono">
+                            {customPalettes.length}
+                          </span>
+                        </button>
+                      )}
+
+                      {availableCategories.map((cat) => {
+                        const count = allPalettes.filter(p => p.category === cat).length;
+                        const isSelected = selectedPaletteCategory === cat;
                         return (
-                          <div 
-                            key={preset.id}
-                            onClick={() => {
-                              setSelections((prev: any) => ({
-                                ...prev,
-                                colorPalette: preset.colors,
-                                colorPaletteId: preset.id
-                              }));
-                            }}
-                            className={`p-4 rounded-3xl border text-left cursor-pointer transition-all flex flex-col gap-3 group relative overflow-hidden ${
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => setSelectedPaletteCategory(cat)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 shrink-0 ${
                               isSelected
-                                ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/10'
-                                : themeClasses.option + ' hover:border-[#8b5a2b]/40'
+                                ? themeClasses.optionActive + ' shadow-sm font-bold'
+                                : 'bg-zinc-800/40 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800'
                             }`}
                           >
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <h3 className="font-bold text-sm flex items-center gap-2">
-                                  {preset.name}
-                                  {preset.id.startsWith('custom-') && (
-                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#8b5a2b]/10 text-[#8b5a2b] dark:bg-indigo-500/10 dark:text-indigo-400 font-bold border border-[#8b5a2b]/20 dark:border-indigo-500/20">
-                                      Custom
-                                    </span>
-                                  )}
-                                </h3>
-                                <p className="text-[10px] leading-tight opacity-60 mt-1">{preset.description}</p>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {preset.id.startsWith('custom-') && onDeleteCustomPalette && (
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onDeleteCustomPalette(preset.id);
-                                    }}
-                                    className="p-1 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 rounded transition-colors animate-in fade-in"
-                                    title="Excluir paleta"
-                                  >
-                                    <Trash2 size={14} />
-                                  </button>
-                                )}
-                                {isSelected && (
-                                  <div className="p-1 bg-[#8b5a2b] text-white rounded-full">
-                                    <Check size={12} />
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="flex h-8 rounded-xl overflow-hidden shadow-inner border border-black/10">
-                              {preset.colors.map((color, idx) => (
-                                <div key={idx} className="flex-1" style={{ backgroundColor: color }} />
-                              ))}
-                            </div>
-
-                            <div className="flex gap-2 items-center flex-wrap pt-1">
-                              {preset.colors.map((color, idx) => (
-                                <span key={idx} className="text-[8px] font-mono opacity-50 select-all">{color}</span>
-                              ))}
-                            </div>
-                          </div>
+                            <span>{cat}</span>
+                            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30 font-mono">
+                              {count}
+                            </span>
+                          </button>
                         );
                       })}
                     </div>
+
+                    {/* Grade de Paletas Filtradas */}
+                    {filteredPalettes.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
+                        {filteredPalettes.map((preset) => {
+                          const isSelected = selections.colorPaletteId === preset.id;
+                          return (
+                            <div 
+                              key={preset.id}
+                              onClick={() => {
+                                setSelections((prev: any) => ({
+                                  ...prev,
+                                  colorPalette: preset.colors,
+                                  colorPaletteId: preset.id
+                                }));
+                              }}
+                              className={`p-4 rounded-3xl border text-left cursor-pointer transition-all flex flex-col gap-3 group relative overflow-hidden ${
+                                isSelected
+                                  ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/10'
+                                  : themeClasses.option + ' hover:border-[#8b5a2b]/40'
+                              }`}
+                            >
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <h3 className="font-bold text-sm">
+                                      {preset.name}
+                                    </h3>
+                                    {preset.id.startsWith('custom-') && (
+                                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 font-bold border border-indigo-500/20">
+                                        Custom
+                                      </span>
+                                    )}
+                                    {preset.category && (
+                                      <span className="text-[9px] px-2 py-0.5 rounded-full bg-zinc-800/80 text-zinc-400 font-medium border border-zinc-700/60">
+                                        {preset.category}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-[10px] leading-tight opacity-60 mt-1">{preset.description}</p>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                  {preset.id.startsWith('custom-') && onDeleteCustomPalette && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onDeleteCustomPalette(preset.id);
+                                      }}
+                                      className="p-1.5 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 rounded-lg transition-colors"
+                                      title="Excluir paleta salva"
+                                    >
+                                      <Trash2 size={14} />
+                                    </button>
+                                  )}
+                                  {isSelected && (
+                                    <div className="p-1 bg-[#8b5a2b] text-white rounded-full">
+                                      <Check size={12} />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="flex h-8 rounded-xl overflow-hidden shadow-inner border border-black/10">
+                                {preset.colors.map((color, idx) => (
+                                  <div key={idx} className="flex-1" style={{ backgroundColor: color }} />
+                                ))}
+                              </div>
+
+                              <div className="flex gap-2 items-center flex-wrap pt-1">
+                                {preset.colors.map((color, idx) => (
+                                  <span key={idx} className="text-[8px] font-mono opacity-50 select-all">{color}</span>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      /* Estado Vazio */
+                      <div className="flex flex-col items-center justify-center p-8 bg-black/5 dark:bg-white/5 rounded-3xl border border-dashed border-zinc-300 dark:border-zinc-800 text-center py-12 space-y-3">
+                        <Filter size={32} className="text-zinc-500 opacity-60" />
+                        <div>
+                          <h4 className="text-xs font-bold text-zinc-300">Nenhuma paleta encontrada</h4>
+                          <p className="text-[11px] text-zinc-500 mt-0.5">
+                            Não encontramos nenhuma paleta correspondente à sua busca ou filtro selecionado.
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPaletteSearchQuery('');
+                            setSelectedPaletteCategory('all');
+                          }}
+                          className="text-xs font-bold text-indigo-400 hover:text-indigo-300 underline underline-offset-4"
+                        >
+                          Limpar busca e filtros
+                        </button>
+                      </div>
+                    )}
 
                     {selections.colorPaletteId && selections.colorPaletteId !== 'custom' && (
                       <div className="flex gap-3">
