@@ -4,8 +4,8 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette, Search, Filter, ArrowUpDown, Tag } from "lucide-react";
-import { Option, Step, SelectionState, ColorPaletteOption } from "../types";
+import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette, Search, Filter, ArrowUpDown, Tag, Lock, Info } from "lucide-react";
+import { Option, Step, SelectionState, ColorPaletteOption, CharacterLockState } from "../types";
 import { STYLES, COLOR_PALETTES, VISUAL_TAGS, LUTS, GRADING_TECHNIQUES } from "../data/constants";
 import React, { useState, useEffect, useMemo } from "react";
 import { fetchImageAsDataUrl } from "../services/imageService";
@@ -41,6 +41,8 @@ interface StepContentProps {
   handleAskMasterDirector?: (val: string) => void;
   setShowPremiumUpgradeModal?: (val: boolean) => void;
   setMasterExplanation?: (val: any) => void;
+  characterLock?: CharacterLockState;
+  setCharacterLock?: React.Dispatch<React.SetStateAction<CharacterLockState>>;
 }
 
 export function StepContent({
@@ -72,7 +74,9 @@ export function StepContent({
   masterExplanation = null,
   handleAskMasterDirector = () => {},
   setShowPremiumUpgradeModal = () => {},
-  setMasterExplanation = () => {}
+  setMasterExplanation = () => {},
+  characterLock,
+  setCharacterLock
 }: StepContentProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>('1. Pintura Tradicional');
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
@@ -500,6 +504,145 @@ export function StepContent({
                     {isTranslating ? 'Traduzindo...' : 'Traduzir para Inglês'}
                   </button>
                 </div>
+              </div>
+
+              {/* Character Blueprint Lock (Consistência por Prancha de Construção) */}
+              <div className={`p-6 rounded-3xl border transition-all duration-300 relative overflow-hidden ${
+                characterLock?.enabled
+                  ? theme === 'dark'
+                    ? 'bg-gradient-to-br from-cyan-950/40 via-zinc-900/90 to-blue-950/30 border-cyan-500/50 shadow-lg shadow-cyan-950/30'
+                    : 'bg-gradient-to-br from-cyan-50 via-white to-blue-50 border-cyan-600/40 shadow-md'
+                  : theme === 'dark'
+                    ? 'bg-zinc-900/40 border-zinc-800'
+                    : 'bg-white/60 border-zinc-200'
+              }`}>
+                {characterLock?.enabled && (
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+                )}
+
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
+                      characterLock?.enabled
+                        ? 'bg-cyan-500 text-zinc-950 shadow-md shadow-cyan-500/30 font-bold'
+                        : 'bg-zinc-800/60 text-zinc-400'
+                    }`}>
+                      <Lock size={20} className={characterLock?.enabled ? 'animate-pulse' : ''} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-base flex items-center gap-2">
+                          Character Blueprint Lock
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 font-mono font-bold uppercase tracking-wider">
+                            Prancha de Construção
+                          </span>
+                        </h3>
+                      </div>
+                      <p className={`${themeClasses.textMuted} text-xs mt-0.5`}>
+                        Força o gerador a usar a imagem da prancha como autoridade anatômica absoluta antes de criar a cena.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Toggle Switch */}
+                  <button
+                    type="button"
+                    onClick={() => setCharacterLock?.(prev => ({ ...prev, enabled: !prev.enabled }))}
+                    className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      characterLock?.enabled ? 'bg-cyan-500' : 'bg-zinc-700/50'
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                        characterLock?.enabled ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Controles expandidos quando ativado */}
+                {characterLock?.enabled && (
+                  <div className="space-y-4 pt-4 border-t border-cyan-500/20 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Nome do Personagem */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 opacity-80">
+                          Nome do Personagem (opcional)
+                        </label>
+                        <input
+                          type="text"
+                          value={characterLock.characterName}
+                          onChange={(e) => setCharacterLock?.(prev => ({ ...prev, characterName: e.target.value }))}
+                          placeholder="Ex: Nina, Detetive Miller..."
+                          className={`w-full px-4 py-2.5 rounded-xl border outline-none text-sm ${themeClasses.input} focus:ring-2 focus:ring-cyan-500/30`}
+                        />
+                      </div>
+
+                      {/* Nível de Fidelidade (Strict vs Balanced) */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 opacity-80">
+                          Nível de Fidelidade à Prancha
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setCharacterLock?.(prev => ({ ...prev, fidelity: 'strict' }))}
+                            className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border ${
+                              characterLock.fidelity === 'strict'
+                                ? 'bg-cyan-500 text-zinc-950 border-cyan-400 shadow-sm'
+                                : 'bg-black/10 border-black/5 hover:bg-black/20 text-zinc-400'
+                            }`}
+                          >
+                            🔒 STRICT (100%)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setCharacterLock?.(prev => ({ ...prev, fidelity: 'balanced' }))}
+                            className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border ${
+                              characterLock.fidelity === 'balanced'
+                                ? 'bg-cyan-500 text-zinc-950 border-cyan-400 shadow-sm'
+                                : 'bg-black/10 border-black/5 hover:bg-black/20 text-zinc-400'
+                            }`}
+                          >
+                            ⚖️ BALANCED
+                          </button>
+                        </div>
+                        <p className="text-[10px] text-zinc-400 mt-1">
+                          {characterLock.fidelity === 'strict'
+                            ? 'Fidelidade estrutural máxima: proporções, crânio e linhas de construção rígidas.'
+                            : 'Fidelidade anatômica com adaptação fluida a poses e luzes dinâmicas.'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Traços Obrigatórios / Distinctive Features */}
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 opacity-80">
+                        Traços Obrigatórios a Preservar (opcional)
+                      </label>
+                      <input
+                        type="text"
+                        value={characterLock.distinctiveFeatures || ''}
+                        onChange={(e) => setCharacterLock?.(prev => ({ ...prev, distinctiveFeatures: e.target.value }))}
+                        placeholder="Ex: cicatriz no supercílio, orelhas pontudas, mecha branca no cabelo, óculos redondos..."
+                        className={`w-full px-4 py-2.5 rounded-xl border outline-none text-xs ${themeClasses.input} focus:ring-2 focus:ring-cyan-500/30`}
+                      />
+                    </div>
+
+                    {/* Guia Rápido de Uso nos Geradores */}
+                    <div className="p-3.5 rounded-2xl bg-cyan-950/20 border border-cyan-500/20 text-xs space-y-2">
+                      <div className="flex items-center gap-1.5 font-bold text-cyan-400">
+                        <Info size={14} />
+                        <span>Como usar a Prancha nos Geradores de Imagem:</span>
+                      </div>
+                      <ul className="list-disc list-inside text-[11px] text-zinc-300 space-y-1 opacity-90 leading-relaxed">
+                        <li><strong>Midjourney:</strong> Anexe o link da prancha no prompt ou utilize como referência com <code className="text-cyan-300 font-mono">--cref &lt;URL&gt;</code>.</li>
+                        <li><strong>FLUX / Stable Diffusion / Fooocus:</strong> Coloque a prancha no campo de <em>Image Prompt / IP-Adapter</em> e use o prompt do ShotCraft como prompt positivo.</li>
+                        <li><strong>ChatGPT / DALL-E:</strong> Basta fazer upload da sua prancha no chat e colar o prompt completo gerado pelo ShotCraft.</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Diretor Master Premium */}

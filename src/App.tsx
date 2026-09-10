@@ -26,7 +26,7 @@ import {
 import { GoogleGenAI } from "@google/genai";
 
 // Types
-import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step, ColorPaletteOption, UserAccount, GalleryItem } from './types';
+import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step, ColorPaletteOption, UserAccount, GalleryItem, CharacterLockState } from './types';
 
 // Constants
 import {
@@ -35,6 +35,7 @@ import {
   PRESETS, AUTO_COMBINATIONS, LUTS, GRADING_TECHNIQUES,
   INITIAL_GALLERY
 } from './data/constants';
+import { buildCharacterBlueprintPrompt, DEFAULT_CHARACTER_LOCK_STATE } from './data/characterConsistency';
 
 // Services
 import { dataService } from './services/dataService';
@@ -99,6 +100,7 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<'builder' | 'library' | 'gallery'>('builder');
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [subject, setSubject] = useState<string>('A mysterious detective standing in the rain');
+  const [characterLock, setCharacterLock] = useState<CharacterLockState>(DEFAULT_CHARACTER_LOCK_STATE);
   const [negativePrompt, setNegativePrompt] = useState<string>('');
   const [mode, setMode] = useState<ShotMode>('cinematic');
   const [theme, setTheme] = useState<Theme>('dark');
@@ -588,7 +590,8 @@ export default function App() {
     const newPreset: UserPreset = {
       name: newPresetName.trim(),
       selections: { ...selections },
-      subject: subject
+      subject: subject,
+      characterLock: { ...characterLock }
     };
     setUserPresets(prev => [...prev, newPreset]);
     setNewPresetName('');
@@ -598,6 +601,7 @@ export default function App() {
 
   const handleReset = () => {
     setSubject('A mysterious detective standing in the rain');
+    setCharacterLock(DEFAULT_CHARACTER_LOCK_STATE);
     setNegativePrompt('');
     setSelections({
       framing: '',
@@ -637,6 +641,12 @@ export default function App() {
 
   const finalPrompt = useMemo(() => {
     const parts = [];
+
+    if (characterLock.enabled) {
+      const blueprintProtocol = buildCharacterBlueprintPrompt(characterLock);
+      if (blueprintProtocol) parts.push(blueprintProtocol);
+    }
+
     if (subject) parts.push(subject);
 
     const framing = SHOT_TYPES.find(o => o.id === selections.framing)?.prompt;
@@ -703,7 +713,7 @@ export default function App() {
     }
 
     return parts.filter(Boolean).join(', ');
-  }, [subject, selections, mode, customAspect, negativePrompt]);
+  }, [subject, selections, mode, customAspect, negativePrompt, characterLock]);
 
   const fallbackCopyTextToClipboard = (text: string) => {
     try {
@@ -882,6 +892,8 @@ export default function App() {
                 handleAskMasterDirector={handleAskMasterDirector}
                 setShowPremiumUpgradeModal={setShowPremiumUpgradeModal}
                 setMasterExplanation={setMasterExplanation}
+                characterLock={characterLock}
+                setCharacterLock={setCharacterLock}
               />
 
               <NegativePrompt
@@ -897,12 +909,18 @@ export default function App() {
                 isSaving={isSaving} setIsSaving={setIsSaving}
                 newPresetName={newPresetName} setNewPresetName={setNewPresetName}
                 handleSavePreset={handleSavePreset} themeClasses={themeClasses}
+                characterLock={characterLock}
               />
 
               <UserPresets
                 userPresets={userPresets} loadUserPreset={(p) => {
                   setSelections(sanitizeSelections(p.selections));
                   setSubject(p.subject);
+                  if (p.characterLock) {
+                    setCharacterLock(p.characterLock);
+                  } else {
+                    setCharacterLock(DEFAULT_CHARACTER_LOCK_STATE);
+                  }
                   addToast('Preset carregado!', 'info');
                 }}
                 deleteUserPreset={(idx) => {

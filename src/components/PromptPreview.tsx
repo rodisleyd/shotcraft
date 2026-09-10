@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Copy, Check, Sparkles, Save, X } from 'lucide-react';
-import { UserPreset } from '../types';
+import { Copy, Check, Sparkles, Save, X, Lock } from 'lucide-react';
+import { UserPreset, CharacterLockState } from '../types';
 
 interface PromptPreviewProps {
   finalPrompt: string;
@@ -16,6 +16,7 @@ interface PromptPreviewProps {
   setNewPresetName: (val: string) => void;
   handleSavePreset: () => void;
   themeClasses: any;
+  characterLock?: CharacterLockState;
 }
 
 export function PromptPreview({
@@ -27,7 +28,8 @@ export function PromptPreview({
   newPresetName,
   setNewPresetName,
   handleSavePreset,
-  themeClasses
+  themeClasses,
+  characterLock
 }: PromptPreviewProps) {
   return (
     <div className={`border rounded-3xl p-8 transition-colors ${themeClasses.card} shadow-xl`}>
@@ -46,6 +48,18 @@ export function PromptPreview({
            </button>
         </div>
       </div>
+
+      {characterLock?.enabled && (
+        <div className="mb-4 flex items-center justify-between px-3 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold">
+          <div className="flex items-center gap-2">
+            <Lock size={13} className="text-cyan-400" />
+            <span>Character Blueprint: <strong className="text-cyan-300">{characterLock.characterName || 'Ativo'}</strong></span>
+          </div>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono uppercase tracking-wider font-bold">
+            {characterLock.fidelity}
+          </span>
+        </div>
+      )}
 
       <div className={`p-6 rounded-2xl border mb-6 relative group min-h-[120px] max-h-[300px] overflow-y-auto transition-all ${themeClasses.bg} scrollbar-thin scrollbar-thumb-zinc-400 scrollbar-track-transparent`}>
         <p className="text-sm leading-relaxed font-medium break-words italic opacity-90">

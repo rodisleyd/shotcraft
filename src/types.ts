@@ -40,10 +40,18 @@ export interface SelectionState {
   };
 }
 
+export interface CharacterLockState {
+  enabled: boolean;
+  characterName: string;
+  fidelity: 'strict' | 'balanced';
+  distinctiveFeatures?: string;
+}
+
 export interface UserPreset {
   name: string;
   selections: SelectionState;
   subject: string;
+  characterLock?: CharacterLockState;
 }
 
 export interface HistoryItem {
