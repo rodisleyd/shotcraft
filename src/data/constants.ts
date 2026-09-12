@@ -478,6 +478,208 @@ export const STYLES: Option[] = [
   { id: 'origami-branco-elegante', label: 'Origami Branco Elegante', prompt: 'white paper origami sculpture, monochromatic folded paper art, elegant geometric folds, luxury papercraft aesthetic, soft studio shadows, paper fibers visible, realistic fold tension, layered paper thickness, subtle paper imperfections', category: 'style', subCategory: '14. Origami e Papercraft' },
   { id: 'origami-low-poly', label: 'Origami Low Poly', prompt: 'origami low poly fusion style, polygonal folded paper construction, sharp geometric edges, stylized paper sculpture aesthetic, paper fibers visible, realistic fold tension, layered paper thickness, subtle paper imperfections', category: 'style', subCategory: '14. Origami e Papercraft' },
   { id: 'craft-art-japan', label: 'Craft Art Japan', prompt: 'style of textured papercraft sculpture with sharp geometric creases and origami-inspired folds, matte cardstock paper texture showing fine grain, soft studio lighting with delicate 3D shadows, shallow depth of field, minimalist clean background.', category: 'style', subCategory: '14. Origami e Papercraft', image: '/images/styles/craft-art-japan.png' },
+
+  // 15. Tipografia & Texturas de Texto
+  { 
+    id: 'tipo-patch-bordado', 
+    label: 'Patch Bordado (Bordado em Relevo)', 
+    prompt: 'strictly apply a 3D embroidered patch texture directly onto the typography and text layout of the reference image. Preserve the exact wording, letters, contour shape, and composition. The text is transformed into a high-density embroidered textile patch with vibrant satin-stitch threads, tactile thread weave direction following the letter curves, raised 3D puffy foam underlay (puffy embroidery), surrounded by a clean Merrowed stitched border on fabric backing. Realistic thread sheen, macro textile photography, studio lighting with soft cast shadows.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-patch-bordado.png' 
+  },
+  { 
+    id: 'tipo-plastico-pastel', 
+    label: 'Plástico 3D Pastel (Inflável)', 
+    prompt: 'strictly apply a smooth 3D molded pastel plastic texture directly onto the typography of the reference image. Preserve the exact letters, font silhouettes, and kerning. The letters are transformed into extruded rounded plastic shapes with soft inflated contours, vibrant pastel candy colors, satin-gloss surface finish with gentle highlights, tactile rubbery plastic feel, subtle beveled edges, realistic studio lighting, clean minimal background.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-plastico-pastel.png' 
+  },
+  { 
+    id: 'tipo-couro-pespontado', 
+    label: 'Couro Pespontado (Costurado)', 
+    prompt: 'strictly convert the typography and text of the reference image into heavy stitched embossed leather. Keep the exact letter anatomy and composition intact. The letters are crafted from rich brown full-grain textured leather with realistic organic leather pores and natural grain. Accented with thick contrast perimeter saddle stitching (pesponto) with heavy wax thread running precisely along every contour edge. Deep embossed bevels, subtle wear patina, macro photography, directional warm studio lighting with realistic cast shadows.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-couro-pespontado.png' 
+  },
+  { 
+    id: 'tipo-tinta-escorrendo', 
+    label: 'Tinta Preta Escorrendo (Glossy Drip)', 
+    prompt: 'strictly apply a wet dripping glossy black plastic paint effect directly onto the typography of the reference image. Maintain the core legible structure of the letters while adding authentic visceral street-art paint drips, oozing wet glossy black liquid droplets running down from the bottom of each letter. High-gloss specular reflections, viscous liquid volume, smooth rounded edges, sharp street typography aesthetic, intense contrast against background.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-tinta-escorrendo.png' 
+  },
+  { 
+    id: 'tipo-pelucia-teddy', 
+    label: 'Pelúcia Teddy Bear (Feltro)', 
+    prompt: 'strictly transform the typography and text of the reference image into a soft plush teddy bear textile. Preserve the exact letter shapes and layout. The letters are made of fluffy beige and brown teddy bear sherpa fleece, soft fuzzy felt and fabric textures, handcrafted stitched seams, charming stuffed toy aesthetic with embroidered paw print accents, volumetric soft stuffing, warm cozy diffuse lighting, macro toy photography.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-pelucia-teddy.png' 
+  },
+  { 
+    id: 'tipo-adesivo-cromado', 
+    label: 'Adesivo Cromado (Chrome Foil)', 
+    prompt: 'strictly apply an ultra-reflective liquid chrome sticker texture directly onto the typography of the reference image. Retain the exact letter curves and lettering flow. The typography is transformed into molten polished mirrored chrome with high-contrast liquid metallic reflections, fluid specular glares, surrounded by a distinct white die-cut sticker border and drop shadow, clean 3D chrome sticker aesthetic.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-adesivo-cromado.png' 
+  },
+  { 
+    id: 'tipo-areia-conchas', 
+    label: 'Areia e Conchas do Mar', 
+    prompt: 'strictly convert the typography and text of the reference image into a coastal beach sand and seashell sculpture. Retain the precise letter shapes and layout. The letters are made of wet compacted beach sand mixed with colorful miniature natural seashells, delicate sea stars, and polished coastal pebbles embedded into the surface. Tactile granular sand texture, organic beach ocean aesthetic, bright sunny coastal lighting with gentle shadows.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-areia-conchas.png' 
+  },
+  { 
+    id: 'tipo-balao-rosa', 
+    label: 'Balão Rosa Inflável (Glossy Pink)', 
+    prompt: 'strictly transform the typography of the reference image into glossy inflatable pink balloon lettering. Keep the exact text and letter contours. Render the letters as smooth, inflated tubular bubblegum pink balloons with high-gloss mirror reflections, plump rounded volumes, air tension wrinkles near joints, soft subsurface scattering, clean studio lighting with vibrant specular highlights.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-balao-rosa.png' 
+  },
+  { 
+    id: 'tipo-la-tricotada', 
+    label: 'Novelo de Lã Tricotado', 
+    prompt: 'strictly convert the typography and text of the reference image into chunky knitted yarn and wool. Preserve the exact letterforms and structure. The letters are meticulously hand-wound and crocheted from soft blue wool yarn with visible twisted fiber strands, intricate interlocking knit stitches, soft tactile fuzzy yarn fuzz, volumetric depth, soft studio illumination, cozy handmade craftsmanship.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-la-tricotada.png' 
+  },
+  { 
+    id: 'tipo-comic-bubble', 
+    label: 'Bubble Graffiti Retrô (HQ)', 
+    prompt: 'strictly apply a 90s retro comic bubble graffiti sticker style to the typography of the reference image. Preserve the exact words and lettering arrangement. The letters are transformed into bulbous puffy bubble text with bold black comic outlines, vibrant rainbow pastel color gradient fills, playful glossy liquid bubble highlights, and a thick white die-cut sticker border, authentic vintage comic book graffiti aesthetic.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-comic-bubble.png' 
+  },
+  { 
+    id: 'tipo-favo-mel', 
+    label: 'Favo de Mel & Abelha', 
+    prompt: 'strictly convert the typography and text of the reference image into a natural golden honeycomb structure. Preserve the exact silhouette and reading of the letters. The letters are formed from authentic hexagonal beeswax cells filled with golden translucent honey, with luscious viscous honey drips oozing and dripping from the bottom tips. Featuring a realistic honeybee perched naturally on the upper edge, glossy specular refractions, macro nature photography lighting.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-favo-mel.png' 
+  },
+  { 
+    id: 'tipo-gelatina-gummy', 
+    label: 'Goma de Gelatina (Gummy Candy)', 
+    prompt: 'strictly apply a translucent gummy candy jelly texture directly onto the typography of the reference image. Retain the letter structure and rounded contours. The letters are cast in translucent emerald green gummy candy with a soft chewy jelly body, subtle light refraction, dusted with fine sparkling white sugar crystals across the surface, delicious tactile candy appearance, backlight showing translucency.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-gelatina-gummy.png' 
+  },
+  { 
+    id: 'tipo-oleo-arcoiris', 
+    label: 'Pincelada a Óleo Arco-Íris', 
+    prompt: 'strictly transform the typography and lettering of the reference image into thick impasto oil paint brushstrokes. Maintain the recognized contours and flow of the text. Rendered as heavy wet oil paint strokes squeezed directly from tubes, blending vibrant multi-colored rainbow pigments (red, orange, yellow, green, blue, purple) with dynamic bristle marks, paint ridges, and glossy wet paint drips, expressive painterly typography.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-oleo-arcoiris.png' 
+  },
+  { 
+    id: 'tipo-balao-dourado', 
+    label: 'Balão Metalizado Dourado', 
+    prompt: 'strictly transform the typography and numbers of the reference image into realistic 3D metallic gold foil balloons. Preserve the exact lettering shape and proportions. Crafted as inflated shiny metallic Mylar foil balloons in polished rich 18k yellow gold, featuring soft pneumatic seams, realistic balloon creases along the corners, warm studio reflections, luxurious celebratory aesthetic.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-balao-dourado.png' 
+  },
+  { 
+    id: 'tipo-calda-morango', 
+    label: 'Calda de Morango Translúcida', 
+    prompt: 'strictly apply a melting translucent strawberry syrup and jelly drip texture onto the typography of the reference image. Retain the recognizable letter anatomy. The letters are shaped from glowing translucent ruby-pink fruit syrup with heavy viscous melting drips running downwards, internal micro air bubbles, glossy liquid surface caustics, vibrant appetizing confectionary lighting.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-calda-morango.png' 
+  },
+  { 
+    id: 'tipo-vidro-fosco', 
+    label: 'Vidro Fosco Degradê (Silicone)', 
+    prompt: 'strictly convert the typography of the reference image into frosted matte gradient glass and translucent silicone. Keep the exact letter proportions and typography intact. Rendered with a silky smooth sandblasted matte texture, elegant two-tone cyan and mint gradient transition, soft internal light diffusion, subsurface scattering, elegant minimalist Scandinavian graphic design aesthetic.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-vidro-fosco.png' 
+  },
+  { 
+    id: 'tipo-nuvens-ceu', 
+    label: 'Nuvens no Céu Azul', 
+    prompt: 'strictly transform the typography and text of the reference image into realistic fluffy white cumulus clouds in a bright blue sky. Preserve the exact text layout and legibility. The letters are naturally shaped by dense billowing cloud wisps, soft cottony vapor edges, realistic atmospheric sunlight illuminating the top edges with delicate cast shadows beneath, serene blue sky background.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-nuvens-ceu.png' 
+  },
+  { 
+    id: 'tipo-splash-agua', 
+    label: 'Splash de Água Líquida', 
+    prompt: 'strictly sculpt the typography and lettering of the reference image out of dynamic splashing crystal-clear water. Preserve the legible silhouette of the text. The letters are formed by swirling fluid liquid water, turbulent splash waves, crisp water droplets, and energetic fluid crests frozen in high-speed photography, pure refraction and caustics with crisp azure blue highlights.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-splash-agua.png' 
+  },
+  { 
+    id: 'tipo-espuma-puff', 
+    label: 'Espuma 3D Inflada (Puff)', 
+    prompt: 'strictly convert the typography and text of the reference image into a soft 3D puffy foam and inflated matte rubber. Keep the exact bold lettering shapes. The letters feature bulbous inflated rounded volumes with a smooth matte powdery finish, subtle bevels, soft clay-like cushion feel, gentle diffuse shadows, modern 3D typographic render.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-espuma-puff.png' 
+  },
+  { 
+    id: 'tipo-penas-brancas', 
+    label: 'Penas Brancas Fofas', 
+    prompt: 'strictly transform the typography and numbers of the reference image into a sculpture made entirely of soft white down feathers. Preserve the exact silhouette and curves. Covered in thousands of delicate, lightweight goose down feathers and fine plumage, with soft wispy barbules flaring gently at the edges, gentle clean lighting, ethereal tactile softness.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-penas-brancas.png' 
+  },
+  { 
+    id: 'tipo-trico-colorido', 
+    label: 'Tricô Trançado Colorido', 
+    prompt: 'strictly convert the typography of the reference image into chunky braided crochet knitwear. Preserve the exact letterform anatomy. The letter is constructed from thick woolen cable-knit braids arranged in distinct vibrant color blocks (red, yellow, green, blue), with heavy textured yarn stitches, visible knitted ribs, warm tactile fiber realism, studio macro lighting.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-trico-colorido.png' 
+  },
+  { 
+    id: 'tipo-cristal-gelo', 
+    label: 'Cristais de Gelo / Diamante', 
+    prompt: 'strictly transform the typography and script of the reference image into sparkling crushed ice and carved crystal diamonds. Preserve the exact fluid cursive or lettering contours. Rendered in ultra-clear fractured crystal glass and ice with razor-sharp refractive facets, prismatic internal light dispersion, glowing bright white reflections against an atmospheric dark background, luxury crystalline typography.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-cristal-gelo.png' 
+  },
+  { 
+    id: 'tipo-arame-farpado', 
+    label: 'Arame Farpado Trançado', 
+    prompt: 'strictly sculpt the typography of the reference image entirely from tightly wound industrial barbed wire. Preserve the recognizable letter structure. Constructed from twisted high-tensile galvanized steel wire strands with sharp protruding metallic barbs and razor spikes radiating outward, realistic metallic sheen, subtle industrial rust patina, dramatic harsh lighting with sharp shadows.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-arame-farpado.png' 
+  },
+  { 
+    id: 'tipo-blocos-pixel', 
+    label: 'Blocos Pixel / Lego', 
+    prompt: 'strictly convert the typography and text of the reference image into modular plastic pixel bricks and Lego-style building blocks. Preserve the exact text reading and alignment. The letters are constructed from interlocking square plastic voxel cubes in crisp white, black, blue, and yellow with clean geometric studs, smooth plastic reflections, and authentic toy brick seam lines.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-blocos-pixel.png' 
+  },
+  { 
+    id: 'tipo-veludo-rosa', 
+    label: 'Veludo Acolchoado Rosa', 
+    prompt: 'strictly transform the typography of the reference image into a plump stuffed pink velvet plush cushion. Preserve the exact letter silhouette. Rendered in thick, luxurious rose-pink velvet fabric with soft nap, subtle directional sheen, plush stuffed rounded volume, neat perimeter piping and seam stitching, tactile softness under cozy studio lighting.', 
+    category: 'style', 
+    subCategory: '15. Tipografia & Texturas de Texto', 
+    image: '/images/styles/tipo-veludo-rosa.png' 
+  },
 ];
 
 export const DETAILS: Option[] = [
