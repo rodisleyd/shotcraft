@@ -58,21 +58,21 @@ export const SHOT_TYPES: Option[] = [
 
 export const ANGLES: Option[] = [
   // 1. Ângulos Básicos
-  { id: 'eye-level', label: 'Nível do Olhar', prompt: 'eye-level angle', category: 'angle', subCategory: '1. Ângulos Básicos' },
-  { id: 'low', label: 'Ângulo Baixo (Contra-Plongée)', prompt: 'extreme low-angle shot, dynamic Dutch angle, dramatic worm\'s-eye view, intense visual foreshortening, action-oriented perspective looking up, radiating motion lines, wide-angle cinematic framing', category: 'angle', subCategory: '1. Ângulos Básicos' },
-  { id: 'high', label: 'Ângulo Alto (Plongée)', prompt: 'high angle, looking down', category: 'angle', subCategory: '1. Ângulos Básicos' },
-  { id: 'shoulder-level', label: 'Nível do Ombro', prompt: 'shoulder level camera angle', category: 'angle', subCategory: '1. Ângulos Básicos' },
-  { id: 'hip-level', label: 'Nível do Quadril', prompt: 'hip level camera angle', category: 'angle', subCategory: '1. Ângulos Básicos' },
+  { id: 'eye-level', label: 'Nível do Olhar', prompt: 'eye-level angle', category: 'angle', subCategory: '1. Ângulos Básicos', image: '/images/angulos/eye-level.png' },
+  { id: 'low', label: 'Ângulo Baixo (Contra-Plongée)', prompt: 'extreme low-angle shot, dynamic Dutch angle, dramatic worm\'s-eye view, intense visual foreshortening, action-oriented perspective looking up, radiating motion lines, wide-angle cinematic framing', category: 'angle', subCategory: '1. Ângulos Básicos', image: '/images/angulos/low.png' },
+  { id: 'high', label: 'Ângulo Alto (Plongée)', prompt: 'high angle, looking down', category: 'angle', subCategory: '1. Ângulos Básicos', image: '/images/angulos/high.png' },
+  { id: 'shoulder-level', label: 'Nível do Ombro', prompt: 'shoulder level camera angle', category: 'angle', subCategory: '1. Ângulos Básicos', image: '/images/angulos/shoulder-level.png' },
+  { id: 'hip-level', label: 'Nível do Quadril', prompt: 'hip level camera angle', category: 'angle', subCategory: '1. Ângulos Básicos', image: '/images/angulos/hip-level.png' },
 
   // 2. Ângulos Verticais
-  { id: 'top', label: 'Top Shot', prompt: 'top-down vertical shot', category: 'angle', subCategory: '2. Ângulos Verticais' },
-  { id: 'overhead', label: 'Overhead', prompt: 'overhead shot', category: 'angle', subCategory: '2. Ângulos Verticais' },
-  { id: 'birds-eye', label: 'Vista de Pássaro (90 Graus)', prompt: "bird's eye view shot", category: 'angle', subCategory: '2. Ângulos Verticais' },
-  { id: 'worms-eye', label: 'Vista de Verme (90 Graus de Baixo)', prompt: "worm's eye view, looking straight up", category: 'angle', subCategory: '2. Ângulos Verticais' },
+  { id: 'top', label: 'Top Shot', prompt: 'top-down vertical shot', category: 'angle', subCategory: '2. Ângulos Verticais', image: '/images/angulos/top.png' },
+  { id: 'overhead', label: 'Overhead', prompt: 'overhead shot', category: 'angle', subCategory: '2. Ângulos Verticais', image: '/images/angulos/overhead.png' },
+  { id: 'birds-eye', label: 'Vista de Pássaro (90 Graus)', prompt: "bird's eye view shot", category: 'angle', subCategory: '2. Ângulos Verticais', image: '/images/angulos/birds-eye.png' },
+  { id: 'worms-eye', label: 'Vista de Verme (90 Graus de Baixo)', prompt: "worm's eye view, looking straight up", category: 'angle', subCategory: '2. Ângulos Verticais', image: '/images/angulos/worms-eye.png' },
 
   // 3. Ângulos Dramáticos
-  { id: 'dutch', label: 'Ângulo Holandês (Dutch Angle)', prompt: 'dutch angle, tilted frame', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
-  { id: 'dynamic-tilt', label: 'Dynamic Tilt (Inclinação Dinâmica)', prompt: 'dynamic tilt angle, extremely canted framing, dramatic skewed camera', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
+  { id: 'dutch', label: 'Ângulo Holandês (Dutch Angle)', prompt: 'dutch angle, tilted frame', category: 'angle', subCategory: '3. Ângulos Dramáticos', image: '/images/angulos/dutch.png' },
+  { id: 'dynamic-tilt', label: 'Dynamic Tilt (Inclinação Dinâmica)', prompt: 'dynamic tilt angle, extremely canted framing, dramatic skewed camera', category: 'angle', subCategory: '3. Ângulos Dramáticos', image: '/images/angulos/dynamic-tilt.png' },
   { id: 'extreme-low', label: 'Extreme Low Angle (Câmera no Chão)', prompt: 'extreme low angle shot, ground level camera angle', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
   { id: 'contra-plongee-extremo', label: 'Contra-Plongée Extremo', prompt: 'extreme low-angle shot, shot from a very low ground-level perspective looking up, dramatic upward camera angle, vertical perspective convergence, dynamic perspective pointing up', category: 'angle', subCategory: '3. Ângulos Dramáticos', image: '/images/enquadramentos/contra-plongee-extremo.png' },
   { id: 'extreme-high', label: 'Extreme High Angle (Câmera Muito Alta)', prompt: 'extreme high angle view, looking straight down from high altitude', category: 'angle', subCategory: '3. Ângulos Dramáticos' },
