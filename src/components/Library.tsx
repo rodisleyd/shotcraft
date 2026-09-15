@@ -100,17 +100,14 @@ export function Library({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleShare = async (data: { title: string; text: string; url?: string }) => {
-    const fullText = `${data.title}\n\n${data.text}\n\n🎬 Criado no ShotCraft: ${window.location.origin}`;
-    
+  const handleShare = async (promptText: string) => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: data.title,
-          text: fullText,
-          url: window.location.origin,
+          title: 'Prompt',
+          text: promptText,
         });
-        addToast('Compartilhado com sucesso!', 'success');
+        addToast('Prompt compartilhado!', 'success');
         return;
       } catch (err: any) {
         if (err.name === 'AbortError') return;
@@ -119,14 +116,14 @@ export function Library({
 
     try {
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(fullText);
+        await navigator.clipboard.writeText(promptText);
       } else {
-        fallbackCopyTextToClipboard(fullText);
+        fallbackCopyTextToClipboard(promptText);
       }
-      addToast('Informações copiadas! Pronto para compartilhar.', 'success');
+      addToast('Prompt copiado para compartilhar!', 'success');
     } catch (err) {
-      fallbackCopyTextToClipboard(fullText);
-      addToast('Informações copiadas! Pronto para compartilhar.', 'success');
+      fallbackCopyTextToClipboard(promptText);
+      addToast('Prompt copiado para compartilhar!', 'success');
     }
   };
 
@@ -321,15 +318,11 @@ export function Library({
                     <button
                       type="button"
                       translate="no"
-                      onClick={() => handleShare({
-                        title: `ShotCraft - ${item.label}`,
-                        text: `🎬 Parâmetro ShotCraft: ${item.label}\n\nPrompt:\n"${item.prompt}"`,
-                        url: getImagePath(item)
-                      })}
+                      onClick={() => handleShare(item.prompt)}
                       className={`p-2 rounded-xl border text-[10px] font-bold flex items-center justify-center gap-1 transition-all notranslate ${
                         themeClasses.option + ' hover:border-indigo-500/20'
                       }`}
-                      title="Compartilhar parâmetro"
+                      title="Compartilhar prompt"
                     >
                       <Share2 size={12} />
                     </button>
@@ -392,13 +385,9 @@ export function Library({
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    onClick={() => handleShare({
-                      title: `ShotCraft - ${selectedZoomImage.label}`,
-                      text: `🎬 Parâmetro ShotCraft: ${selectedZoomImage.label}\n\nPrompt:\n"${selectedZoomImage.prompt}"`,
-                      url: selectedZoomImage.src
-                    })}
+                    onClick={() => handleShare(selectedZoomImage.prompt)}
                     className="p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors"
-                    title="Compartilhar"
+                    title="Compartilhar prompt"
                   >
                     <Share2 size={16} />
                   </button>

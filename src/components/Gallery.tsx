@@ -111,16 +111,23 @@ export function Gallery({
   };
 
   const handleShare = async (data: { title: string; text: string; url?: string }) => {
-    const fullText = `${data.title}\n\n${data.text}\n\n🎬 Criado no ShotCraft: ${window.location.origin}`;
+    // Monta o link direto para a imagem
+    const imageUrl = data.url && !data.url.startsWith('data:')
+      ? (data.url.startsWith('http') ? data.url : `${window.location.origin}${data.url}`)
+      : '';
+
+    const shareContent = imageUrl 
+      ? `${data.title}\n${imageUrl}\n\nPrompt:\n${data.text}`
+      : `${data.title}\n\nPrompt:\n${data.text}`;
     
     if (navigator.share) {
       try {
         await navigator.share({
           title: data.title,
-          text: fullText,
-          url: window.location.origin,
+          text: shareContent,
+          url: imageUrl || undefined,
         });
-        addToast('Compartilhado com sucesso!', 'success');
+        addToast('Link da imagem compartilhado com sucesso!', 'success');
         return;
       } catch (err: any) {
         if (err.name === 'AbortError') return;
@@ -129,14 +136,14 @@ export function Gallery({
 
     try {
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(fullText);
+        await navigator.clipboard.writeText(shareContent);
       } else {
-        fallbackCopyTextToClipboard(fullText);
+        fallbackCopyTextToClipboard(shareContent);
       }
-      addToast('Informações copiadas! Pronto para compartilhar.', 'success');
+      addToast('Link da imagem e prompt copiados!', 'success');
     } catch (err) {
-      fallbackCopyTextToClipboard(fullText);
-      addToast('Informações copiadas! Pronto para compartilhar.', 'success');
+      fallbackCopyTextToClipboard(shareContent);
+      addToast('Link da imagem e prompt copiados!', 'success');
     }
   };
 
