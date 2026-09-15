@@ -111,39 +111,93 @@ export function Gallery({
   };
 
   const handleShare = async (data: { title: string; text: string; url?: string }) => {
-    // Monta o link direto para a imagem
-    const imageUrl = data.url && !data.url.startsWith('data:')
-      ? (data.url.startsWith('http') ? data.url : `${window.location.origin}${data.url}`)
-      : '';
+    try {
+      // 1. Converte a imagem (base64 ou URL) em arquivo real para envio nativo
+      let imageFile: File | null = null;
+      let imageBlob: Blob | null = null;
+      
+      if (data.url) {
+        try {
+          const response = await fetch(data.url);
+          imageBlob = await response.blob();
+          const mimeType = imageBlob.type || 'image/jpeg';
+          const ext = mimeType.includes('png') ? 'png' : 'jpg';
+          const cleanName = data.title.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 30) || 'arte-shotcraft';
+          imageFile = new File([imageBlob], `${cleanName}.${ext}`, { type: mimeType });
+        } catch (err) {
+          console.warn('Não foi possível converter url em arquivo:', err);
+        }
+      }
 
-    const shareContent = imageUrl 
-      ? `${data.title}\n${imageUrl}\n\nPrompt:\n${data.text}`
-      : `${data.title}\n\nPrompt:\n${data.text}`;
-    
-    if (navigator.share) {
-      try {
+      // 2. Se o dispositivo suportar envio de arquivo nativo (WhatsApp, Telegram, etc.)
+      if (imageFile && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+        await navigator.share({
+          files: [imageFile],
+          title: data.title,
+          text: `🎨 ${data.title}\n\nPrompt:\n${data.text}`,
+        });
+        addToast('Imagem enviada para compartilhamento!', 'success');
+        return;
+      }
+
+      // 3. Se for URL pública direta (não base64) e navegador suportar share normal
+      const isBase64 = data.url?.startsWith('data:');
+      const directImageUrl = (data.url && !isBase64)
+        ? (data.url.startsWith('http') ? data.url : `${window.location.origin}${data.url}`)
+        : '';
+
+      if (directImageUrl && navigator.share) {
         await navigator.share({
           title: data.title,
-          text: shareContent,
-          url: imageUrl || undefined,
+          text: `🎨 ${data.title}\n${directImageUrl}\n\nPrompt:\n${data.text}`,
+          url: directImageUrl,
         });
-        addToast('Link da imagem compartilhado com sucesso!', 'success');
+        addToast('Link da imagem compartilhado!', 'success');
         return;
-      } catch (err: any) {
-        if (err.name === 'AbortError') return;
       }
-    }
 
-    try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(shareContent);
-      } else {
-        fallbackCopyTextToClipboard(shareContent);
+      // 4. Fallback para Desktop: Copia a imagem para o Clipboard (permitindo colar com Ctrl+V no WhatsApp Web)
+      if (imageBlob && navigator.clipboard && window.isSecureContext) {
+        try {
+          let clipboardBlob = imageBlob;
+          if (imageBlob.type !== 'image/png') {
+            clipboardBlob = await new Promise<Blob>((resolve) => {
+              const img = new Image();
+              img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0);
+                canvas.toBlob((b) => resolve(b || imageBlob!), 'image/png');
+              };
+              img.src = data.url || '';
+            });
+          }
+          await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': clipboardBlob })
+          ]);
+          addToast('Imagem copiada! Pressione Ctrl+V no WhatsApp Web para enviar a foto.', 'success');
+          return;
+        } catch (clipErr) {
+          console.warn('Clipboard image copy fallback error:', clipErr);
+        }
       }
-      addToast('Link da imagem e prompt copiados!', 'success');
-    } catch (err) {
-      fallbackCopyTextToClipboard(shareContent);
-      addToast('Link da imagem e prompt copiados!', 'success');
+
+      // 5. Fallback final de texto
+      const fallbackText = directImageUrl 
+        ? `🎨 ${data.title}\nLink da Imagem: ${directImageUrl}\n\nPrompt:\n${data.text}`
+        : `🎨 ${data.title}\n\nPrompt:\n${data.text}`;
+      
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(fallbackText);
+      } else {
+        fallbackCopyTextToClipboard(fallbackText);
+      }
+      addToast('Informações copiadas!', 'success');
+    } catch (err: any) {
+      if (err.name === 'AbortError') return;
+      addToast('Informações copiadas!', 'info');
     }
   };
 
