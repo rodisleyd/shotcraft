@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { GalleryItem, UserAccount, Theme } from '../types';
-import { Plus, X, Copy, Check, Trash2, Image as ImageIcon, Cpu, Sparkles, AlertCircle, Upload, Edit } from 'lucide-react';
+import { Plus, X, Copy, Check, Trash2, Image as ImageIcon, Cpu, Sparkles, AlertCircle, Upload, Edit, Share2 } from 'lucide-react';
 
 interface GalleryProps {
   items: GalleryItem[];
@@ -108,6 +108,36 @@ export function Gallery({
     setCopied(true);
     addToast('Prompt copiado com sucesso!', 'success');
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = async (data: { title: string; text: string; url?: string }) => {
+    const fullText = `${data.title}\n\n${data.text}\n\n🎬 Criado no ShotCraft: ${window.location.origin}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: data.title,
+          text: fullText,
+          url: window.location.origin,
+        });
+        addToast('Compartilhado com sucesso!', 'success');
+        return;
+      } catch (err: any) {
+        if (err.name === 'AbortError') return;
+      }
+    }
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(fullText);
+      } else {
+        fallbackCopyTextToClipboard(fullText);
+      }
+      addToast('Informações copiadas! Pronto para compartilhar.', 'success');
+    } catch (err) {
+      fallbackCopyTextToClipboard(fullText);
+      addToast('Informações copiadas! Pronto para compartilhar.', 'success');
+    }
   };
 
   const handleStartEdit = (item: GalleryItem) => {
@@ -244,6 +274,23 @@ export function Gallery({
                 </div>
               </div>
 
+              {/* Botão de Compartilhar rápido para o Card */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleShare({
+                    title: `ShotCraft - ${item.title}`,
+                    text: `🎨 "${item.title}" (por ${item.author})\n\nPrompt:\n${item.prompt}`,
+                    url: item.url
+                  });
+                }}
+                className="absolute top-3 left-3 p-2 bg-black/60 hover:bg-black/80 text-white rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 backdrop-blur-sm"
+                title="Compartilhar arte"
+              >
+                <Share2 size={12} />
+              </button>
+
               {/* Botão de Excluir rápido para Admin */}
               {user?.isAdmin && (
                 <button
@@ -331,19 +378,38 @@ export function Gallery({
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <label className="text-[10px] font-black uppercase tracking-wider opacity-60">Prompt Utilizado</label>
-                    <button
-                      type="button"
-                      translate="no"
-                      onClick={() => handleCopyPrompt(activeItem.prompt)}
-                      className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all notranslate ${
-                        theme === 'dark'
-                          ? 'border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-indigo-400'
-                          : 'border-zinc-200 bg-white hover:bg-zinc-50 text-[#8b5a2b]'
-                      }`}
-                    >
-                      {copied ? <Check size={11} /> : <Copy size={11} />}
-                      <span className="notranslate" translate="no">{copied ? 'Copiado' : 'Copiar'}</span>
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleShare({
+                          title: `ShotCraft - ${activeItem.title}`,
+                          text: `🎨 "${activeItem.title}" (por ${activeItem.author})\n\nPrompt:\n${activeItem.prompt}`,
+                          url: activeItem.url
+                        })}
+                        className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                          theme === 'dark'
+                            ? 'border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-indigo-400'
+                            : 'border-zinc-200 bg-white hover:bg-zinc-50 text-[#8b5a2b]'
+                        }`}
+                        title="Compartilhar arte"
+                      >
+                        <Share2 size={11} />
+                        <span>Compartilhar</span>
+                      </button>
+                      <button
+                        type="button"
+                        translate="no"
+                        onClick={() => handleCopyPrompt(activeItem.prompt)}
+                        className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all notranslate ${
+                          theme === 'dark'
+                            ? 'border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-indigo-400'
+                            : 'border-zinc-200 bg-white hover:bg-zinc-50 text-[#8b5a2b]'
+                        }`}
+                      >
+                        {copied ? <Check size={11} /> : <Copy size={11} />}
+                        <span className="notranslate" translate="no">{copied ? 'Copiado' : 'Copiar'}</span>
+                      </button>
+                    </div>
                   </div>
                   <div className={`p-4 rounded-2xl border text-xs font-mono leading-relaxed max-h-48 overflow-y-auto select-all ${themeClasses.input}`}>
                     {activeItem.prompt}

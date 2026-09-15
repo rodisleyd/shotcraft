@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Search, Copy, Check, Sparkles, X, ZoomIn, BookOpen, Layers } from "lucide-react";
+import { Search, Copy, Check, Sparkles, X, ZoomIn, BookOpen, Layers, Share2 } from "lucide-react";
 import { 
   SHOT_TYPES, ANGLES, PERSPECTIVES, LENSES, 
   LIGHTING, ENVIRONMENTS, STYLES, DETAILS 
@@ -98,6 +98,36 @@ export function Library({
     setCopiedId(id);
     addToast('Prompt de estilo copiado!', 'success');
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleShare = async (data: { title: string; text: string; url?: string }) => {
+    const fullText = `${data.title}\n\n${data.text}\n\n🎬 Criado no ShotCraft: ${window.location.origin}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: data.title,
+          text: fullText,
+          url: window.location.origin,
+        });
+        addToast('Compartilhado com sucesso!', 'success');
+        return;
+      } catch (err: any) {
+        if (err.name === 'AbortError') return;
+      }
+    }
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(fullText);
+      } else {
+        fallbackCopyTextToClipboard(fullText);
+      }
+      addToast('Informações copiadas! Pronto para compartilhar.', 'success');
+    } catch (err) {
+      fallbackCopyTextToClipboard(fullText);
+      addToast('Informações copiadas! Pronto para compartilhar.', 'success');
+    }
   };
 
   const handleApplyAndGo = (category: string, id: string) => {
@@ -276,7 +306,7 @@ export function Library({
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-2 pt-2 border-t border-black/5 dark:border-white/5">
+                  <div className="flex gap-1.5 pt-2 border-t border-black/5 dark:border-white/5">
                     <button
                       type="button"
                       translate="no"
@@ -287,6 +317,21 @@ export function Library({
                     >
                       {copiedId === item.id ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
                       <span className="notranslate" translate="no">{copiedId === item.id ? 'Copiado' : 'Copiar'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      translate="no"
+                      onClick={() => handleShare({
+                        title: `ShotCraft - ${item.label}`,
+                        text: `🎬 Parâmetro ShotCraft: ${item.label}\n\nPrompt:\n"${item.prompt}"`,
+                        url: getImagePath(item)
+                      })}
+                      className={`p-2 rounded-xl border text-[10px] font-bold flex items-center justify-center gap-1 transition-all notranslate ${
+                        themeClasses.option + ' hover:border-indigo-500/20'
+                      }`}
+                      title="Compartilhar parâmetro"
+                    >
+                      <Share2 size={12} />
                     </button>
                     <button
                       type="button"
@@ -344,13 +389,27 @@ export function Library({
                   <h3 className="font-bold text-base">{selectedZoomImage.label}</h3>
                   <p className="text-[10px] text-zinc-400 mt-0.5">Visualização de Parâmetro</p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedZoomImage(null)}
-                  className="p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors"
-                >
-                  <X size={16} />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => handleShare({
+                      title: `ShotCraft - ${selectedZoomImage.label}`,
+                      text: `🎬 Parâmetro ShotCraft: ${selectedZoomImage.label}\n\nPrompt:\n"${selectedZoomImage.prompt}"`,
+                      url: selectedZoomImage.src
+                    })}
+                    className="p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors"
+                    title="Compartilhar"
+                  >
+                    <Share2 size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedZoomImage(null)}
+                    className="p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
               </div>
 
               {/* Image */}
