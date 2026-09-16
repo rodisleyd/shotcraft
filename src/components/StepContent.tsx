@@ -6,7 +6,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette, Search, Filter, ArrowUpDown, Tag, Lock, Info } from "lucide-react";
 import { Option, Step, SelectionState, ColorPaletteOption, CharacterLockState } from "../types";
-import { STYLES, COLOR_PALETTES, VISUAL_TAGS, LUTS, GRADING_TECHNIQUES } from "../data/constants";
+import { STYLES, PAPERS, COLOR_PALETTES, VISUAL_TAGS, LUTS, GRADING_TECHNIQUES } from "../data/constants";
 import React, { useState, useEffect, useMemo } from "react";
 import { fetchImageAsDataUrl } from "../services/imageService";
 import { ColorPickerModal } from "./ColorPickerModal";
@@ -200,6 +200,8 @@ export function StepContent({
   useEffect(() => {
     if (activeStep === 9) {
       setExpandedCategory('1. Pintura Tradicional');
+    } else if (activeStep === 10) {
+      setExpandedCategory('1. Papéis para Aquarela');
     } else if (activeStep === 2) {
       setExpandedCategory('1. Enquadramentos Básicos');
     } else if (activeStep === 3) {
@@ -212,7 +214,7 @@ export function StepContent({
       setExpandedCategory('1. Iluminação Básica');
     } else if (activeStep === 7) {
       setExpandedCategory('1. Cenários Naturais');
-    } else if (activeStep === 10) {
+    } else if (activeStep === 11) {
       setExpandedCategory('1. Efeitos Ópticos');
     } else {
       setExpandedCategory(null);
@@ -858,14 +860,14 @@ export function StepContent({
             </div>
           )}
 
-          {activeStep > 0 && activeStep < 11 && activeStep !== 8 && (
+          {activeStep > 0 && activeStep < 12 && activeStep !== 8 && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold mb-2">{steps[activeStep].title}</h2>
                 <p className={`${themeClasses.textMuted} text-sm`}>Escolha uma opção técnica para refinar a composição.</p>
               </div>
               
-              {activeStep === 9 || activeStep === 2 || activeStep === 3 || activeStep === 4 || activeStep === 5 || activeStep === 6 || activeStep === 7 || activeStep === 10 ? (
+              {activeStep === 9 || activeStep === 10 || activeStep === 2 || activeStep === 3 || activeStep === 4 || activeStep === 5 || activeStep === 6 || activeStep === 7 || activeStep === 11 ? (
                 <div className="space-y-3">
                   {Array.from(new Set(getCurrentOptions(activeStep).map(s => s.subCategory))).filter(Boolean).map(subCat => (
                     <div key={subCat} className={`border rounded-2xl transition-colors ${themeClasses.card} ${
@@ -2101,7 +2103,7 @@ export function StepContent({
             </div>
           )}
           
-          {activeStep === 11 && (
+          {activeStep === 12 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
               <div>
                 <h2 className="text-2xl font-bold mb-2">Revisão Final</h2>
@@ -2178,6 +2180,7 @@ export function StepContent({
                   { key: 'lens', label: 'Lente', options: getCurrentOptions(5) },
                   { key: 'lighting', label: 'Luz', options: getCurrentOptions(6) },
                   { key: 'environment', label: 'Cenário', options: getCurrentOptions(7) },
+                  { key: 'paper', label: 'Papel / Suporte', options: PAPERS },
                   { key: 'lutId', label: 'LUT de Cor', options: LUTS },
                 ].map((cat) => {
                   const selectionId = selections[cat.key];

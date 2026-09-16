@@ -27,6 +27,7 @@ export interface SelectionState {
   lighting: string;
   environment: string;
   style: string[];
+  paper: string;
   detail: string[];
   colorPalette: string[];
   colorPaletteId: string;

@@ -21,7 +21,8 @@ import {
   Languages,
   CheckCircle2,
   Trash2,
-  Droplet
+  Droplet,
+  FileText
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
@@ -31,7 +32,7 @@ import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, St
 // Constants
 import {
   SHOT_TYPES, ANGLES, PERSPECTIVES, ASPECT_RATIOS,
-  LENSES, LIGHTING, ENVIRONMENTS, STYLES, DETAILS,
+  LENSES, LIGHTING, ENVIRONMENTS, STYLES, PAPERS, DETAILS,
   PRESETS, AUTO_COMBINATIONS, LUTS, GRADING_TECHNIQUES,
   INITIAL_GALLERY
 } from './data/constants';
@@ -113,6 +114,7 @@ export default function App() {
     lighting: '',
     environment: '',
     style: [],
+    paper: '',
     detail: [],
     colorPalette: [],
     colorPaletteId: '',
@@ -207,6 +209,7 @@ export default function App() {
       style: Array.isArray(sel.style) 
         ? sel.style 
         : (typeof sel.style === 'object' && sel.style !== null ? Object.values(sel.style) : []),
+      paper: typeof sel?.paper === 'string' ? sel.paper : '',
       detail: Array.isArray(sel.detail) 
         ? sel.detail 
         : (typeof sel.detail === 'object' && sel.detail !== null ? Object.values(sel.detail) : [sel.detail].filter(Boolean)),
@@ -234,6 +237,7 @@ export default function App() {
     { title: 'Cenário', icon: <MapPin size={20} /> },
     { title: 'Colorização', icon: <Droplet size={20} /> },
     { title: 'Estilo', icon: <Palette size={20} /> },
+    { title: 'Papéis', icon: <FileText size={20} /> },
     { title: 'Detalhe', icon: <Zap size={20} /> },
     { title: 'Revisão', icon: <CheckCircle2 size={20} /> },
   ];
@@ -249,7 +253,8 @@ export default function App() {
       case 7: return ENVIRONMENTS;
       case 8: return [];
       case 9: return STYLES;
-      case 10: return DETAILS;
+      case 10: return PAPERS;
+      case 11: return DETAILS;
       default: return [];
     }
   };
@@ -577,7 +582,7 @@ export default function App() {
 
       addToast('O Diretor Master organizou sua cena com perfeição! 🎬', 'success');
       setIsAnalyzingMaster(false);
-      setActiveStep(11); // Pular diretamente para a revisão
+      setActiveStep(12); // Pular diretamente para a revisão
     } catch (error) {
       console.error('Erro ao invocar o Diretor Master:', error);
       setIsAnalyzingMaster(false);
@@ -612,6 +617,7 @@ export default function App() {
       lighting: '',
       environment: '',
       style: [],
+      paper: '',
       detail: [],
       colorPalette: [],
       colorPaletteId: '',
@@ -671,6 +677,11 @@ export default function App() {
       const prompt = STYLES.find(o => o.id === id)?.prompt;
       if (prompt) parts.push(prompt);
     });
+
+    if (selections.paper) {
+      const paperPrompt = PAPERS.find(o => o.id === selections.paper)?.prompt;
+      if (paperPrompt) parts.push(paperPrompt);
+    }
 
     if (selections.colorPalette && selections.colorPalette.length > 0) {
       if (selections.useColorRule603010 && selections.colorRule603010?.dominant && selections.colorRule603010?.secondary && selections.colorRule603010?.accent) {

@@ -682,6 +682,168 @@ export const STYLES: Option[] = [
   },
 ];
 
+export const PAPERS: Option[] = [
+  // 1. Papéis para Aquarela
+  { 
+    id: 'papel-aquarela-cold-press', 
+    label: 'Aquarela Prensado a Frio (Cold Press / Grain Fin)', 
+    prompt: 'painted on cold pressed watercolor paper, 300gsm, delicate fine grain texture, visible organic paper tooth, natural water absorption, authentic pigment settling', 
+    description: 'Mais versátil. Textura levemente granulada, boa absorção e controle da água. Ideal para paisagens, flores e ilustrações em geral.',
+    category: 'paper', 
+    subCategory: '1. Papéis para Aquarela' 
+  },
+  { 
+    id: 'papel-aquarela-hot-press', 
+    label: 'Aquarela Prensado a Quente (Hot Press / Grain Satin)', 
+    prompt: 'painted on hot press watercolor paper, smooth satin finish, crisp clean edges, fine detail watercolor rendering, no heavy surface grain, razor-sharp linework', 
+    description: 'Superfície lisa e uniforme. Facilita linhas finas e detalhes botânicos, lettering e artes para digitalização.',
+    category: 'paper', 
+    subCategory: '1. Papéis para Aquarela' 
+  },
+  { 
+    id: 'papel-aquarela-rough', 
+    label: 'Aquarela Áspero (Rough / Grain Torchon)', 
+    prompt: 'painted on rough grain torchon watercolor paper, heavy textured surface, deep paper tooth, dramatic pigment granulation, rustic expressive watercolor texture', 
+    description: 'Textura bastante marcada. Cria efeitos expressivos de granulação de pigmentos. Ideal para paisagens, montanhas, pedras e árvores.',
+    category: 'paper', 
+    subCategory: '1. Papéis para Aquarela' 
+  },
+  { 
+    id: 'papel-aquarela-100-algodao', 
+    label: 'Papel 100% Algodão (Pure Cotton Rag)', 
+    prompt: 'on 100% cotton archival watercolor rag paper, museum quality heavy cotton fibers, soft deckled edge, deep pigment absorption, rich layered watercolor washes', 
+    description: 'Fibra nobre de puro algodão. Máxima resistência, durabilidade e absorção para trabalhos profissionais e exposições.',
+    category: 'paper', 
+    subCategory: '1. Papéis para Aquarela' 
+  },
+  { 
+    id: 'papel-aquarela-celulose', 
+    label: 'Papel de Celulose (Wood Pulp)', 
+    prompt: 'on standard wood pulp cellulose watercolor paper, smooth surface drying, bright white background, lightweight watercolor study paper', 
+    description: 'Mais acessível e uniforme. Secagem de tinta em superfície, perfeito para estudos, esboços diários e ilustrações rápidas.',
+    category: 'paper', 
+    subCategory: '1. Papéis para Aquarela' 
+  },
+
+  // 2. Guache e Pintura Acrílica
+  { 
+    id: 'papel-guache-veludo', 
+    label: 'Papel para Guache (Opaque Velvet Finish)', 
+    prompt: 'painted on heavy gouache paper, 250gsm, smooth matte velvety surface, opaque paint adhesion, flat uniform color blocks, zero paper buckling', 
+    description: 'Gramatura média/alta com superfície lisa a levemente texturizada. Acabamento mate opaco que não empena.',
+    category: 'paper', 
+    subCategory: '2. Guache e Pintura Acrílica' 
+  },
+  { 
+    id: 'papel-acrilica-preparado', 
+    label: 'Papel para Acrílica (Acrylic Heavyweight)', 
+    prompt: 'painted on heavy 350gsm acrylic painting paper, gesso primed surface, thick impasto strokes, textured paint film, non-absorbent ground', 
+    description: 'Papel espesso e resistente, preparado para receber tinta acrílica e suportar pinceladas densas sem deformar.',
+    category: 'paper', 
+    subCategory: '2. Guache e Pintura Acrílica' 
+  },
+  { 
+    id: 'papel-mixed-media', 
+    label: 'Técnicas Mistas (Mixed Media Paper)', 
+    prompt: 'on durable heavyweight mixed media art paper, vellum texture, versatile tooth, multi-layer ink gouache and colored pencil blend', 
+    description: 'Desenvolvido para combinar múltiplos materiais: aquarela, guache, nanquim, lápis e canetas em camadas mistas.',
+    category: 'paper', 
+    subCategory: '2. Guache e Pintura Acrílica' 
+  },
+
+  // 3. Técnicas de Desenho e Ilustração
+  { 
+    id: 'papel-bristol-smooth', 
+    label: 'Papel Bristol Liso (Bristol Smooth)', 
+    prompt: 'drawn on bright white smooth Bristol board, slick flat non-porous paper surface, razor sharp india ink lineart, pristine high-contrast inking, comic board finish', 
+    description: 'Superfície lisa, firme e branca brilhante. Perfeito para nanquim, quadrinhos, arte-final e desenho técnico de precisão.',
+    category: 'paper', 
+    subCategory: '3. Técnicas de Desenho e Ilustração' 
+  },
+  { 
+    id: 'papel-marcadores-bleedproof', 
+    label: 'Papel para Marcadores (Bleedproof Marker)', 
+    prompt: 'illustrated on bleedproof marker layout paper, coated smooth surface, smooth alcohol ink blending, vibrant Copic marker rendering, crisp edges without feathering', 
+    description: 'Papel especial liso e impermeabilizado contra vazamento de álcool. Essencial para concept art, design de personagens e marcadores.',
+    category: 'paper', 
+    subCategory: '3. Técnicas de Desenho e Ilustração' 
+  },
+  { 
+    id: 'papel-pastel-seco-sanded', 
+    label: 'Papel Abrasivo para Pastel Seco (Sanded Paper)', 
+    prompt: 'on sanded pastel paper, gritty abrasive tooth surface, micro-sand texture gripping dry pigment dust, velvety soft pastel blends, deep smudged charcoal', 
+    description: 'Superfície arenosa abrasiva que retém os pigmentos do pastel seco e giz artístico, facilitando esfumados e degradês aveludados.',
+    category: 'paper', 
+    subCategory: '3. Técnicas de Desenho e Ilustração' 
+  },
+  { 
+    id: 'papel-oleo-preparado', 
+    label: 'Papel para Pintura a Óleo (Oil Paper)', 
+    prompt: 'painted on specially primed oil painting paper, oil barrier coating, rich buttery oil brushwork, textured linen grain, authentic oil sheen', 
+    description: 'Revestido com barreira oleofóbica para receber tinta a óleo portátil sem que o óleo penetre e quebre as fibras.',
+    category: 'paper', 
+    subCategory: '3. Técnicas de Desenho e Ilustração' 
+  },
+  { 
+    id: 'papel-textura-tela-canvas', 
+    label: 'Papel Textura de Tela (Canvas Paper)', 
+    prompt: 'on canvas textured paper, embossed woven linen fabric grain, canvas weave surface relief, tactile fine art texture', 
+    description: 'Acabamento que imita perfeitamente a trama de uma tela de tecido/linho de pintura em formato de bloco de papel.',
+    category: 'paper', 
+    subCategory: '3. Técnicas de Desenho e Ilustração' 
+  },
+  { 
+    id: 'papel-preto-tonalizado', 
+    label: 'Papel Preto / Tonalizado (Black Toned Cardstock)', 
+    prompt: 'illustrated on deep black heavy art cardstock, dark matte paper background, striking high-contrast highlights, opaque light pigments popping on dark ground', 
+    description: 'Fundo escuro profundo que interfere diretamente no contraste, realçando luzes vibrantes, guache claro e giz artístico.',
+    category: 'paper', 
+    subCategory: '3. Técnicas de Desenho e Ilustração' 
+  },
+  { 
+    id: 'papel-kraft-tonalizado', 
+    label: 'Papel Kraft / Pardo Tonalizado (Toned Tan Paper)', 
+    prompt: 'on toned tan kraft paper, warm mid-tone paper background, white charcoal highlights, sepia ink hatching, vintage traditional sketchbook aesthetic', 
+    description: 'Tom médio natural e quente. Permite trabalhar simultaneamente luzes com branco e sombras profundas com nanquim.',
+    category: 'paper', 
+    subCategory: '3. Técnicas de Desenho e Ilustração' 
+  },
+
+  // 4. Gramaturas e Espessuras de Papel
+  { 
+    id: 'gramatura-leve-90-120', 
+    label: 'Gramatura Leve (90–120 g/m²) - Esboço & Croqui', 
+    prompt: 'on lightweight 100gsm sketching paper, delicate sketchbook page, quick gestural drawing study, dry media texture', 
+    description: 'Papel leve para desenho seco, croquis rápidos e estudos preliminares.',
+    category: 'paper', 
+    subCategory: '4. Gramaturas e Espessuras de Papel' 
+  },
+  { 
+    id: 'gramatura-media-150-200', 
+    label: 'Gramatura Média (150–200 g/m²) - Mista Leve', 
+    prompt: 'on medium-weight 180gsm art paper, balanced surface, light washes and dry pencil drawing', 
+    description: 'Papel de peso médio para técnicas secas combinadas e guache leve com pouca água.',
+    category: 'paper', 
+    subCategory: '4. Gramaturas e Espessuras de Papel' 
+  },
+  { 
+    id: 'gramatura-padrao-300', 
+    label: 'Gramatura Padrão (300 g/m²) - Padrão Aquarela', 
+    prompt: 'on heavyweight 300gsm archival paper, professional artist paper weight, sturdy warp-resistant foundation, balanced wet absorption', 
+    description: 'O peso padrão de referência para aquarela e guache profissional. Resistente ao empenamento.',
+    category: 'paper', 
+    subCategory: '4. Gramaturas e Espessuras de Papel' 
+  },
+  { 
+    id: 'gramatura-pesada-400', 
+    label: 'Gramatura Pesada (400+ g/m²) - Lavagens Intensas', 
+    prompt: 'on ultra-heavy 400gsm rigid paper board, thick robust support, heavy fluid washes, deep puddle pigment dispersion, no warping', 
+    description: 'Suporte espesso e rígido desenvolvido para suportar grandes volumes de água, técnicas de wet-on-wet e empastamento.',
+    category: 'paper', 
+    subCategory: '4. Gramaturas e Espessuras de Papel' 
+  }
+];
+
 export const DETAILS: Option[] = [
   // 1. Efeitos Ópticos
   { id: 'shallow-dof', label: 'Desfoque de Fundo (Shallow DoF)', prompt: 'shallow depth of field, blurred background, beautiful cinematic bokeh', category: 'detail', subCategory: '1. Efeitos Ópticos' },
