@@ -330,8 +330,8 @@ export default function App() {
     }
   };
 
-  const handleSaveCustomPalette = (name: string, colors: string[], category?: string) => {
-    const id = `custom-${Date.now()}`;
+  const handleSaveCustomPalette = (name: string, colors: string[], category?: string, existingId?: string) => {
+    const id = existingId || `custom-${Date.now()}`;
     const cleanCategory = category?.trim() || 'Minhas Paletas';
     const newPalette: ColorPaletteOption = {
       id,
@@ -341,9 +341,15 @@ export default function App() {
       category: cleanCategory,
       createdAt: Date.now()
     };
-    setCustomPalettes(prev => [newPalette, ...prev]);
+    setCustomPalettes(prev => {
+      const exists = prev.some(p => p.id === id);
+      if (exists) {
+        return prev.map(p => p.id === id ? newPalette : p);
+      }
+      return [newPalette, ...prev];
+    });
     setSelections(prev => ({ ...prev, colorPalette: colors, colorPaletteId: id }));
-    addToast(`Paleta "${name}" salva na categoria "${cleanCategory}"!`, 'success');
+    addToast(existingId ? `Paleta "${name}" atualizada!` : `Paleta "${name}" salva com sucesso!`, 'success');
   };
 
   const handleDeleteCustomPalette = (id: string) => {
@@ -964,6 +970,9 @@ export default function App() {
             themeClasses={themeClasses}
             user={user}
             addToast={addToast}
+            customPalettes={customPalettes}
+            onSaveCustomPalette={handleSaveCustomPalette}
+            onDeleteCustomPalette={handleDeleteCustomPalette}
             onConsumeCredit={() => {
               if (!user) return true;
               if (user.isAdmin) return true;

@@ -497,6 +497,8 @@ export function buildColoristPrompt(params: {
   temperatureId: string;
   paperId: string;
   colorIntensity: 'vibrant' | 'balanced' | 'muted' | 'monochrome';
+  customPaletteName?: string;
+  customPaletteColors?: string[];
   customNotes?: string;
 }): string {
   const drawingTypeObj = DRAWING_TYPES.find(d => d.id === params.drawingType) || DRAWING_TYPES[0];
@@ -516,6 +518,11 @@ export function buildColoristPrompt(params: {
   let colorDirection = '';
   if (params.colorIntensity === 'monochrome') {
     colorDirection = 'Color Direction: Strict monochromatic scale (deep rich blacks, nuanced gray midtones, crisp clean white highlights).';
+  } else if (params.customPaletteName && params.customPaletteColors && params.customPaletteColors.length > 0) {
+    const dominant = params.rule603010.dominant || params.customPaletteColors[0];
+    const secondary = params.rule603010.secondary || params.customPaletteColors[1] || params.customPaletteColors[0];
+    const accent = params.rule603010.accent || params.customPaletteColors[2] || params.customPaletteColors[0];
+    colorDirection = `Custom Color Palette: "${params.customPaletteName}" [${params.customPaletteColors.join(', ')}]. Applied strictly using the 60-30-10 color rule: Dominant 60% (${dominant} for background and large masses), Secondary 30% (${secondary} for main forms and clothing), Accent 10% (${accent} for eye-catching focal highlights).`;
   } else if (params.useCustom603010 && params.rule603010.dominant) {
     colorDirection = `Color Palette (60-30-10 Rule): Dominant 60% (${params.rule603010.dominant} on large areas/background), Secondary 30% (${params.rule603010.secondary} on clothing/mid elements), Accent 10% (${params.rule603010.accent} on focal highlights and eye-catching details). Mood: ${moodObj.prompt}.`;
   } else {

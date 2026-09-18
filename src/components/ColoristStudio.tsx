@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Palette,
   Sparkles,
@@ -25,9 +25,16 @@ import {
   Info,
   CheckCircle2,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Plus,
+  Edit2,
+  Bookmark,
+  FolderHeart,
+  X,
+  Save,
+  Wand2
 } from 'lucide-react';
-import { Theme, UserAccount } from '../types';
+import { Theme, UserAccount, ColorPaletteOption } from '../types';
 import {
   DRAWING_TYPES,
   PAINTING_TECHNIQUES,
@@ -47,6 +54,9 @@ interface ColoristStudioProps {
   user: UserAccount | null;
   addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   onConsumeCredit?: () => boolean;
+  customPalettes: ColorPaletteOption[];
+  onSaveCustomPalette: (name: string, colors: string[], category?: string, id?: string) => void;
+  onDeleteCustomPalette: (id: string) => void;
 }
 
 export function ColoristStudio({
@@ -54,20 +64,34 @@ export function ColoristStudio({
   themeClasses,
   user,
   addToast,
-  onConsumeCredit
+  onConsumeCredit,
+  customPalettes,
+  onSaveCustomPalette,
+  onDeleteCustomPalette
 }: ColoristStudioProps) {
   // --- States ---
   const [drawingType, setDrawingType] = useState<string>('nanquim');
   const [selectedTechniqueId, setSelectedTechniqueId] = useState<string>('guache');
-  const [selectedMoodId, setSelectedMoodId] = useState<string>('drama-melancolia');
   const [techniqueCategory, setTechniqueCategory] = useState<string>('Todos');
   const [colorIntensity, setColorIntensity] = useState<'vibrant' | 'balanced' | 'muted' | 'monochrome'>('balanced');
   
+  // Palette View Mode: 'moods' | 'custom' | 'creator'
+  const [paletteTab, setPaletteTab] = useState<'moods' | 'custom' | 'creator'>('moods');
+  const [paletteType, setPaletteType] = useState<'mood' | 'custom'>('mood');
+  const [selectedMoodId, setSelectedMoodId] = useState<string>('drama-melancolia');
+  const [selectedCustomPaletteId, setSelectedCustomPaletteId] = useState<string | null>(null);
+
   // Custom 60-30-10 rule states
   const [useCustom603010, setUseCustom603010] = useState<boolean>(false);
   const [customDominant, setCustomDominant] = useState<string>('#4f5d75');
   const [customSecondary, setCustomSecondary] = useState<string>('#747d8c');
   const [customAccent, setCustomAccent] = useState<string>('#eccc68');
+
+  // Palette Creator / Editor State
+  const [editingPaletteId, setEditingPaletteId] = useState<string | null>(null);
+  const [creatorName, setCreatorName] = useState<string>('');
+  const [creatorCategory, setCreatorCategory] = useState<string>('Minhas Paletas');
+  const [creatorColors, setCreatorColors] = useState<string[]>(['#2b5876', '#4e4376', '#f39c12', '#e74c3c', '#ecf0f1']);
 
   // Lighting & Paper
   const [selectedLightingId, setSelectedLightingId] = useState<string>('soft-diffuse');
@@ -84,14 +108,113 @@ export function ColoristStudio({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sync custom colors with mood when mood changes if not modified
+  // Active items helpers
+  const activeMood = useMemo(() => {
+    return COLOR_MOODS.find(m => m.id === selectedMoodId) || COLOR_MOODS[0];
+  }, [selectedMoodId]);
+
+  const activeCustomPalette = useMemo(() => {
+    if (!selectedCustomPaletteId) return null;
+    return customPalettes.find(p => p.id === selectedCustomPaletteId) || null;
+  }, [selectedCustomPaletteId, customPalettes]);
+
+  const activeTechnique = useMemo(() => {
+    return PAINTING_TECHNIQUES.find(t => t.id === selectedTechniqueId) || PAINTING_TECHNIQUES[0];
+  }, [selectedTechniqueId]);
+
+  // Sync colors when selecting mood
   const handleMoodSelect = (mood: ColorMoodOption) => {
+    setPaletteType('mood');
     setSelectedMoodId(mood.id);
+    setSelectedCustomPaletteId(null);
     if (!useCustom603010) {
       setCustomDominant(mood.rule603010.dominant);
       setCustomSecondary(mood.rule603010.secondary);
       setCustomAccent(mood.rule603010.accent);
     }
+  };
+
+  // Sync colors when selecting custom palette
+  const handleCustomPaletteSelect = (palette: ColorPaletteOption) => {
+    setPaletteType('custom');
+    setSelectedCustomPaletteId(palette.id);
+    if (!useCustom603010 && palette.colors.length >= 3) {
+      setCustomDominant(palette.colors[0]);
+      setCustomSecondary(palette.colors[1] || palette.colors[0]);
+      setCustomAccent(palette.colors[2] || palette.colors[0]);
+    }
+  };
+
+  // Open Creator for a new palette
+  const handleStartCreatePalette = () => {
+    setEditingPaletteId(null);
+    setCreatorName('');
+    setCreatorCategory('Minhas Paletas');
+    setCreatorColors(['#3a6073', '#3a7bd5', '#ffd200', '#f12711', '#f5af19']);
+    setPaletteTab('creator');
+  };
+
+  // Open Creator for editing an existing palette
+  const handleStartEditPalette = (palette: ColorPaletteOption) => {
+    setEditingPaletteId(palette.id);
+    setCreatorName(palette.name);
+    setCreatorCategory(palette.category || 'Minhas Paletas');
+    setCreatorColors(palette.colors.length > 0 ? [...palette.colors] : ['#3a6073', '#3a7bd5', '#ffd200']);
+    setPaletteTab('creator');
+  };
+
+  // Save palette from creator
+  const handleSaveCreatorPalette = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!creatorName.trim()) {
+      addToast('Por favor dê um nome para sua paleta de cores.', 'error');
+      return;
+    }
+    if (creatorColors.length < 3) {
+      addToast('A paleta deve conter pelo menos 3 cores.', 'error');
+      return;
+    }
+
+    onSaveCustomPalette(creatorName.trim(), creatorColors, creatorCategory.trim(), editingPaletteId || undefined);
+    
+    // Automatically select the created/updated palette
+    const targetId = editingPaletteId || `custom-active`;
+    setPaletteType('custom');
+    setPaletteTab('custom');
+    setEditingPaletteId(null);
+
+    // Apply to 60-30-10 if not customized
+    if (!useCustom603010) {
+      setCustomDominant(creatorColors[0]);
+      setCustomSecondary(creatorColors[1] || creatorColors[0]);
+      setCustomAccent(creatorColors[2] || creatorColors[0]);
+    }
+  };
+
+  // Add / remove color in creator
+  const handleAddCreatorColor = () => {
+    if (creatorColors.length >= 8) {
+      addToast('Máximo de 8 cores por paleta atingido.', 'info');
+      return;
+    }
+    // Generate a complementary or harmonious default color
+    const defaultColors = ['#e67e22', '#1abc9c', '#9b59b6', '#34495e', '#e74c3c', '#2ecc71', '#f39c12'];
+    const nextColor = defaultColors[creatorColors.length % defaultColors.length];
+    setCreatorColors([...creatorColors, nextColor]);
+  };
+
+  const handleUpdateCreatorColor = (index: number, newHex: string) => {
+    const updated = [...creatorColors];
+    updated[index] = newHex.toUpperCase();
+    setCreatorColors(updated);
+  };
+
+  const handleRemoveCreatorColor = (index: number) => {
+    if (creatorColors.length <= 3) {
+      addToast('Uma paleta precisa ter no mínimo 3 cores para a regra 60-30-10.', 'info');
+      return;
+    }
+    setCreatorColors(creatorColors.filter((_, i) => i !== index));
   };
 
   // Sync paper suggestion when technique changes
@@ -109,10 +232,11 @@ export function ColoristStudio({
 
   // Build Final Prompt in Real-Time
   const generatedPrompt = useMemo(() => {
+    const isCustom = paletteType === 'custom' && activeCustomPalette;
     return buildColoristPrompt({
       drawingType,
       techniqueId: selectedTechniqueId,
-      paletteId: selectedMoodId,
+      paletteId: isCustom ? activeCustomPalette.id : selectedMoodId,
       useCustom603010,
       rule603010: {
         dominant: customDominant,
@@ -124,11 +248,15 @@ export function ColoristStudio({
       temperatureId: selectedTemperatureId,
       paperId: selectedPaperId,
       colorIntensity,
+      customPaletteName: isCustom ? activeCustomPalette.name : undefined,
+      customPaletteColors: isCustom ? activeCustomPalette.colors : undefined,
       customNotes
     });
   }, [
     drawingType,
     selectedTechniqueId,
+    paletteType,
+    activeCustomPalette,
     selectedMoodId,
     useCustom603010,
     customDominant,
@@ -181,13 +309,16 @@ export function ColoristStudio({
   const handleReset = () => {
     setDrawingType('nanquim');
     setSelectedTechniqueId('guache');
+    setPaletteType('mood');
     setSelectedMoodId('drama-melancolia');
+    setSelectedCustomPaletteId(null);
     setColorIntensity('balanced');
     setUseCustom603010(false);
     setSelectedLightingId('soft-diffuse');
     setSelectedTemperatureId('warm');
     setSelectedPaperId('cold-press');
     setCustomNotes('');
+    setPaletteTab('moods');
     addToast('Configurações de colorização resetadas.', 'info');
   };
 
@@ -196,9 +327,6 @@ export function ColoristStudio({
     if (techniqueCategory === 'Todos') return PAINTING_TECHNIQUES;
     return PAINTING_TECHNIQUES.filter(t => t.category === techniqueCategory);
   }, [techniqueCategory]);
-
-  const activeTechnique = PAINTING_TECHNIQUES.find(t => t.id === selectedTechniqueId) || PAINTING_TECHNIQUES[0];
-  const activeMood = COLOR_MOODS.find(m => m.id === selectedMoodId) || COLOR_MOODS[0];
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -463,7 +591,7 @@ export function ColoristStudio({
             </div>
           </section>
 
-          {/* 3. SEÇÃO: PSICOLOGIA DAS CORES & HARMONIA 60-30-10 */}
+          {/* 3. SEÇÃO: PSICOLOGIA DAS CORES, SELETOR & PALETAS PERSONALIZADAS */}
           <section className={`p-6 rounded-3xl border ${themeClasses.card}`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
               <div className="flex items-center gap-2.5">
@@ -471,8 +599,8 @@ export function ColoristStudio({
                   theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-[#8b5a2b] text-white'
                 }`}>3</span>
                 <div>
-                  <h2 className="text-base font-bold">Psicologia das Cores & Regra 60-30-10</h2>
-                  <p className={`text-xs ${themeClasses.textMuted}`}>Defina a narrativa emocional e a hierarquia cromática da sua pintura.</p>
+                  <h2 className="text-base font-bold">Psicologia das Cores & Paletas Personalizadas</h2>
+                  <p className={`text-xs ${themeClasses.textMuted}`}>Escolha paletas narrativas, monte e salve suas próprias combinações cromáticas.</p>
                 </div>
               </div>
 
@@ -500,46 +628,364 @@ export function ColoristStudio({
               </div>
             </div>
 
-            {/* Grid de Paletas Emocionais */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-              {COLOR_MOODS.map((mood) => {
-                const isSelected = selectedMoodId === mood.id;
-                return (
-                  <div
-                    key={mood.id}
-                    onClick={() => handleMoodSelect(mood)}
-                    className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
-                      isSelected
-                        ? themeClasses.optionActive
-                        : themeClasses.option + ' hover:border-[#8b5a2b]/40'
+            {/* Sub-Abas: Climas Narrativos vs. Minhas Paletas vs. Criar Paleta */}
+            <div className="flex items-center gap-2 mb-5 p-1 rounded-2xl border bg-black/5 dark:bg-zinc-950/60 border-black/5 dark:border-zinc-800/80">
+              <button
+                type="button"
+                onClick={() => setPaletteTab('moods')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  paletteTab === 'moods'
+                    ? theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'bg-[#8b5a2b] text-white shadow-md'
+                    : 'opacity-70 hover:opacity-100'
+                }`}
+              >
+                <span>🎨</span>
+                <span>Climas & Psicologia ({COLOR_MOODS.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaletteTab('custom')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  paletteTab === 'custom'
+                    ? theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'bg-[#8b5a2b] text-white shadow-md'
+                    : 'opacity-70 hover:opacity-100'
+                }`}
+              >
+                <Bookmark size={13} />
+                <span>Minhas Paletas ({customPalettes.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleStartCreatePalette}
+                className={`py-2 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  paletteTab === 'creator'
+                    ? theme === 'dark' ? 'bg-emerald-600 text-white shadow-md' : 'bg-emerald-700 text-white shadow-md'
+                    : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'
+                }`}
+              >
+                <Plus size={14} />
+                <span>Nova Paleta</span>
+              </button>
+            </div>
+
+            {/* CONTEÚDO DA SUB-ABA 1: CLIMAS NARRATIVOS */}
+            {paletteTab === 'moods' && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 animate-in fade-in duration-200">
+                {COLOR_MOODS.map((mood) => {
+                  const isSelected = paletteType === 'mood' && selectedMoodId === mood.id;
+                  return (
+                    <div
+                      key={mood.id}
+                      onClick={() => handleMoodSelect(mood)}
+                      className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                        isSelected
+                          ? themeClasses.optionActive
+                          : themeClasses.option + ' hover:border-[#8b5a2b]/40'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold">{mood.name}</span>
+                        <span className="text-[9px] px-2 py-0.5 rounded-md font-semibold bg-black/10 dark:bg-white/10 opacity-75">
+                          {mood.category}
+                        </span>
+                      </div>
+
+                      {/* Faixa de Cores HEX */}
+                      <div className="flex h-3.5 rounded-lg overflow-hidden gap-1 mb-2">
+                        {mood.colors.map((color, i) => (
+                          <div
+                            key={i}
+                            className="flex-1 transition-transform hover:scale-110"
+                            style={{ backgroundColor: color }}
+                            title={color}
+                          />
+                        ))}
+                      </div>
+
+                      <p className={`text-[11px] ${themeClasses.textMuted} line-clamp-2 leading-tight`}>
+                        {mood.description}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* CONTEÚDO DA SUB-ABA 2: MINHAS PALETAS PERSONALIZADAS */}
+            {paletteTab === 'custom' && (
+              <div className="mb-6 animate-in fade-in duration-200">
+                {customPalettes.length === 0 ? (
+                  <div className="p-8 rounded-2xl border border-dashed text-center flex flex-col items-center justify-center gap-3 bg-black/5 dark:bg-zinc-950/40">
+                    <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-400">
+                      <FolderHeart size={24} />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold">Nenhuma Paleta Personalizada Criada</h4>
+                      <p className={`text-xs ${themeClasses.textMuted} mt-1 max-w-md`}>
+                        Você pode criar paletas com suas cores exclusivas, salvá-las com o nome que preferir e aplicá-las em qualquer colorização!
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleStartCreatePalette}
+                      className={`mt-2 px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 text-white shadow-lg ${
+                        theme === 'dark' ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-[#8b5a2b] hover:bg-[#724820]'
+                      }`}
+                    >
+                      <Plus size={15} />
+                      Criar Minha Primeira Paleta
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {customPalettes.map((palette) => {
+                      const isSelected = paletteType === 'custom' && selectedCustomPaletteId === palette.id;
+                      return (
+                        <div
+                          key={palette.id}
+                          className={`p-3.5 rounded-2xl border text-left transition-all relative group ${
+                            isSelected
+                              ? themeClasses.optionActive
+                              : themeClasses.option + ' hover:border-[#8b5a2b]/40'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2 truncate">
+                              <Bookmark size={13} className={isSelected ? 'text-amber-400' : 'opacity-40'} />
+                              <span className="text-xs font-bold truncate">{palette.name}</span>
+                            </div>
+                            <div className="flex items-center gap-1 opacity-90">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleStartEditPalette(palette);
+                                }}
+                                className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 text-indigo-400 transition-all"
+                                title="Editar Paleta"
+                              >
+                                <Edit2 size={13} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onDeleteCustomPalette(palette.id);
+                                  if (selectedCustomPaletteId === palette.id) {
+                                    setSelectedCustomPaletteId(null);
+                                    setPaletteType('mood');
+                                  }
+                                }}
+                                className="p-1 rounded-lg hover:bg-rose-500/10 text-rose-400 transition-all"
+                                title="Excluir Paleta"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Faixa de Cores HEX */}
+                          <div className="flex h-4 rounded-lg overflow-hidden gap-1 mb-2.5">
+                            {palette.colors.map((color, i) => (
+                              <div
+                                key={i}
+                                className="flex-1 transition-transform hover:scale-110"
+                                style={{ backgroundColor: color }}
+                                title={`${color} (Clique para copiar)`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigator.clipboard.writeText(color);
+                                  addToast(`Cor ${color} copiada!`, 'info');
+                                }}
+                              />
+                            ))}
+                          </div>
+
+                          <div className="flex items-center justify-between text-[11px]">
+                            <span className={`${themeClasses.textMuted} truncate`}>
+                              {palette.colors.length} cores • {palette.category || 'Minhas Paletas'}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleCustomPaletteSelect(palette)}
+                              className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${
+                                isSelected
+                                  ? 'bg-emerald-500 text-white font-black'
+                                  : 'bg-black/10 dark:bg-white/10 hover:bg-black/20'
+                              }`}
+                            >
+                              {isSelected ? 'Ativa no Prompt' : 'Usar Paleta'}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* CONTEÚDO DA SUB-ABA 3: CRIADOR / EDITOR DE PALETAS */}
+            {paletteTab === 'creator' && (
+              <form onSubmit={handleSaveCreatorPalette} className="p-5 rounded-2xl border bg-black/5 dark:bg-zinc-950/60 border-black/10 dark:border-zinc-800 space-y-5 mb-6 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500">
+                      <Wand2 size={16} />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold uppercase tracking-wider">
+                        {editingPaletteId ? 'Editar Paleta de Cores' : 'Criar Nova Paleta Personalizada'}
+                      </h3>
+                      <p className={`text-[11px] ${themeClasses.textMuted}`}>
+                        Monte sua harmonia exclusiva e salve para usar sempre que quiser.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPaletteTab('custom')}
+                    className="p-1.5 rounded-lg hover:bg-black/10 dark:hover:bg-white/10"
+                    title="Fechar Criador"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Nome e Categoria da Paleta */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold">Nome da Paleta *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ex: Fantasia Élfica, Neon Vintage, Pôr do Sol Quente..."
+                      value={creatorName}
+                      onChange={(e) => setCreatorName(e.target.value)}
+                      className={`w-full p-2.5 rounded-xl border text-xs ${
+                        theme === 'dark' 
+                          ? 'bg-zinc-900 border-zinc-700 text-zinc-100 placeholder-zinc-500' 
+                          : 'bg-white border-[#d3cbb3] text-[#433422] placeholder-[#8b7e6a]/60'
+                      }`}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold">Categoria</label>
+                    <input
+                      type="text"
+                      placeholder="Ex: Fantasia, Retrô, Paisagem, Minhas Paletas..."
+                      value={creatorCategory}
+                      onChange={(e) => setCreatorCategory(e.target.value)}
+                      className={`w-full p-2.5 rounded-xl border text-xs ${
+                        theme === 'dark' 
+                          ? 'bg-zinc-900 border-zinc-700 text-zinc-100 placeholder-zinc-500' 
+                          : 'bg-white border-[#d3cbb3] text-[#433422] placeholder-[#8b7e6a]/60'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Visualizador da Faixa de Cores em Tempo Real */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold">Pré-visualização da Paleta:</span>
+                    <span className={`text-[10px] ${themeClasses.textMuted}`}>{creatorColors.length} cores configuradas</span>
+                  </div>
+                  <div className="flex h-7 rounded-xl overflow-hidden shadow-inner border border-black/10 dark:border-white/10">
+                    {creatorColors.map((color, i) => (
+                      <div
+                        key={i}
+                        className="flex-1 flex items-center justify-center transition-transform hover:scale-105"
+                        style={{ backgroundColor: color }}
+                      >
+                        <span className="text-[9px] font-mono font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] text-white">
+                          {color}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Grade de Slots de Cores do Criador */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold">Amostras de Cores (Mínimo 3, Máximo 8):</label>
+                    {creatorColors.length < 8 && (
+                      <button
+                        type="button"
+                        onClick={handleAddCreatorColor}
+                        className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                      >
+                        <Plus size={13} />
+                        Adicionar Cor
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {creatorColors.map((color, index) => (
+                      <div
+                        key={index}
+                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 ${
+                          theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-[#d3cbb3]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <input
+                            type="color"
+                            value={color}
+                            onChange={(e) => handleUpdateCreatorColor(index, e.target.value)}
+                            className="w-7 h-7 rounded-lg border-0 cursor-pointer bg-transparent flex-shrink-0"
+                          />
+                          <input
+                            type="text"
+                            value={color}
+                            onChange={(e) => handleUpdateCreatorColor(index, e.target.value)}
+                            className="w-16 text-xs font-mono font-bold uppercase bg-transparent border-0 p-0 focus:outline-none focus:ring-0"
+                          />
+                        </div>
+                        {creatorColors.length > 3 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveCreatorColor(index)}
+                            className="p-1 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-all flex-shrink-0"
+                            title="Remover cor"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Botões de Ação do Formulário */}
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-black/10 dark:border-zinc-800">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPaletteTab('custom');
+                      setEditingPaletteId(null);
+                    }}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
+                      theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-white border-[#d3cbb3] text-[#8b7e6a]'
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold">{mood.name}</span>
-                      <span className="text-[9px] px-2 py-0.5 rounded-md font-semibold bg-black/10 dark:bg-white/10 opacity-75">
-                        {mood.category}
-                      </span>
-                    </div>
-
-                    {/* Faixa de Cores HEX */}
-                    <div className="flex h-3 rounded-lg overflow-hidden gap-1 mb-2">
-                      {mood.colors.map((color, i) => (
-                        <div
-                          key={i}
-                          className="flex-1 transition-transform hover:scale-110"
-                          style={{ backgroundColor: color }}
-                          title={color}
-                        />
-                      ))}
-                    </div>
-
-                    <p className={`text-[11px] ${themeClasses.textMuted} line-clamp-2 leading-tight`}>
-                      {mood.description}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+                  >
+                    <Save size={14} />
+                    <span>{editingPaletteId ? 'Atualizar Paleta' : 'Salvar Paleta'}</span>
+                  </button>
+                </div>
+              </form>
+            )}
 
             {/* Bloco Interativo: Regra 60-30-10 */}
             <div className={`p-4 rounded-2xl border ${
@@ -572,12 +1018,12 @@ export function ColoristStudio({
                     <input
                       type="color"
                       disabled={!useCustom603010}
-                      value={useCustom603010 ? customDominant : activeMood.rule603010.dominant}
+                      value={useCustom603010 ? customDominant : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[0] : activeMood.rule603010.dominant)}
                       onChange={(e) => setCustomDominant(e.target.value)}
                       className="w-6 h-6 rounded-lg border-0 cursor-pointer bg-transparent disabled:opacity-75"
                     />
                     <span className="text-xs font-mono font-bold">
-                      {useCustom603010 ? customDominant : activeMood.rule603010.dominant}
+                      {useCustom603010 ? customDominant : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[0] : activeMood.rule603010.dominant)}
                     </span>
                   </div>
                 </div>
@@ -592,12 +1038,12 @@ export function ColoristStudio({
                     <input
                       type="color"
                       disabled={!useCustom603010}
-                      value={useCustom603010 ? customSecondary : activeMood.rule603010.secondary}
+                      value={useCustom603010 ? customSecondary : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[1] || activeCustomPalette.colors[0] : activeMood.rule603010.secondary)}
                       onChange={(e) => setCustomSecondary(e.target.value)}
                       className="w-6 h-6 rounded-lg border-0 cursor-pointer bg-transparent disabled:opacity-75"
                     />
                     <span className="text-xs font-mono font-bold">
-                      {useCustom603010 ? customSecondary : activeMood.rule603010.secondary}
+                      {useCustom603010 ? customSecondary : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[1] || activeCustomPalette.colors[0] : activeMood.rule603010.secondary)}
                     </span>
                   </div>
                 </div>
@@ -612,12 +1058,12 @@ export function ColoristStudio({
                     <input
                       type="color"
                       disabled={!useCustom603010}
-                      value={useCustom603010 ? customAccent : activeMood.rule603010.accent}
+                      value={useCustom603010 ? customAccent : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[2] || activeCustomPalette.colors[0] : activeMood.rule603010.accent)}
                       onChange={(e) => setCustomAccent(e.target.value)}
                       className="w-6 h-6 rounded-lg border-0 cursor-pointer bg-transparent disabled:opacity-75"
                     />
                     <span className="text-xs font-mono font-bold">
-                      {useCustom603010 ? customAccent : activeMood.rule603010.accent}
+                      {useCustom603010 ? customAccent : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[2] || activeCustomPalette.colors[0] : activeMood.rule603010.accent)}
                     </span>
                   </div>
                 </div>
@@ -787,13 +1233,17 @@ export function ColoristStudio({
                 <span className="text-base">🎨</span>
                 <div className="truncate">
                   <div className="font-bold truncate">{activeTechnique.label}</div>
-                  <div className={`text-[10px] truncate ${themeClasses.textMuted}`}>{activeMood.name}</div>
+                  <div className={`text-[10px] truncate ${themeClasses.textMuted}`}>
+                    {paletteType === 'custom' && activeCustomPalette 
+                      ? `Paleta: ${activeCustomPalette.name}` 
+                      : `Clima: ${activeMood.name}`}
+                  </div>
                 </div>
               </div>
               <div className="flex h-4 w-12 rounded overflow-hidden flex-shrink-0">
-                <div className="flex-1" style={{ backgroundColor: useCustom603010 ? customDominant : activeMood.rule603010.dominant }} />
-                <div className="flex-1" style={{ backgroundColor: useCustom603010 ? customSecondary : activeMood.rule603010.secondary }} />
-                <div className="flex-1" style={{ backgroundColor: useCustom603010 ? customAccent : activeMood.rule603010.accent }} />
+                <div className="flex-1" style={{ backgroundColor: useCustom603010 ? customDominant : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[0] : activeMood.rule603010.dominant) }} />
+                <div className="flex-1" style={{ backgroundColor: useCustom603010 ? customSecondary : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[1] || activeCustomPalette.colors[0] : activeMood.rule603010.secondary) }} />
+                <div className="flex-1" style={{ backgroundColor: useCustom603010 ? customAccent : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[2] || activeCustomPalette.colors[0] : activeMood.rule603010.accent) }} />
               </div>
             </div>
 
