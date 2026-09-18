@@ -41,6 +41,9 @@ import {
   PAINTING_TECHNIQUES,
   COLOR_MOODS,
   LIGHTING_OPTIONS,
+  LIGHTING_DIRECTIONS,
+  LIGHTING_TYPES,
+  LIGHTING_SHADOW_STYLES,
   TEMPERATURE_OPTIONS,
   PAPER_TEXTURES,
   PLATFORM_GUIDES,
@@ -49,9 +52,13 @@ import {
   PaintingTechniqueOption,
   ColorMoodOption,
   ElementColorAssignment,
-  PresetElementOption
+  PresetElementOption,
+  LightingDirectionOption,
+  LightingTypeOption,
+  LightingShadowStyleOption
 } from '../data/coloristData';
 import { PhotoshopColorPickerModal } from './PhotoshopColorPickerModal';
+import { LightingCompassWidget } from './LightingCompassWidget';
 
 interface ColoristStudioProps {
   theme: Theme;
@@ -106,6 +113,9 @@ export function ColoristStudio({
 
   // Lighting & Paper
   const [selectedLightingId, setSelectedLightingId] = useState<string>('soft-diffuse');
+  const [lightingDirectionId, setLightingDirectionId] = useState<string>('top-left');
+  const [lightingTypeId, setLightingTypeId] = useState<string>('directional-spot');
+  const [lightingShadowStyle, setLightingShadowStyle] = useState<'soft' | 'hard' | 'volumetric'>('soft');
   const [selectedTemperatureId, setSelectedTemperatureId] = useState<string>('warm');
   const [selectedPaperId, setSelectedPaperId] = useState<string>('cold-press');
   const [customNotes, setCustomNotes] = useState<string>('');
@@ -327,6 +337,9 @@ export function ColoristStudio({
       },
       colorMoodId: selectedMoodId,
       lightingId: selectedLightingId,
+      lightingDirectionId,
+      lightingTypeId,
+      lightingShadowStyle,
       temperatureId: selectedTemperatureId,
       paperId: selectedPaperId,
       colorIntensity,
@@ -346,6 +359,9 @@ export function ColoristStudio({
     customSecondary,
     customAccent,
     selectedLightingId,
+    lightingDirectionId,
+    lightingTypeId,
+    lightingShadowStyle,
     selectedTemperatureId,
     selectedPaperId,
     colorIntensity,
@@ -399,6 +415,9 @@ export function ColoristStudio({
     setColorIntensity('balanced');
     setUseCustom603010(false);
     setSelectedLightingId('soft-diffuse');
+    setLightingDirectionId('top-left');
+    setLightingTypeId('directional-spot');
+    setLightingShadowStyle('soft');
     setSelectedTemperatureId('warm');
     setSelectedPaperId('cold-press');
     setElementColors([]);
@@ -1539,47 +1558,38 @@ export function ColoristStudio({
           </section>
 
           {/* 5. SEÇÃO: ILUMINAÇÃO, TEMPERATURA & SUPORTE */}
-          <section className={`p-6 rounded-3xl border ${themeClasses.card}`}>
-            <div className="flex items-center gap-2.5 mb-5">
+          <section className={`p-6 rounded-3xl border ${themeClasses.card} space-y-6`}>
+            <div className="flex items-center gap-2.5">
               <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black ${
                 theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-[#8b5a2b] text-white'
               }`}>5</span>
               <div>
-                <h2 className="text-base font-bold">Iluminação, Temperatura & Textura de Suporte</h2>
-                <p className={`text-xs ${themeClasses.textMuted}`}>Ajuste a direção das sombras, calor da cena e superfície física do papel.</p>
+                <h2 className="text-base font-bold">Iluminação, Direção da Luz & Textura de Suporte</h2>
+                <p className={`text-xs ${themeClasses.textMuted}`}>
+                  Defina de onde a luz incide na cena usando a bússola interativa, o tipo de emissão e a superfície física.
+                </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
-              {/* Estilo de Iluminação */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold flex items-center gap-1.5">
-                  <Sun size={13} className="text-amber-500" />
-                  Direção da Luz
-                </label>
-                <select
-                  value={selectedLightingId}
-                  onChange={(e) => setSelectedLightingId(e.target.value)}
-                  className={`w-full p-2.5 rounded-xl border text-xs font-medium ${
-                    theme === 'dark' 
-                      ? 'bg-zinc-900 border-zinc-700 text-zinc-100' 
-                      : 'bg-white border-[#d3cbb3] text-[#433422]'
-                  }`}
-                >
-                  {LIGHTING_OPTIONS.map(l => (
-                    <option key={l.id} value={l.id}>{l.name}</option>
-                  ))}
-                </select>
-                <p className={`text-[10px] ${themeClasses.textMuted}`}>
-                  {LIGHTING_OPTIONS.find(l => l.id === selectedLightingId)?.description}
-                </p>
-              </div>
+            {/* WIDGET INTERATIVO: BÚSSOLA 3X3 & TIPOS DE LUZ */}
+            <LightingCompassWidget
+              theme={theme}
+              themeClasses={themeClasses}
+              selectedDirectionId={lightingDirectionId}
+              onSelectDirection={setLightingDirectionId}
+              selectedTypeId={lightingTypeId}
+              onSelectType={setLightingTypeId}
+              selectedShadowStyle={lightingShadowStyle}
+              onSelectShadowStyle={setLightingShadowStyle}
+            />
 
+            {/* Configurações Complementares: Temperatura e Papel */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-black/10 dark:border-zinc-800">
               {/* Temperatura de Cor */}
               <div className="space-y-2">
                 <label className="text-xs font-bold flex items-center gap-1.5">
                   <Flame size={13} className="text-rose-500" />
-                  Temperatura Térmica
+                  Temperatura Térmica da Cena
                 </label>
                 <select
                   value={selectedTemperatureId}
@@ -1603,7 +1613,7 @@ export function ColoristStudio({
               <div className="space-y-2">
                 <label className="text-xs font-bold flex items-center gap-1.5">
                   <FileText size={13} className="text-indigo-400" />
-                  Textura do Papel / Tela
+                  Textura do Papel / Suporte de Arte
                 </label>
                 <select
                   value={selectedPaperId}
@@ -1625,7 +1635,7 @@ export function ColoristStudio({
             </div>
 
             {/* Campo de Notas Livres do Colorista */}
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 pt-2">
               <label className="text-xs font-bold flex items-center gap-1.5">
                 <Info size={13} className="text-indigo-400" />
                 Notas Adicionais do Colorista (Opcional)

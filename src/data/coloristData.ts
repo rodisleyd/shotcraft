@@ -49,6 +49,33 @@ export interface LightingOption {
   prompt: string;
 }
 
+export interface LightingDirectionOption {
+  id: string;
+  name: string;
+  shortName: string;
+  description: string;
+  prompt: string;
+  shadowAngleDeg: number;
+  icon: string;
+  matrixPos: { row: number; col: number };
+}
+
+export interface LightingTypeOption {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  icon: string;
+  prompt: string;
+}
+
+export interface LightingShadowStyleOption {
+  id: 'soft' | 'hard' | 'volumetric';
+  name: string;
+  description: string;
+  prompt: string;
+}
+
 export interface TemperatureOption {
   id: string;
   name: string;
@@ -399,6 +426,215 @@ export const LIGHTING_OPTIONS: LightingOption[] = [
     name: 'Luz Chapada / Uniforme (Gráfico 2D)',
     description: 'Sem sombras realistas, priorizando a pureza das tintas e do traço.',
     prompt: 'flat uniform lighting, minimalist clean shadows, pure graphic art aesthetic'
+  }
+];
+
+export const LIGHTING_DIRECTIONS: LightingDirectionOption[] = [
+  {
+    id: 'top-left',
+    name: 'Superior Esquerdo (45°)',
+    shortName: 'Sup. Esquerdo',
+    description: 'Luz clássica vinda do canto superior esquerdo, criando relevo natural e sombras para a direita inferior.',
+    prompt: 'key light source striking from top-left at a 45-degree angle, casting realistic diagonal drop shadows down-right',
+    shadowAngleDeg: 135,
+    icon: '↖️',
+    matrixPos: { row: 0, col: 0 }
+  },
+  {
+    id: 'top',
+    name: 'Zenital / Superior (90° Top-Down)',
+    shortName: 'Zenital (Top)',
+    description: 'Luz vinda diretamente de cima como o sol do meio-dia ou lustre de teto, sombras sob o queixo e quepe.',
+    prompt: 'overhead zenithal top-down key light falling directly from above, casting short vertical downward shadows',
+    shadowAngleDeg: 90,
+    icon: '⬆️',
+    matrixPos: { row: 0, col: 1 }
+  },
+  {
+    id: 'top-right',
+    name: 'Superior Direito (45°)',
+    shortName: 'Sup. Direito',
+    description: 'Luz vinda do canto superior direito, projetando sombras para a esquerda inferior.',
+    prompt: 'key light source striking from top-right at a 45-degree angle, casting realistic diagonal drop shadows down-left',
+    shadowAngleDeg: 225,
+    icon: '↗️',
+    matrixPos: { row: 0, col: 2 }
+  },
+  {
+    id: 'left',
+    name: 'Lateral Esquerda (90° Split)',
+    shortName: 'Lateral Esq.',
+    description: 'Luz vinda da extrema esquerda, recortando metade do assunto e criando forte dramaticidade lateral.',
+    prompt: 'strong direct side lighting from the left at a 90-degree angle, split lighting effect with heavy dimensional relief',
+    shadowAngleDeg: 180,
+    icon: '⬅️',
+    matrixPos: { row: 1, col: 0 }
+  },
+  {
+    id: 'right',
+    name: 'Lateral Direita (90° Split)',
+    shortName: 'Lateral Dir.',
+    description: 'Luz vinda da extrema direita, gerando volume acentuado na lateral oposta.',
+    prompt: 'strong direct side lighting from the right at a 90-degree angle, split lighting effect with dramatic contour carving',
+    shadowAngleDeg: 0,
+    icon: '➡️',
+    matrixPos: { row: 1, col: 2 }
+  },
+  {
+    id: 'bottom-left',
+    name: 'Inferior Esquerdo (Contra-Plongée)',
+    shortName: 'Inf. Esquerdo',
+    description: 'Luz ascendente de baixo para cima pela esquerda, clima teatral, misterioso ou sobrenatural.',
+    prompt: 'low-angle upward key light from the bottom-left, theatrical mysterious upward shadows',
+    shadowAngleDeg: 315,
+    icon: '↙️',
+    matrixPos: { row: 2, col: 0 }
+  },
+  {
+    id: 'bottom',
+    name: 'Inferior / De Baixo (Underlight)',
+    shortName: 'De Baixo (Monster)',
+    description: 'Luz assustadora ou dramática vinda diretamente do chão (fogueira, chão iluminado ou efeito terror).',
+    prompt: 'dramatic underlighting rising straight from below, expressive upward shadow projections and menacing theatrical mood',
+    shadowAngleDeg: 270,
+    icon: '⬇️',
+    matrixPos: { row: 2, col: 1 }
+  },
+  {
+    id: 'bottom-right',
+    name: 'Inferior Direito (Contra-Plongée)',
+    shortName: 'Inf. Direito',
+    description: 'Luz ascendente vinda do canto inferior direito com sombras invertidas para cima.',
+    prompt: 'low-angle upward key light from the bottom-right, dynamic atmospheric upward shadow casting',
+    shadowAngleDeg: 45,
+    icon: '↘️',
+    matrixPos: { row: 2, col: 2 }
+  },
+  {
+    id: 'front',
+    name: 'Frontal Direta (Ring Light / Flat)',
+    shortName: 'Frontal',
+    description: 'Luz vinda diretamente da frente, eliminando a maioria das sombras laterais para visual nítido.',
+    prompt: 'direct frontal key light illuminating the subject directly from the camera perspective, minimal cast shadows',
+    shadowAngleDeg: 0,
+    icon: '⏺️',
+    matrixPos: { row: 1, col: 1 }
+  },
+  {
+    id: 'backlight',
+    name: 'Contraluz Traseiro (Rim Light / Silhueta)',
+    shortName: 'Contraluz Traseiro',
+    description: 'Fonte de luz posicionada atrás do sujeito, criando aura de luz nas bordas e silhueta imersiva.',
+    prompt: 'pure backlight illumination positioned behind the subject, brilliant luminous halo edge rim contours with silhouette separation',
+    shadowAngleDeg: 0,
+    icon: '🌟',
+    matrixPos: { row: -1, col: -1 }
+  },
+  {
+    id: 'omni',
+    name: 'Luz Ambiente 360° (Omnidirecional)',
+    shortName: 'Omni 360°',
+    description: 'Iluminação difusa envolvendo toda a cena uniformemente, sem uma única direção predominante.',
+    prompt: '360-degree omnidirectional soft ambient illumination, smooth wraparound environmental lighting without harsh directional bias',
+    shadowAngleDeg: 0,
+    icon: '🌐',
+    matrixPos: { row: -1, col: -1 }
+  }
+];
+
+export const LIGHTING_TYPES: LightingTypeOption[] = [
+  {
+    id: 'directional-spot',
+    name: 'Foco Direcional / Spot (Key Light)',
+    category: 'Foco & Volume',
+    description: 'Feixe de luz focado e direto que esculpe o volume tridimensional com sombras nítidas.',
+    icon: '💡',
+    prompt: 'intense directional spotlight key illumination with defined dimensional contrast and structured shadows'
+  },
+  {
+    id: 'omni-diffuse',
+    name: 'Omni / Difusa Ambiente (Softbox)',
+    category: 'Suave & Envolvente',
+    description: 'Luz suave e difusa de estúdio que preenche todo o ambiente sem criar sombras duras.',
+    icon: '🌐',
+    prompt: 'soft diffused ambient omnidirectional illumination, gentle smooth gradations and seamless fill'
+  },
+  {
+    id: 'sunlight-rays',
+    name: 'Luz Solar Natural & Raios (God Rays)',
+    category: 'Natural & Atmosférico',
+    description: 'Luz natural do sol com feixes volumétricos visíveis (crepuscular rays) e calor solar.',
+    icon: '☀️',
+    prompt: 'radiant natural direct sunlight with atmospheric volumetric god rays, sunbeam shafts and sun-dappled highlights'
+  },
+  {
+    id: 'rim-backlight',
+    name: 'Contraluz / Rim Light de Borda',
+    category: 'Cinemático & Silhueta',
+    description: 'Fio de luz intenso nas arestas que destaca o personagem ou objeto do plano de fundo.',
+    icon: '✨',
+    prompt: 'dramatic edge rim lighting outlining the subject contours, brilliant silhouette halo separation and kicker glow'
+  },
+  {
+    id: 'candle-flame',
+    name: 'Chama / Vela / Lampião / Fogueira',
+    category: 'Orgânico & Aconchegante',
+    description: 'Luz quente trêmula emitida por fogo orgânico, tocha ou vela, com reflexos avermelhados/dourados.',
+    icon: '🕯️',
+    prompt: 'organic warm flickering flame and candlelight illumination, intimate campfire ember glow and deep warm ambiance'
+  },
+  {
+    id: 'neon-glow',
+    name: 'Neon / Cyberpunk & Luzes Coloridas',
+    category: 'Estilizado & Sci-Fi',
+    description: 'Emissões vibrantes de tubos de neon elétricos com reflexos especulares e brilho cromático.',
+    icon: '⚡',
+    prompt: 'vibrant electric neon glow lighting, colorful specular highlights, cyberpunk illumination and reflective edge sheen'
+  },
+  {
+    id: 'window-gobo',
+    name: 'Luz de Janela / Fresta (Efeito Gobo)',
+    category: 'Narrativo & Interior',
+    description: 'Luz natural recortada por persianas ou janelas, projetando padrões geométricos de sombra.',
+    icon: '🪟',
+    prompt: 'cinematic window light spill with cast architectural gobo shadow patterns and atmospheric dust motes'
+  },
+  {
+    id: 'chiaroscuro',
+    name: 'Chiaroscuro Dramático (Hard Light)',
+    category: 'Dramático & Pintoresco',
+    description: 'Contraste extremo barroco entre luz focal brilhante e sombras pretas impenetráveis.',
+    icon: '🎭',
+    prompt: 'dramatic chiaroscuro hard light illumination, deep black shadow pools contrasting with sharp crisp highlights'
+  },
+  {
+    id: 'studio-rembrandt',
+    name: 'Estúdio Rembrandt (3 Pontos Fotográficos)',
+    category: 'Fotográfico & Clássico',
+    description: 'Iluminação clássica com triângulo luminoso na bochecha sombreada e recorte profissional.',
+    icon: '📸',
+    prompt: 'professional 3-point studio lighting setup with iconic soft Rembrandt triangle highlight on the cheek and gentle fill'
+  }
+];
+
+export const LIGHTING_SHADOW_STYLES: LightingShadowStyleOption[] = [
+  {
+    id: 'soft',
+    name: 'Sombras Suaves & Graduais',
+    description: 'Transições aveludadas entre luz e sombra sem bordas cortantes.',
+    prompt: 'gentle diffuse penumbra shadows and smooth tonal rolloff'
+  },
+  {
+    id: 'hard',
+    name: 'Sombras Duras & Recortadas',
+    description: 'Bordas nítidas de sombra com alto contraste gráfico.',
+    prompt: 'sharp crisp cast shadows with high local contrast and well-defined shadow edges'
+  },
+  {
+    id: 'volumetric',
+    name: 'Raios Volumétricos & Névoa',
+    description: 'Feixes de luz visíveis atravessando a poeira e atmosfera da cena.',
+    prompt: 'atmospheric volumetric haze, visible crepuscular light shafts cutting through the scene'
   }
 ];
 
@@ -840,7 +1076,10 @@ export function buildColoristPrompt(params: {
   useCustom603010: boolean;
   rule603010: { dominant: string; secondary: string; accent: string };
   colorMoodId: string;
-  lightingId: string;
+  lightingId?: string;
+  lightingDirectionId?: string;
+  lightingTypeId?: string;
+  lightingShadowStyle?: 'soft' | 'hard' | 'volumetric';
   temperatureId: string;
   paperId: string;
   colorIntensity: 'vibrant' | 'balanced' | 'muted' | 'monochrome';
@@ -852,9 +1091,20 @@ export function buildColoristPrompt(params: {
   const drawingTypeObj = DRAWING_TYPES.find(d => d.id === params.drawingType) || DRAWING_TYPES[0];
   const techniqueObj = PAINTING_TECHNIQUES.find(t => t.id === params.techniqueId) || PAINTING_TECHNIQUES[0];
   const moodObj = COLOR_MOODS.find(m => m.id === params.colorMoodId) || COLOR_MOODS[0];
-  const lightingObj = LIGHTING_OPTIONS.find(l => l.id === params.lightingId) || LIGHTING_OPTIONS[0];
   const tempObj = TEMPERATURE_OPTIONS.find(t => t.id === params.temperatureId) || TEMPERATURE_OPTIONS[0];
   const paperObj = PAPER_TEXTURES.find(p => p.id === params.paperId) || PAPER_TEXTURES[0];
+
+  // Dynamic Lighting Construction
+  let lightingStatement = '';
+  if (params.lightingDirectionId && params.lightingTypeId) {
+    const dirObj = LIGHTING_DIRECTIONS.find(d => d.id === params.lightingDirectionId) || LIGHTING_DIRECTIONS[0];
+    const typeObj = LIGHTING_TYPES.find(t => t.id === params.lightingTypeId) || LIGHTING_TYPES[0];
+    const shadowObj = LIGHTING_SHADOW_STYLES.find(s => s.id === (params.lightingShadowStyle || 'soft')) || LIGHTING_SHADOW_STYLES[0];
+    lightingStatement = `Illuminated by ${typeObj.prompt}, ${dirObj.prompt}, styled with ${shadowObj.prompt}`;
+  } else {
+    const lightingObj = LIGHTING_OPTIONS.find(l => l.id === (params.lightingId || 'soft-diffuse')) || LIGHTING_OPTIONS[0];
+    lightingStatement = lightingObj.prompt;
+  }
 
   const intensityDescriptor = {
     vibrant: 'high color saturation and punchy pigments',
@@ -898,7 +1148,7 @@ COLOR SCHEME & PSYCHOLOGY:
 ${colorDirection}${elementMappingSection}
 
 LIGHTING & ATMOSPHERE:
-${lightingObj.prompt}. ${tempObj.prompt}. Rendered ${paperObj.prompt}.${notesPart}
+${lightingStatement}. ${tempObj.prompt}. Rendered ${paperObj.prompt}.${notesPart}
 
 NEGATIVE RESTRICTIONS:
 --no photorealism, 3D CGI render, blurry lineart, erased lines, redrawing the sketch, altered anatomy, missing linework, deformed contours, flat plastic gradient, artifacts, watermark`;
