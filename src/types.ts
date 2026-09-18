@@ -138,3 +138,23 @@ export interface GalleryItem {
   postProcessing?: string;
   createdAt: number;
 }
+
+export type NavigationTab = 'builder' | 'colorist' | 'gallery' | 'library';
+
+export interface ColoristState {
+  drawingType: string;
+  techniqueId: string;
+  paletteId: string;
+  useCustom603010: boolean;
+  rule603010: {
+    dominant: string;
+    secondary: string;
+    accent: string;
+  };
+  colorMoodId: string;
+  lightingId: string;
+  temperatureId: string;
+  paperId: string;
+  colorIntensity: 'vibrant' | 'balanced' | 'muted' | 'monochrome';
+  customNotes: string;
+}

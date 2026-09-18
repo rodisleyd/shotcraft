@@ -27,7 +27,7 @@ import {
 import { GoogleGenAI } from "@google/genai";
 
 // Types
-import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step, ColorPaletteOption, UserAccount, GalleryItem, CharacterLockState } from './types';
+import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step, ColorPaletteOption, UserAccount, GalleryItem, CharacterLockState, NavigationTab } from './types';
 
 // Constants
 import {
@@ -56,6 +56,7 @@ import { LandingPage } from './components/LandingPage';
 import { AuthPage } from './components/AuthPage';
 import { AdminDashboard } from './components/AdminDashboard';
 import { Gallery } from './components/Gallery';
+import { ColoristStudio } from './components/ColoristStudio';
 
 // AI Optimization Service
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -98,7 +99,7 @@ export default function App() {
   const [selectedPixPlan, setSelectedPixPlan] = useState<{ credits: number; price: string } | null>(null);
   const [isSimulatingPixPayment, setIsSimulatingPixPayment] = useState(false);
 
-  const [currentTab, setCurrentTab] = useState<'builder' | 'library' | 'gallery'>('builder');
+  const [currentTab, setCurrentTab] = useState<NavigationTab>('builder');
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [subject, setSubject] = useState<string>('A mysterious detective standing in the rain');
   const [characterLock, setCharacterLock] = useState<CharacterLockState>(DEFAULT_CHARACTER_LOCK_STATE);
@@ -957,6 +958,26 @@ export default function App() {
               />
             </div>
           </div>
+        ) : currentTab === 'colorist' ? (
+          <ColoristStudio
+            theme={theme}
+            themeClasses={themeClasses}
+            user={user}
+            addToast={addToast}
+            onConsumeCredit={() => {
+              if (!user) return true;
+              if (user.isAdmin) return true;
+              const allowed = dataService.consumeCredit();
+              if (!allowed) {
+                setShowPixModal(true);
+                setSelectedPixPlan({ credits: 300, price: 'R$ 19,90' });
+                addToast('Seus créditos acabaram! Recarregue para continuar copiando.', 'error');
+                return false;
+              }
+              setUser(dataService.getCurrentUser());
+              return true;
+            }}
+          />
         ) : currentTab === 'gallery' ? (
           <Gallery
             items={galleryItems}

@@ -24,22 +24,20 @@ O projeto segue a estrutura padrão de uma aplicação React empacotada com Vite
 
 Abaixo está a lista detalhada de cada componente React e sua responsabilidade na interface:
 
-1.  **`Header.tsx`**: Renderiza a barra superior do aplicativo. Gerencia a alternância dos modos de visualização (`builder`, `library`, `gallery`), os botões de controle de créditos (incluindo o atalho para abrir o modal de recargas Pix), a chave seletora de tema (`Theme`) e os botões de logout e acesso administrativo.
+1.  **`Header.tsx`**: Renderiza a barra superior do aplicativo. Gerencia a alternância dos modos de visualização (`builder`, `colorist`, `gallery`, `library`), os botões de controle de créditos (incluindo o atalho para abrir o modal de recargas Pix), a chave seletora de tema (`Theme`) e os botões de logout e acesso administrativo.
 2.  **`Stepper.tsx`**: Exibe a linha de tempo visual com ícones dos 12 passos de configuração técnica do construtor de prompts. Controla a alteração reativa do estado `activeStep`.
-3.  **`StepContent.tsx`**: Componente crítico. Controla a renderização dinâmica de inputs dependendo do passo ativo. Inclui:
-    *   Passo 0: Textarea de assunto, botão de refinar e traduzir com IA, área de arrastar-e-soltar do *Modo Mestre* e botões de clima (*Visual Tags*).
-    *   Passos 1-7 e 9-10: Grades dinâmicas de opções técnicas de enquadramento, iluminação, cenários, estilos artísticos com *preview de hover* e visualização com zoom de imagem em modal.
-    *   Passo 8: Interface interna de cores, com abas para carregar imagem de referência, extrair paleta HEX, selecionar paletas prontas ou configurar técnicas de grading cinematográfico.
-4.  **`PromptPreview.tsx`**: Caixa reativa lateral que exibe o prompt final formatado em tempo real. Possui botões de copiar prompt (que dispara a validação de créditos), campo para salvar o prompt ativo como preset de usuário e indicador visual de cópia realizada.
-5.  **`UserPresets.tsx`**: Painel lateral contendo a listagem de presets armazenados localmente, permitindo carregar todas as seleções de câmera anteriores com um clique ou excluir presets.
-6.  **`NegativePrompt.tsx`**: Exibe a caixa de texto livre abaixo do construtor para que o usuário insira termos que a inteligência artificial deve excluir da renderização final (utiliza a sintaxe `--no`).
-7.  **`History.tsx`**: Painel lateral que lista os últimos 20 prompts copiados de forma cronológica, permitindo carregar o prompt antigo de volta à tela de trabalho ou limpar a lista.
-8.  **`Library.tsx`**: Aba de pesquisa livre de técnicas visuais. Fornece uma visualização contínua de estilos e enquadramentos organizados por abas com a funcionalidade de aplicar a técnica selecionada de forma instantânea nas seleções do Builder.
-9.  **`Gallery.tsx`**: Aba social de compartilhamento. Permite aos usuários compartilharem suas criações, visualizarem criações de terceiros, filtrarem por modo e copiarem/clonarem os prompts para o builder.
-10. **`AdminDashboard.tsx`**: Painel fechado de administração. Renderiza um gráfico de acessos nos últimos 7 dias, dados de faturamento estimado, listagem de e-mails cadastrados, botões para incremento manual de créditos e exportação em CSV para e-mail marketing.
-11. **`AuthPage.tsx`**: Tela de entrada e autenticação. Executa o cadastro automático ou login baseado em e-mail e fornece dicas de como acessar a conta administrativa (`admin@shotcraft.com`).
-12. **`LandingPage.tsx`**: Página de apresentação com design moderno que destaca os diferenciais da plataforma e convida o visitante a testar o simulador.
-13. **`Toast.tsx`**: Sistema dinâmico de exibição de alertas de feedback instantâneo (sucesso, erro, informação) empilhados no topo direito da tela.
+3.  **`StepContent.tsx`**: Componente crítico. Controla a renderização dinâmica de inputs dependendo do passo ativo.
+4.  **`ColoristStudio.tsx`**: Aba independente dedicada ao estúdio de colorização e técnicas de pintura. Permite upload de esboços/line arts, diagnóstico de traço, seleção de técnicas de pintura (Guache, Aquarela, Óleo, Acrílica, Lápis de Cor, David Aja, Cel Shading, etc.), psicologia das cores e regra 60-30-10, iluminação e geração de prompt com preservação estrita do traço original.
+5.  **`PromptPreview.tsx`**: Caixa reativa lateral que exibe o prompt final formatado em tempo real. Possui botões de copiar prompt (que dispara a validação de créditos), campo para salvar o prompt ativo como preset de usuário e indicador visual de cópia realizada.
+6.  **`UserPresets.tsx`**: Painel lateral contendo a listagem de presets armazenados localmente, permitindo carregar todas as seleções de câmera anteriores com um clique ou excluir presets.
+7.  **`NegativePrompt.tsx`**: Exibe a caixa de texto livre abaixo do construtor para que o usuário insira termos que a inteligência artificial deve excluir da renderização final (utiliza a sintaxe `--no`).
+8.  **`History.tsx`**: Painel lateral que lista os últimos 20 prompts copiados de forma cronológica, permitindo carregar o prompt antigo de volta à tela de trabalho ou limpar a lista.
+9.  **`Library.tsx`**: Aba de pesquisa livre de técnicas visuais. Fornece uma visualização contínua de estilos e enquadramentos organizados por abas com a funcionalidade de aplicar a técnica selecionada de forma instantânea nas seleções do Builder.
+10. **`Gallery.tsx`**: Aba social de compartilhamento. Permite aos usuários compartilharem suas criações, visualizarem criações de terceiros, filtrarem por modo e copiarem/clonarem os prompts para o builder.
+11. **`AdminDashboard.tsx`**: Painel fechado de administração. Renderiza um gráfico de acessos nos últimos 7 dias, dados de faturamento estimado, listagem de e-mails cadastrados, botões para incremento manual de créditos e exportação em CSV para e-mail marketing.
+12. **`AuthPage.tsx`**: Tela de entrada e autenticação. Executa o cadastro automático ou login baseado em e-mail e fornece dicas de como acessar a conta administrativa (`admin@shotcraft.com`).
+13. **`LandingPage.tsx`**: Página de apresentação com design moderno que destaca os diferenciais da plataforma e convida o visitante a testar o simulador.
+14. **`Toast.tsx`**: Sistema dinâmico de exibição de alertas de feedback instantâneo (sucesso, erro, informação) empilhados no topo direito da tela.
 
 ---
 

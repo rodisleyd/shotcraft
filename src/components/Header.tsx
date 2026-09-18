@@ -1,5 +1,5 @@
-import { Film, Lightbulb, Zap, Check, Copy, Monitor, Layout, Sparkles, RotateCcw, BookOpen, Sliders, LogOut, ShieldAlert, Coins, Image as ImageIcon } from 'lucide-react';
-import { ShotMode, Theme, UserAccount } from '../types';
+import { Film, Lightbulb, Zap, Check, Copy, Monitor, Layout, Sparkles, RotateCcw, BookOpen, Sliders, LogOut, ShieldAlert, Coins, Image as ImageIcon, Palette } from 'lucide-react';
+import { ShotMode, Theme, UserAccount, NavigationTab } from '../types';
 
 interface HeaderProps {
   mode: ShotMode;
@@ -10,8 +10,8 @@ interface HeaderProps {
   handleReset: () => void;
   copied: boolean;
   themeClasses: any;
-  currentTab: 'builder' | 'library' | 'gallery';
-  setCurrentTab: (tab: 'builder' | 'library' | 'gallery') => void;
+  currentTab: NavigationTab;
+  setCurrentTab: (tab: NavigationTab) => void;
   user: UserAccount | null;
   onLogout: () => void;
   onAdminClick: () => void;
@@ -63,6 +63,19 @@ export function Header({
               >
                 <Sliders size={13} />
                 Simulador
+              </button>
+              <button
+                onClick={() => setCurrentTab('colorist')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                  currentTab === 'colorist'
+                    ? theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-[#8b5a2b] text-white'
+                    : theme === 'dark'
+                    ? 'text-zinc-400 hover:text-zinc-100 hover:bg-white/5'
+                    : 'text-[#8b7e6a] hover:text-[#433422] hover:bg-black/5'
+                }`}
+              >
+                <Palette size={13} />
+                Colorista
               </button>
               <button
                 onClick={() => setCurrentTab('gallery')}
