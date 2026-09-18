@@ -13,6 +13,12 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         registerType: 'autoUpdate',
         includeAssets: ['favicon.png', 'icone pwa.png', 'logotipo.png'],
+        workbox: {
+          cleanupOutdatedCaches: true,
+          skipWaiting: true,
+          clientsClaim: true,
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}']
+        },
         manifest: {
           name: 'ShotCraft - Director Simulator',
           short_name: 'ShotCraft',
