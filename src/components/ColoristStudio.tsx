@@ -32,7 +32,8 @@ import {
   FolderHeart,
   X,
   Save,
-  Wand2
+  Wand2,
+  Pipette
 } from 'lucide-react';
 import { Theme, UserAccount, ColorPaletteOption } from '../types';
 import {
@@ -47,6 +48,7 @@ import {
   PaintingTechniqueOption,
   ColorMoodOption
 } from '../data/coloristData';
+import { PhotoshopColorPickerModal } from './PhotoshopColorPickerModal';
 
 interface ColoristStudioProps {
   theme: Theme;
@@ -83,15 +85,21 @@ export function ColoristStudio({
 
   // Custom 60-30-10 rule states
   const [useCustom603010, setUseCustom603010] = useState<boolean>(false);
-  const [customDominant, setCustomDominant] = useState<string>('#4f5d75');
-  const [customSecondary, setCustomSecondary] = useState<string>('#747d8c');
-  const [customAccent, setCustomAccent] = useState<string>('#eccc68');
+  const [customDominant, setCustomDominant] = useState<string>('#4F5D75');
+  const [customSecondary, setCustomSecondary] = useState<string>('#747D8C');
+  const [customAccent, setCustomAccent] = useState<string>('#ECCC68');
 
   // Palette Creator / Editor State
   const [editingPaletteId, setEditingPaletteId] = useState<string | null>(null);
   const [creatorName, setCreatorName] = useState<string>('');
   const [creatorCategory, setCreatorCategory] = useState<string>('Minhas Paletas');
-  const [creatorColors, setCreatorColors] = useState<string[]>(['#2b5876', '#4e4376', '#f39c12', '#e74c3c', '#ecf0f1']);
+  const [creatorColors, setCreatorColors] = useState<string[]>(['#2B5876', '#4E4376', '#F39C12', '#E74C3C', '#ECF0F1']);
+
+  // Photoshop Color Picker Modal State
+  const [psPickerOpen, setPsPickerOpen] = useState<boolean>(false);
+  const [psPickerInitialColor, setPsPickerInitialColor] = useState<string>('#EFA549');
+  const [psPickerTitle, setPsPickerTitle] = useState<string>('Seletor de Cores (Photoshop)');
+  const [psPickerCallback, setPsPickerCallback] = useState<((hex: string) => void) | null>(null);
 
   // Lighting & Paper
   const [selectedLightingId, setSelectedLightingId] = useState<string>('soft-diffuse');
@@ -122,15 +130,23 @@ export function ColoristStudio({
     return PAINTING_TECHNIQUES.find(t => t.id === selectedTechniqueId) || PAINTING_TECHNIQUES[0];
   }, [selectedTechniqueId]);
 
+  // Open Photoshop Color Picker
+  const openPhotoshopPicker = (initialColor: string, title: string, onSelect: (hex: string) => void) => {
+    setPsPickerInitialColor(initialColor || '#EFA549');
+    setPsPickerTitle(title);
+    setPsPickerCallback(() => onSelect);
+    setPsPickerOpen(true);
+  };
+
   // Sync colors when selecting mood
   const handleMoodSelect = (mood: ColorMoodOption) => {
     setPaletteType('mood');
     setSelectedMoodId(mood.id);
     setSelectedCustomPaletteId(null);
     if (!useCustom603010) {
-      setCustomDominant(mood.rule603010.dominant);
-      setCustomSecondary(mood.rule603010.secondary);
-      setCustomAccent(mood.rule603010.accent);
+      setCustomDominant(mood.rule603010.dominant.toUpperCase());
+      setCustomSecondary(mood.rule603010.secondary.toUpperCase());
+      setCustomAccent(mood.rule603010.accent.toUpperCase());
     }
   };
 
@@ -139,9 +155,9 @@ export function ColoristStudio({
     setPaletteType('custom');
     setSelectedCustomPaletteId(palette.id);
     if (!useCustom603010 && palette.colors.length >= 3) {
-      setCustomDominant(palette.colors[0]);
-      setCustomSecondary(palette.colors[1] || palette.colors[0]);
-      setCustomAccent(palette.colors[2] || palette.colors[0]);
+      setCustomDominant(palette.colors[0].toUpperCase());
+      setCustomSecondary((palette.colors[1] || palette.colors[0]).toUpperCase());
+      setCustomAccent((palette.colors[2] || palette.colors[0]).toUpperCase());
     }
   };
 
@@ -150,7 +166,7 @@ export function ColoristStudio({
     setEditingPaletteId(null);
     setCreatorName('');
     setCreatorCategory('Minhas Paletas');
-    setCreatorColors(['#3a6073', '#3a7bd5', '#ffd200', '#f12711', '#f5af19']);
+    setCreatorColors(['#3A6073', '#3A7BD5', '#FFD200', '#F12711', '#F5AF19']);
     setPaletteTab('creator');
   };
 
@@ -159,7 +175,7 @@ export function ColoristStudio({
     setEditingPaletteId(palette.id);
     setCreatorName(palette.name);
     setCreatorCategory(palette.category || 'Minhas Paletas');
-    setCreatorColors(palette.colors.length > 0 ? [...palette.colors] : ['#3a6073', '#3a7bd5', '#ffd200']);
+    setCreatorColors(palette.colors.length > 0 ? palette.colors.map(c => c.toUpperCase()) : ['#3A6073', '#3A7BD5', '#FFD200']);
     setPaletteTab('creator');
   };
 
@@ -177,8 +193,6 @@ export function ColoristStudio({
 
     onSaveCustomPalette(creatorName.trim(), creatorColors, creatorCategory.trim(), editingPaletteId || undefined);
     
-    // Automatically select the created/updated palette
-    const targetId = editingPaletteId || `custom-active`;
     setPaletteType('custom');
     setPaletteTab('custom');
     setEditingPaletteId(null);
@@ -197,8 +211,7 @@ export function ColoristStudio({
       addToast('Máximo de 8 cores por paleta atingido.', 'info');
       return;
     }
-    // Generate a complementary or harmonious default color
-    const defaultColors = ['#e67e22', '#1abc9c', '#9b59b6', '#34495e', '#e74c3c', '#2ecc71', '#f39c12'];
+    const defaultColors = ['#E67E22', '#1ABC9C', '#9B59B6', '#34495E', '#E74C3C', '#2ECC71', '#F39C12'];
     const nextColor = defaultColors[creatorColors.length % defaultColors.length];
     setCreatorColors([...creatorColors, nextColor]);
   };
@@ -591,7 +604,7 @@ export function ColoristStudio({
             </div>
           </section>
 
-          {/* 3. SEÇÃO: PSICOLOGIA DAS CORES, SELETOR & PALETAS PERSONALIZADAS */}
+          {/* 3. SEÇÃO: PSICOLOGIA DAS CORES, SELETOR PHOTOSHOP & PALETAS PERSONALIZADAS */}
           <section className={`p-6 rounded-3xl border ${themeClasses.card}`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
               <div className="flex items-center gap-2.5">
@@ -599,8 +612,8 @@ export function ColoristStudio({
                   theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-[#8b5a2b] text-white'
                 }`}>3</span>
                 <div>
-                  <h2 className="text-base font-bold">Psicologia das Cores & Paletas Personalizadas</h2>
-                  <p className={`text-xs ${themeClasses.textMuted}`}>Escolha paletas narrativas, monte e salve suas próprias combinações cromáticas.</p>
+                  <h2 className="text-base font-bold">Psicologia das Cores & Seletor de Cores</h2>
+                  <p className={`text-xs ${themeClasses.textMuted}`}>Use o Seletor de Cores com Conta-Gotas ou escolha climas e paletas salvas.</p>
                 </div>
               </div>
 
@@ -827,7 +840,7 @@ export function ColoristStudio({
               </div>
             )}
 
-            {/* CONTEÚDO DA SUB-ABA 3: CRIADOR / EDITOR DE PALETAS */}
+            {/* CONTEÚDO DA SUB-ABA 3: CRIADOR / EDITOR DE PALETAS (COM SELETOR PHOTOSHOP) */}
             {paletteTab === 'creator' && (
               <form onSubmit={handleSaveCreatorPalette} className="p-5 rounded-2xl border bg-black/5 dark:bg-zinc-950/60 border-black/10 dark:border-zinc-800 space-y-5 mb-6 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between">
@@ -840,7 +853,7 @@ export function ColoristStudio({
                         {editingPaletteId ? 'Editar Paleta de Cores' : 'Criar Nova Paleta Personalizada'}
                       </h3>
                       <p className={`text-[11px] ${themeClasses.textMuted}`}>
-                        Monte sua harmonia exclusiva e salve para usar sempre que quiser.
+                        Monte sua harmonia exclusiva usando o Seletor de Cores do Photoshop ou Conta-Gotas.
                       </p>
                     </div>
                   </div>
@@ -894,12 +907,18 @@ export function ColoristStudio({
                     <span className="font-bold">Pré-visualização da Paleta:</span>
                     <span className={`text-[10px] ${themeClasses.textMuted}`}>{creatorColors.length} cores configuradas</span>
                   </div>
-                  <div className="flex h-7 rounded-xl overflow-hidden shadow-inner border border-black/10 dark:border-white/10">
+                  <div className="flex h-8 rounded-xl overflow-hidden shadow-inner border border-black/10 dark:border-white/10">
                     {creatorColors.map((color, i) => (
                       <div
                         key={i}
-                        className="flex-1 flex items-center justify-center transition-transform hover:scale-105"
+                        className="flex-1 flex items-center justify-center transition-transform hover:scale-105 cursor-pointer"
                         style={{ backgroundColor: color }}
+                        onClick={() => {
+                          openPhotoshopPicker(color, `Editar Amostra ${i + 1}`, (newHex) => {
+                            handleUpdateCreatorColor(i, newHex);
+                          });
+                        }}
+                        title={`Clique para abrir no Seletor Photoshop: ${color}`}
                       >
                         <span className="text-[9px] font-mono font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] text-white">
                           {color}
@@ -909,10 +928,10 @@ export function ColoristStudio({
                   </div>
                 </div>
 
-                {/* Grade de Slots de Cores do Criador */}
+                {/* Grade de Slots de Cores com Botão Seletor Photoshop & Conta-Gotas */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold">Amostras de Cores (Mínimo 3, Máximo 8):</label>
+                    <label className="text-xs font-bold">Amostras de Cores (Clique para abrir o Seletor do Photoshop):</label>
                     {creatorColors.length < 8 && (
                       <button
                         type="button"
@@ -929,28 +948,38 @@ export function ColoristStudio({
                     {creatorColors.map((color, index) => (
                       <div
                         key={index}
-                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 ${
+                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 transition-all hover:border-indigo-500/50 ${
                           theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-[#d3cbb3]'
                         }`}
                       >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <input
-                            type="color"
-                            value={color}
-                            onChange={(e) => handleUpdateCreatorColor(index, e.target.value)}
-                            className="w-7 h-7 rounded-lg border-0 cursor-pointer bg-transparent flex-shrink-0"
-                          />
-                          <input
-                            type="text"
-                            value={color}
-                            onChange={(e) => handleUpdateCreatorColor(index, e.target.value)}
-                            className="w-16 text-xs font-mono font-bold uppercase bg-transparent border-0 p-0 focus:outline-none focus:ring-0"
-                          />
+                        {/* Botão de Amostra Clicável que Abre o Seletor Photoshop */}
+                        <div
+                          className="flex items-center gap-2 min-w-0 cursor-pointer flex-1"
+                          onClick={() => {
+                            openPhotoshopPicker(color, `Seletor de Cor (Amostra ${index + 1})`, (newHex) => {
+                              handleUpdateCreatorColor(index, newHex);
+                            });
+                          }}
+                          title="Clique para abrir no Seletor do Photoshop"
+                        >
+                          <div
+                            className="w-7 h-7 rounded-lg border border-black/20 shadow-sm flex-shrink-0 flex items-center justify-center text-white transition-transform hover:scale-110"
+                            style={{ backgroundColor: color }}
+                          >
+                            <Pipette size={11} className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]" />
+                          </div>
+                          <span className="text-xs font-mono font-bold uppercase truncate">
+                            {color}
+                          </span>
                         </div>
+
                         {creatorColors.length > 3 && (
                           <button
                             type="button"
-                            onClick={() => handleRemoveCreatorColor(index)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveCreatorColor(index);
+                            }}
                             className="p-1 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-all flex-shrink-0"
                             title="Remover cor"
                           >
@@ -987,7 +1016,7 @@ export function ColoristStudio({
               </form>
             )}
 
-            {/* Bloco Interativo: Regra 60-30-10 */}
+            {/* Bloco Interativo: Regra 60-30-10 com Seletor do Photoshop */}
             <div className={`p-4 rounded-2xl border ${
               theme === 'dark' ? 'bg-zinc-950/60 border-zinc-800' : 'bg-black/5 border-[#d3cbb3]'
             }`}>
@@ -1014,14 +1043,23 @@ export function ColoristStudio({
                     <span className="font-bold">60% Dominante</span>
                     <span className="text-[10px] opacity-75">Fundos/Grandes Áreas</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2 rounded-xl border bg-black/10 dark:bg-zinc-900 border-black/10 dark:border-zinc-800">
-                    <input
-                      type="color"
-                      disabled={!useCustom603010}
-                      value={useCustom603010 ? customDominant : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[0] : activeMood.rule603010.dominant)}
-                      onChange={(e) => setCustomDominant(e.target.value)}
-                      className="w-6 h-6 rounded-lg border-0 cursor-pointer bg-transparent disabled:opacity-75"
-                    />
+                  <div 
+                    onClick={() => {
+                      if (!useCustom603010) return;
+                      openPhotoshopPicker(customDominant, 'Cor Dominante (60%)', (hex) => {
+                        setCustomDominant(hex);
+                      });
+                    }}
+                    className={`flex items-center gap-2 p-2 rounded-xl border transition-all ${
+                      useCustom603010 ? 'cursor-pointer hover:border-indigo-500' : 'opacity-85'
+                    } ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-[#d3cbb3]'}`}
+                  >
+                    <div
+                      className="w-6 h-6 rounded-lg border border-black/20 shadow-sm flex-shrink-0 flex items-center justify-center text-white"
+                      style={{ backgroundColor: useCustom603010 ? customDominant : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[0] : activeMood.rule603010.dominant) }}
+                    >
+                      {useCustom603010 && <Pipette size={10} className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]" />}
+                    </div>
                     <span className="text-xs font-mono font-bold">
                       {useCustom603010 ? customDominant : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[0] : activeMood.rule603010.dominant)}
                     </span>
@@ -1034,14 +1072,23 @@ export function ColoristStudio({
                     <span className="font-bold">30% Secundária</span>
                     <span className="text-[10px] opacity-75">Vestimentas/Objetos</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2 rounded-xl border bg-black/10 dark:bg-zinc-900 border-black/10 dark:border-zinc-800">
-                    <input
-                      type="color"
-                      disabled={!useCustom603010}
-                      value={useCustom603010 ? customSecondary : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[1] || activeCustomPalette.colors[0] : activeMood.rule603010.secondary)}
-                      onChange={(e) => setCustomSecondary(e.target.value)}
-                      className="w-6 h-6 rounded-lg border-0 cursor-pointer bg-transparent disabled:opacity-75"
-                    />
+                  <div 
+                    onClick={() => {
+                      if (!useCustom603010) return;
+                      openPhotoshopPicker(customSecondary, 'Cor Secundária (30%)', (hex) => {
+                        setCustomSecondary(hex);
+                      });
+                    }}
+                    className={`flex items-center gap-2 p-2 rounded-xl border transition-all ${
+                      useCustom603010 ? 'cursor-pointer hover:border-indigo-500' : 'opacity-85'
+                    } ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-[#d3cbb3]'}`}
+                  >
+                    <div
+                      className="w-6 h-6 rounded-lg border border-black/20 shadow-sm flex-shrink-0 flex items-center justify-center text-white"
+                      style={{ backgroundColor: useCustom603010 ? customSecondary : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[1] || activeCustomPalette.colors[0] : activeMood.rule603010.secondary) }}
+                    >
+                      {useCustom603010 && <Pipette size={10} className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]" />}
+                    </div>
                     <span className="text-xs font-mono font-bold">
                       {useCustom603010 ? customSecondary : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[1] || activeCustomPalette.colors[0] : activeMood.rule603010.secondary)}
                     </span>
@@ -1054,14 +1101,23 @@ export function ColoristStudio({
                     <span className="font-bold">10% Destaque / Acento</span>
                     <span className="text-[10px] opacity-75">Olhos/Luz Focal</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2 rounded-xl border bg-black/10 dark:bg-zinc-900 border-black/10 dark:border-zinc-800">
-                    <input
-                      type="color"
-                      disabled={!useCustom603010}
-                      value={useCustom603010 ? customAccent : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[2] || activeCustomPalette.colors[0] : activeMood.rule603010.accent)}
-                      onChange={(e) => setCustomAccent(e.target.value)}
-                      className="w-6 h-6 rounded-lg border-0 cursor-pointer bg-transparent disabled:opacity-75"
-                    />
+                  <div 
+                    onClick={() => {
+                      if (!useCustom603010) return;
+                      openPhotoshopPicker(customAccent, 'Cor de Destaque / Acento (10%)', (hex) => {
+                        setCustomAccent(hex);
+                      });
+                    }}
+                    className={`flex items-center gap-2 p-2 rounded-xl border transition-all ${
+                      useCustom603010 ? 'cursor-pointer hover:border-indigo-500' : 'opacity-85'
+                    } ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-[#d3cbb3]'}`}
+                  >
+                    <div
+                      className="w-6 h-6 rounded-lg border border-black/20 shadow-sm flex-shrink-0 flex items-center justify-center text-white"
+                      style={{ backgroundColor: useCustom603010 ? customAccent : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[2] || activeCustomPalette.colors[0] : activeMood.rule603010.accent) }}
+                    >
+                      {useCustom603010 && <Pipette size={10} className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]" />}
+                    </div>
                     <span className="text-xs font-mono font-bold">
                       {useCustom603010 ? customAccent : (paletteType === 'custom' && activeCustomPalette ? activeCustomPalette.colors[2] || activeCustomPalette.colors[0] : activeMood.rule603010.accent)}
                     </span>
@@ -1349,6 +1405,20 @@ export function ColoristStudio({
           </div>
         </div>
       )}
+
+      {/* Modal Seletor de Cores do Photoshop com Conta-Gotas */}
+      <PhotoshopColorPickerModal
+        isOpen={psPickerOpen}
+        initialColor={psPickerInitialColor}
+        title={psPickerTitle}
+        onClose={() => setPsPickerOpen(false)}
+        onApplyColor={(selectedHex) => {
+          if (psPickerCallback) {
+            psPickerCallback(selectedHex);
+          }
+          addToast(`Cor ${selectedHex} aplicada!`, 'success');
+        }}
+      />
     </div>
   );
 }
