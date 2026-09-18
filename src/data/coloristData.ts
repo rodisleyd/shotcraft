@@ -56,6 +56,23 @@ export interface TemperatureOption {
   prompt: string;
 }
 
+export interface ElementColorAssignment {
+  id: string;
+  name: string;
+  englishLabel: string;
+  colorHex: string;
+  category: 'character' | 'clothing' | 'environment' | 'custom';
+}
+
+export interface PresetElementOption {
+  id: string;
+  name: string;
+  englishLabel: string;
+  category: 'character' | 'clothing' | 'environment';
+  icon: string;
+  suggestedColors: Array<{ name: string; hex: string }>;
+}
+
 export interface PaperTextureOption {
   id: string;
   name: string;
@@ -486,6 +503,336 @@ export const PLATFORM_GUIDES = [
   }
 ];
 
+export const PRESET_ELEMENTS: PresetElementOption[] = [
+  // --- Personagem & Anatomia ---
+  {
+    id: 'hair',
+    name: 'Cabelo',
+    englishLabel: 'Hair',
+    category: 'character',
+    icon: '💇',
+    suggestedColors: [
+      { name: 'Preto Profundo', hex: '#111213' },
+      { name: 'Castanho Escuro', hex: '#3E2723' },
+      { name: 'Castanho Claro', hex: '#6D4C41' },
+      { name: 'Loiro Dourado', hex: '#F1C40F' },
+      { name: 'Loiro Platinado', hex: '#F5EEF8' },
+      { name: 'Ruivo Acobreado', hex: '#C0392B' },
+      { name: 'Prateado / Grisalho', hex: '#BDC3C7' },
+      { name: 'Rosa Pastel', hex: '#FADBD8' },
+      { name: 'Azul Meia-Noite', hex: '#1B263B' },
+      { name: 'Verde Esmeralda', hex: '#1E8449' }
+    ]
+  },
+  {
+    id: 'skin',
+    name: 'Tom de Pele',
+    englishLabel: 'Skin tone',
+    category: 'character',
+    icon: '👤',
+    suggestedColors: [
+      { name: 'Pele Clara Porcelana', hex: '#FDEDEC' },
+      { name: 'Pele Clara Quente', hex: '#F5D0A9' },
+      { name: 'Pele Bege / Natural', hex: '#ECC59A' },
+      { name: 'Pele Morena Clara', hex: '#D2A06E' },
+      { name: 'Pele Morena Dourada', hex: '#B87E4F' },
+      { name: 'Pele Negra Acobreada', hex: '#875133' },
+      { name: 'Pele Negra Profunda', hex: '#4A2E1B' },
+      { name: 'Pele Élfica / Pálida', hex: '#EAECEE' },
+      { name: 'Pele Fantasia Azulada', hex: '#A9CCE3' },
+      { name: 'Pele Fantasia Esmeralda', hex: '#A3E4D7' }
+    ]
+  },
+  {
+    id: 'eyes',
+    name: 'Olhos / Íris',
+    englishLabel: 'Eyes',
+    category: 'character',
+    icon: '👁️',
+    suggestedColors: [
+      { name: 'Castanho Escuro', hex: '#3E2723' },
+      { name: 'Mel / Âmbar', hex: '#D4AC0D' },
+      { name: 'Azul Safira', hex: '#2980B9' },
+      { name: 'Azul Celeste Claro', hex: '#5DADE2' },
+      { name: 'Verde Esmeralda', hex: '#27AE60' },
+      { name: 'Verde Oliva', hex: '#52796F' },
+      { name: 'Cinza Gélido', hex: '#A6ACAF' },
+      { name: 'Violeta / Roxo', hex: '#8E44AD' },
+      { name: 'Vermelho Carmim', hex: '#C0392B' },
+      { name: 'Dourado Brilhante', hex: '#F39C12' }
+    ]
+  },
+  {
+    id: 'lips',
+    name: 'Lábios / Boca',
+    englishLabel: 'Lips',
+    category: 'character',
+    icon: '👄',
+    suggestedColors: [
+      { name: 'Rosado Natural', hex: '#E8A7A1' },
+      { name: 'Nude Pêssego', hex: '#D98880' },
+      { name: 'Vermelho Clássico', hex: '#C0392B' },
+      { name: 'Vermelho Vinho', hex: '#78281F' },
+      { name: 'Coral Quente', hex: '#E59866' },
+      { name: 'Bordô Escuro', hex: '#5B2C6F' },
+      { name: 'Preto Gótico', hex: '#1C2833' }
+    ]
+  },
+  {
+    id: 'beard',
+    name: 'Barba / Pelos Faciais',
+    englishLabel: 'Beard and facial hair',
+    category: 'character',
+    icon: '🧔',
+    suggestedColors: [
+      { name: 'Preto', hex: '#17202A' },
+      { name: 'Castanho Escuro', hex: '#4A235A' },
+      { name: 'Castanho Médio', hex: '#5D4037' },
+      { name: 'Ruivo', hex: '#A04000' },
+      { name: 'Grisalho / Prata', hex: '#BDC3C7' },
+      { name: 'Branco Puro', hex: '#FDFEFE' }
+    ]
+  },
+  {
+    id: 'wings-horns',
+    name: 'Asas / Chifres / Adereços',
+    englishLabel: 'Wings, horns, and appendages',
+    category: 'character',
+    icon: '🪽',
+    suggestedColors: [
+      { name: 'Preto Obsidiana', hex: '#111213' },
+      { name: 'Branco Celestial', hex: '#F8F9F9' },
+      { name: 'Vermelho Demoníaco', hex: '#922B21' },
+      { name: 'Dourado Radiante', hex: '#F1C40F' },
+      { name: 'Osso Envelhecido', hex: '#F5EEF8' },
+      { name: 'Azul Etéreo', hex: '#5499C7' }
+    ]
+  },
+
+  // --- Vestuário & Roupas ---
+  {
+    id: 'shirt',
+    name: 'Camisa / Camiseta / Top',
+    englishLabel: 'Shirt and upper garment',
+    category: 'clothing',
+    icon: '👕',
+    suggestedColors: [
+      { name: 'Branco Puro', hex: '#FFFFFF' },
+      { name: 'Preto Carvão', hex: '#1B2631' },
+      { name: 'Azul Marinho', hex: '#1A5276' },
+      { name: 'Vermelho Carmim', hex: '#B03A2E' },
+      { name: 'Verde Floresta', hex: '#196F3D' },
+      { name: 'Amarelo Mostarda', hex: '#D4AC0D' },
+      { name: 'Cinza Chumbo', hex: '#5D6D7E' },
+      { name: 'Rosa Pastel', hex: '#F5B7B1' },
+      { name: 'Bege Creme', hex: '#F9E79F' },
+      { name: 'Roxo Imperial', hex: '#6C3483' }
+    ]
+  },
+  {
+    id: 'jacket',
+    name: 'Jaqueta / Casaco / Armadura',
+    englishLabel: 'Jacket, coat, or armor',
+    category: 'clothing',
+    icon: '🧥',
+    suggestedColors: [
+      { name: 'Couro Preto', hex: '#17202A' },
+      { name: 'Couro Marrom Envelhecido', hex: '#6E2C00' },
+      { name: 'Azul Denim / Jeans', hex: '#2471A3' },
+      { name: 'Verde Militar', hex: '#4D5656' },
+      { name: 'Metal Prata Aço', hex: '#A6ACAF' },
+      { name: 'Dourado / Bronze', hex: '#B7950B' },
+      { name: 'Vermelho Carmim', hex: '#78281F' },
+      { name: 'Cinza Asfalto', hex: '#34495E' }
+    ]
+  },
+  {
+    id: 'pants',
+    name: 'Calça / Jeans / Calças Compridas',
+    englishLabel: 'Pants and trousers',
+    category: 'clothing',
+    icon: '👖',
+    suggestedColors: [
+      { name: 'Jeans Azul Escuro', hex: '#1B4F72' },
+      { name: 'Jeans Azul Claro', hex: '#5DADE2' },
+      { name: 'Preto Puro', hex: '#111213' },
+      { name: 'Caqui / Bege', hex: '#D5D8DC' },
+      { name: 'Cinza Chumbo', hex: '#2C3E50' },
+      { name: 'Verde Oliva', hex: '#273746' },
+      { name: 'Marrom Terra', hex: '#4A235A' }
+    ]
+  },
+  {
+    id: 'shorts-skirt',
+    name: 'Bermuda / Shorts / Saia',
+    englishLabel: 'Shorts or skirt',
+    category: 'clothing',
+    icon: '🩳',
+    suggestedColors: [
+      { name: 'Jeans Desbotado', hex: '#85929E' },
+      { name: 'Preto Clássico', hex: '#1C2833' },
+      { name: 'Xadrez Vermelho / Tartan', hex: '#922B21' },
+      { name: 'Branco Verão', hex: '#FBFCFC' },
+      { name: 'Amarelo Solar', hex: '#F4D03F' },
+      { name: 'Rosa Chiclete', hex: '#F1948A' },
+      { name: 'Verde Menta', hex: '#73C6B6' }
+    ]
+  },
+  {
+    id: 'dress',
+    name: 'Vestido / Túnica / Traje Inteiro',
+    englishLabel: 'Dress, gown, or full-body robe',
+    category: 'clothing',
+    icon: '👗',
+    suggestedColors: [
+      { name: 'Vermelho Escarlate', hex: '#C0392B' },
+      { name: 'Azul Royal', hex: '#2980B9' },
+      { name: 'Branco Noiva / Seda', hex: '#FDFEFE' },
+      { name: 'Preto Elegante', hex: '#111213' },
+      { name: 'Verde Esmeralda', hex: '#1E8449' },
+      { name: 'Dourado Champanhe', hex: '#FAD7A0' },
+      { name: 'Rosa Antigo', hex: '#D98880' },
+      { name: 'Roxo Noturno', hex: '#4A235A' }
+    ]
+  },
+  {
+    id: 'shoes',
+    name: 'Sapatos / Tênis / Botas',
+    englishLabel: 'Shoes, sneakers, or boots',
+    category: 'clothing',
+    icon: '👞',
+    suggestedColors: [
+      { name: 'Preto Couro', hex: '#111213' },
+      { name: 'Branco Tênis', hex: '#FFFFFF' },
+      { name: 'Marrom Caramelo', hex: '#784212' },
+      { name: 'Vermelho Tênis', hex: '#C0392B' },
+      { name: 'Cinza Metalizado', hex: '#7F8C8D' },
+      { name: 'Amarelo Trigo / Botas', hex: '#D4AC0D' }
+    ]
+  },
+  {
+    id: 'socks-gloves',
+    name: 'Meias / Luvas / Meia-Calça',
+    englishLabel: 'Socks, stockings, or gloves',
+    category: 'clothing',
+    icon: '🧦',
+    suggestedColors: [
+      { name: 'Branco Puro', hex: '#FFFFFF' },
+      { name: 'Preto Opaco', hex: '#17202A' },
+      { name: 'Cinza Mescla', hex: '#BDC3C7' },
+      { name: 'Vermelho / Listrado', hex: '#E74C3C' },
+      { name: 'Azul Marinho', hex: '#1F618D' }
+    ]
+  },
+  {
+    id: 'hat-cape',
+    name: 'Chapéu / Capa / Manto / Cachecol',
+    englishLabel: 'Hat, cape, cloak, or scarf',
+    category: 'clothing',
+    icon: '🧣',
+    suggestedColors: [
+      { name: 'Vermelho Carmim', hex: '#922B21' },
+      { name: 'Preto Sombrio', hex: '#0B0C10' },
+      { name: 'Verde Floresta', hex: '#145A32' },
+      { name: 'Dourado Ocre', hex: '#B7950B' },
+      { name: 'Azul Meia-Noite', hex: '#1B263B' },
+      { name: 'Bege Lã', hex: '#F5EEF8' }
+    ]
+  },
+
+  // --- Cenário, Ambiente & Fundo ---
+  {
+    id: 'sky',
+    name: 'Céu / Nuvens / Atmosfera',
+    englishLabel: 'Sky, clouds, and atmosphere',
+    category: 'environment',
+    icon: '☁️',
+    suggestedColors: [
+      { name: 'Azul Céu Diurno', hex: '#5DADE2' },
+      { name: 'Pôr do Sol Dourado / Âmbar', hex: '#F39C12' },
+      { name: 'Pôr do Sol Magenta / Violeta', hex: '#8E44AD' },
+      { name: 'Crepúsculo Blue Hour', hex: '#21618C' },
+      { name: 'Noite Estrelada Profunda', hex: '#0B132B' },
+      { name: 'Céu Tempestuoso / Cinza', hex: '#566573' },
+      { name: 'Céu Vermelho Apocalíptico', hex: '#641E16' }
+    ]
+  },
+  {
+    id: 'wall',
+    name: 'Paredes / Construções / Fachada',
+    englishLabel: 'Walls, buildings, and architecture',
+    category: 'environment',
+    icon: '🧱',
+    suggestedColors: [
+      { name: 'Tijolo Vermelho Envelhecido', hex: '#78281F' },
+      { name: 'Concreto Urbano Cinza', hex: '#7F8C8D' },
+      { name: 'Madeira Rústica / Tabuas', hex: '#5D4037' },
+      { name: 'Parede Branca / Gesso', hex: '#EAEDED' },
+      { name: 'Pedra Medieval Musgosa', hex: '#4D5656' },
+      { name: 'Paredes Neon Futuristas', hex: '#17202A' }
+    ]
+  },
+  {
+    id: 'ground',
+    name: 'Piso / Chão / Asfalto / Estrada',
+    englishLabel: 'Ground, floor, street, and terrain',
+    category: 'environment',
+    icon: '🛣️',
+    suggestedColors: [
+      { name: 'Asfalto Molhado', hex: '#1C2833' },
+      { name: 'Terra Batida / Argila', hex: '#6E2C00' },
+      { name: 'Areia Dourada do Deserto', hex: '#EDBB99' },
+      { name: 'Paralelepípedo Cinza', hex: '#566573' },
+      { name: 'Piso de Madeira / Parquet', hex: '#873600' },
+      { name: 'Gelo / Neve Congelada', hex: '#EBF5FB' }
+    ]
+  },
+  {
+    id: 'foliage',
+    name: 'Vegetação / Grama / Folhagem',
+    englishLabel: 'Foliage, grass, trees, and flora',
+    category: 'environment',
+    icon: '🌿',
+    suggestedColors: [
+      { name: 'Verde Gramado Fresco', hex: '#27AE60' },
+      { name: 'Verde Floresta Profundo', hex: '#145A32' },
+      { name: 'Folhas de Outono Douradas', hex: '#D35400' },
+      { name: 'Flores de Cerejeira / Rosa', hex: '#FADBD8' },
+      { name: 'Musgo Úmido Envelhecido', hex: '#3F4A3C' },
+      { name: 'Vegetação Alienígena Violeta', hex: '#6C3483' }
+    ]
+  },
+  {
+    id: 'water',
+    name: 'Água / Mar / Rio / Lago',
+    englishLabel: 'Water, ocean, sea, and river',
+    category: 'environment',
+    icon: '🌊',
+    suggestedColors: [
+      { name: 'Azul Turquesa Tropical', hex: '#1ABC9C' },
+      { name: 'Azul Oceano Profundo', hex: '#1B4F72' },
+      { name: 'Água Cristalina de Rio', hex: '#A9CCE3' },
+      { name: 'Mar Noturno Espelhado', hex: '#0E1A24' },
+      { name: 'Água Pútrida / Pântano', hex: '#3E4F42' }
+    ]
+  },
+  {
+    id: 'glow-effects',
+    name: 'Luzes / Efeitos de Brilho / Neon / Fogo',
+    englishLabel: 'Glow, energy, fire, and neon lights',
+    category: 'environment',
+    icon: '✨',
+    suggestedColors: [
+      { name: 'Fogo Quente / Laranja Solar', hex: '#E67E22' },
+      { name: 'Chama Azul Mágica', hex: '#3498DB' },
+      { name: 'Neon Ciano Elétrico', hex: '#00F5D4' },
+      { name: 'Neon Magenta Tóxico', hex: '#FF007F' },
+      { name: 'Luz Dourada Sagrada', hex: '#F1C40F' },
+      { name: 'Energia Verde Venenosa', hex: '#2ECC71' }
+    ]
+  }
+];
+
 export function buildColoristPrompt(params: {
   drawingType: string;
   techniqueId: string;
@@ -499,6 +846,7 @@ export function buildColoristPrompt(params: {
   colorIntensity: 'vibrant' | 'balanced' | 'muted' | 'monochrome';
   customPaletteName?: string;
   customPaletteColors?: string[];
+  elementColors?: ElementColorAssignment[];
   customNotes?: string;
 }): string {
   const drawingTypeObj = DRAWING_TYPES.find(d => d.id === params.drawingType) || DRAWING_TYPES[0];
@@ -529,6 +877,13 @@ export function buildColoristPrompt(params: {
     colorDirection = `Color Palette & Psychology: ${moodObj.prompt}. Featuring a cohesive trio with dominant (${moodObj.rule603010.dominant}), secondary (${moodObj.rule603010.secondary}), and vibrant accent (${moodObj.rule603010.accent}).`;
   }
 
+  // Bloco de Mapeamento Pontual de Elementos
+  let elementMappingSection = '';
+  if (params.elementColors && params.elementColors.length > 0) {
+    const elementLines = params.elementColors.map(el => `  • ${el.englishLabel || el.name}: strictly colored in ${el.colorHex}`);
+    elementMappingSection = `\n\nTARGETED ELEMENT COLOR MAPPING (STRICT SPECIFICATIONS):\nStrictly apply the designated specific colors to their corresponding visual elements in the drawing:\n${elementLines.join('\n')}`;
+  }
+
   const notesPart = params.customNotes?.trim() ? ` Additional Colorist Notes: ${params.customNotes.trim()}.` : '';
 
   return `Edit and colorize the provided image by strictly acting as a master traditional colorist over the original line art.
@@ -540,7 +895,7 @@ PAINTING TECHNIQUE:
 Apply a ${techniqueObj.prompt}. Color fills must sit naturally within and beneath the line work with ${intensityDescriptor}.
 
 COLOR SCHEME & PSYCHOLOGY:
-${colorDirection}
+${colorDirection}${elementMappingSection}
 
 LIGHTING & ATMOSPHERE:
 ${lightingObj.prompt}. ${tempObj.prompt}. Rendered ${paperObj.prompt}.${notesPart}

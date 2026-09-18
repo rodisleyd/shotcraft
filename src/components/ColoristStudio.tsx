@@ -1,8 +1,3 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Palette,
@@ -33,7 +28,12 @@ import {
   X,
   Save,
   Wand2,
-  Pipette
+  Pipette,
+  Target,
+  Shirt,
+  User,
+  Trees,
+  PlusCircle
 } from 'lucide-react';
 import { Theme, UserAccount, ColorPaletteOption } from '../types';
 import {
@@ -44,9 +44,12 @@ import {
   TEMPERATURE_OPTIONS,
   PAPER_TEXTURES,
   PLATFORM_GUIDES,
+  PRESET_ELEMENTS,
   buildColoristPrompt,
   PaintingTechniqueOption,
-  ColorMoodOption
+  ColorMoodOption,
+  ElementColorAssignment,
+  PresetElementOption
 } from '../data/coloristData';
 import { PhotoshopColorPickerModal } from './PhotoshopColorPickerModal';
 
@@ -106,6 +109,13 @@ export function ColoristStudio({
   const [selectedTemperatureId, setSelectedTemperatureId] = useState<string>('warm');
   const [selectedPaperId, setSelectedPaperId] = useState<string>('cold-press');
   const [customNotes, setCustomNotes] = useState<string>('');
+
+  // Targeted Element Color Mapping State
+  const [elementColors, setElementColors] = useState<ElementColorAssignment[]>([]);
+  const [elementCategory, setElementCategory] = useState<'all' | 'character' | 'clothing' | 'environment' | 'custom'>('all');
+  const [customElementName, setCustomElementName] = useState<string>('');
+  const [customElementEnglish, setCustomElementEnglish] = useState<string>('');
+  const [customElementColor, setCustomElementColor] = useState<string>('#3498DB');
 
   // Image Upload state
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -243,6 +253,65 @@ export function ColoristStudio({
     }
   };
 
+  // --- Element Color Handlers ---
+  const handleAssignElementColor = (
+    elementId: string,
+    name: string,
+    englishLabel: string,
+    colorHex: string,
+    category: 'character' | 'clothing' | 'environment' | 'custom'
+  ) => {
+    const cleanHex = colorHex.toUpperCase();
+    setElementColors(prev => {
+      const existsIndex = prev.findIndex(item => item.id === elementId);
+      if (existsIndex >= 0) {
+        const updated = [...prev];
+        updated[existsIndex] = {
+          ...updated[existsIndex],
+          name,
+          englishLabel,
+          colorHex: cleanHex,
+          category
+        };
+        return updated;
+      }
+      return [
+        ...prev,
+        {
+          id: elementId,
+          name,
+          englishLabel,
+          colorHex: cleanHex,
+          category
+        }
+      ];
+    });
+  };
+
+  const handleRemoveElementColor = (elementId: string) => {
+    setElementColors(prev => prev.filter(item => item.id !== elementId));
+  };
+
+  const handleClearAllElementColors = () => {
+    setElementColors([]);
+    addToast('Todos os mapeamentos de cores pontuais foram removidos.', 'info');
+  };
+
+  const handleAddCustomElement = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customElementName.trim()) {
+      addToast('Digite o nome do elemento (Ex: Espada Mágica, Mochila de Couro...).', 'error');
+      return;
+    }
+    const customId = `custom-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+    const label = customElementName.trim();
+    const english = customElementEnglish.trim() || label;
+    handleAssignElementColor(customId, label, english, customElementColor, 'custom');
+    addToast(`Elemento "${label}" adicionado ao mapeamento com a cor ${customElementColor.toUpperCase()}!`, 'success');
+    setCustomElementName('');
+    setCustomElementEnglish('');
+  };
+
   // Build Final Prompt in Real-Time
   const generatedPrompt = useMemo(() => {
     const isCustom = paletteType === 'custom' && activeCustomPalette;
@@ -263,6 +332,7 @@ export function ColoristStudio({
       colorIntensity,
       customPaletteName: isCustom ? activeCustomPalette.name : undefined,
       customPaletteColors: isCustom ? activeCustomPalette.colors : undefined,
+      elementColors,
       customNotes
     });
   }, [
@@ -279,6 +349,7 @@ export function ColoristStudio({
     selectedTemperatureId,
     selectedPaperId,
     colorIntensity,
+    elementColors,
     customNotes
   ]);
 
@@ -330,6 +401,10 @@ export function ColoristStudio({
     setSelectedLightingId('soft-diffuse');
     setSelectedTemperatureId('warm');
     setSelectedPaperId('cold-press');
+    setElementColors([]);
+    setElementCategory('all');
+    setCustomElementName('');
+    setCustomElementEnglish('');
     setCustomNotes('');
     setPaletteTab('moods');
     addToast('Configurações de colorização resetadas.', 'info');
@@ -1127,12 +1202,348 @@ export function ColoristStudio({
             </div>
           </section>
 
-          {/* 4. SEÇÃO: ILUMINAÇÃO, TEMPERATURA & SUPORTE */}
+          {/* 4. SEÇÃO: MAPEAMENTO DE CORES PONTUAIS POR ELEMENTO */}
+          <section className={`p-6 rounded-3xl border ${themeClasses.card}`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+              <div className="flex items-center gap-2.5">
+                <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black ${
+                  theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-[#8b5a2b] text-white'
+                }`}>4</span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-bold">Mapeamento de Cores Pontuais por Elemento</h2>
+                    {elementColors.length > 0 && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        {elementColors.length} {elementColors.length === 1 ? 'definido' : 'definidos'}
+                      </span>
+                    )}
+                  </div>
+                  <p className={`text-xs ${themeClasses.textMuted}`}>
+                    Especifique a cor exata para cada parte do desenho (cabelo, pele, olhos, roupas, cenário ou crie elementos livres).
+                  </p>
+                </div>
+              </div>
+
+              {elementColors.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleClearAllElementColors}
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-all flex items-center gap-1.5 self-start sm:self-auto"
+                  title="Limpar todos os elementos configurados"
+                >
+                  <Trash2 size={13} />
+                  <span>Limpar Mapeamentos ({elementColors.length})</span>
+                </button>
+              )}
+            </div>
+
+            {/* Categorias de Filtro de Elementos */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 mb-5">
+              {[
+                { id: 'all', label: 'Todos', icon: '🌟' },
+                { id: 'character', label: 'Personagem & Anatomia', icon: '👤' },
+                { id: 'clothing', label: 'Vestuário & Roupas', icon: '👗' },
+                { id: 'environment', label: 'Cenário & Objetos', icon: '🏞️' },
+                { id: 'custom', label: 'Elemento Livre (+)', icon: '✨' }
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setElementCategory(cat.id as any)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                    elementCategory === cat.id
+                      ? theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'bg-[#8b5a2b] text-white shadow-md'
+                      : theme === 'dark' ? 'bg-zinc-800/60 text-zinc-400 hover:bg-zinc-700' : 'bg-black/5 text-[#8b7e6a] hover:bg-black/10'
+                  }`}
+                >
+                  <span>{cat.icon}</span>
+                  <span>{cat.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* BARRA DE ELEMENTOS ATIVOS CONFIGURADOS */}
+            {elementColors.length > 0 && (
+              <div className="p-4 rounded-2xl border bg-emerald-500/5 border-emerald-500/20 mb-6 space-y-2.5 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-emerald-400 flex items-center gap-1.5">
+                    <CheckCircle2 size={14} />
+                    Elementos com Cores Fixadas no Prompt:
+                  </span>
+                  <span className={`text-[11px] ${themeClasses.textMuted}`}>
+                    Clique na cor para editar no Photoshop
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {elementColors.map((el) => (
+                    <div
+                      key={el.id}
+                      className={`px-3 py-1.5 rounded-xl border flex items-center gap-2 transition-all shadow-sm ${
+                        theme === 'dark' ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-[#d3cbb3]'
+                      }`}
+                    >
+                      {/* Cor Clicável para abrir Seletor */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          openPhotoshopPicker(el.colorHex, `Editar Cor: ${el.name}`, (newHex) => {
+                            handleAssignElementColor(el.id, el.name, el.englishLabel, newHex, el.category);
+                          });
+                        }}
+                        className="w-5 h-5 rounded-md border border-black/20 shadow-sm flex-shrink-0 transition-transform hover:scale-110 flex items-center justify-center text-white"
+                        style={{ backgroundColor: el.colorHex }}
+                        title={`Cor: ${el.colorHex} (Clique para alterar)`}
+                      >
+                        <Pipette size={9} className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]" />
+                      </button>
+
+                      <div className="flex flex-col text-left">
+                        <span className="text-xs font-bold leading-tight">{el.name}</span>
+                        <span className="text-[10px] font-mono opacity-60 leading-tight">{el.colorHex}</span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveElementColor(el.id)}
+                        className="p-1 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-all ml-1"
+                        title={`Remover mapeamento de ${el.name}`}
+                      >
+                        <X size={13} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* GRADE DE ELEMENTOS PRÉ-DEFINIDOS (Presets) */}
+            {elementCategory !== 'custom' && (
+              <div className="space-y-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                  {PRESET_ELEMENTS
+                    .filter(p => elementCategory === 'all' || p.category === elementCategory)
+                    .map((preset) => {
+                      const activeAssignment = elementColors.find(item => item.id === preset.id);
+                      const isAssigned = !!activeAssignment;
+
+                      return (
+                        <div
+                          key={preset.id}
+                          className={`p-3.5 rounded-2xl border transition-all flex flex-col justify-between gap-3 ${
+                            isAssigned
+                              ? theme === 'dark' 
+                                ? 'bg-indigo-950/20 border-indigo-500/40 ring-1 ring-indigo-500/30' 
+                                : 'bg-[#f4ebe1] border-[#8b5a2b]/40 ring-1 ring-[#8b5a2b]/30'
+                              : theme === 'dark'
+                              ? 'bg-zinc-900/50 border-zinc-800/80 hover:border-zinc-700'
+                              : 'bg-white/60 border-[#d3cbb3]/70 hover:border-[#8b5a2b]/30'
+                          }`}
+                        >
+                          {/* Cabeçalho do Elemento */}
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">{preset.icon}</span>
+                              <div>
+                                <h4 className="text-xs font-bold leading-tight">{preset.name}</h4>
+                                <span className={`text-[10px] ${themeClasses.textMuted} font-mono`}>
+                                  {preset.englishLabel}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1.5">
+                              {/* Botão Seletor Photoshop */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  openPhotoshopPicker(
+                                    activeAssignment?.colorHex || preset.suggestedColors[0]?.hex || '#EFA549',
+                                    `Seletor de Cor: ${preset.name}`,
+                                    (newHex) => {
+                                      handleAssignElementColor(preset.id, preset.name, preset.englishLabel, newHex, preset.category);
+                                    }
+                                  );
+                                }}
+                                className={`px-2.5 py-1 rounded-xl text-[11px] font-bold border flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 ${
+                                  isAssigned
+                                    ? 'bg-indigo-600 text-white border-indigo-500'
+                                    : theme === 'dark'
+                                    ? 'bg-zinc-800 border-zinc-700 text-zinc-200 hover:bg-zinc-700'
+                                    : 'bg-white border-[#d3cbb3] text-[#433422] hover:bg-zinc-50'
+                                }`}
+                                title="Abrir Seletor do Photoshop com Conta-Gotas"
+                              >
+                                {isAssigned ? (
+                                  <>
+                                    <div
+                                      className="w-3.5 h-3.5 rounded-full border border-white/40 shadow-sm"
+                                      style={{ backgroundColor: activeAssignment.colorHex }}
+                                    />
+                                    <span className="font-mono">{activeAssignment.colorHex}</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Pipette size={12} className="text-amber-400" />
+                                    <span>Seletor Photoshop</span>
+                                  </>
+                                )}
+                              </button>
+
+                              {isAssigned && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveElementColor(preset.id)}
+                                  className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-all"
+                                  title={`Remover cor de ${preset.name}`}
+                                >
+                                  <X size={13} />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Amostras Rápidas Sugeridas */}
+                          <div className="space-y-1">
+                            <span className={`text-[10px] font-semibold ${themeClasses.textMuted} block`}>
+                              Sugestões Rápidas de Tons:
+                            </span>
+                            <div className="flex flex-wrap gap-1.5 items-center">
+                              {preset.suggestedColors.map((sug, i) => {
+                                const isColorSelected = activeAssignment?.colorHex.toUpperCase() === sug.hex.toUpperCase();
+                                return (
+                                  <button
+                                    key={i}
+                                    type="button"
+                                    onClick={() => handleAssignElementColor(preset.id, preset.name, preset.englishLabel, sug.hex, preset.category)}
+                                    className={`group relative flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[10px] transition-all hover:scale-105 active:scale-95 ${
+                                      isColorSelected
+                                        ? 'border-indigo-500 bg-indigo-500/10 font-bold ring-1 ring-indigo-500'
+                                        : theme === 'dark' 
+                                        ? 'border-zinc-800 bg-zinc-900/80 hover:border-zinc-600' 
+                                        : 'border-[#d3cbb3]/70 bg-white/80 hover:border-[#8b5a2b]/40'
+                                    }`}
+                                    title={`${sug.name} (${sug.hex})`}
+                                  >
+                                    <div
+                                      className="w-3 h-3 rounded-full border border-black/20 shadow-sm flex-shrink-0"
+                                      style={{ backgroundColor: sug.hex }}
+                                    />
+                                    <span className="truncate max-w-[100px]">{sug.name}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
+
+            {/* SEÇÃO DE ELEMENTO LIVRE PERSONALIZADO */}
+            <form onSubmit={handleAddCustomElement} className={`p-4 sm:p-5 rounded-2xl border ${
+              theme === 'dark' ? 'bg-zinc-950/60 border-zinc-800' : 'bg-black/5 border-[#d3cbb3]'
+            } space-y-4`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+                    <PlusCircle size={16} />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-wider">
+                      Adicionar Elemento Livre / Customizado
+                    </h3>
+                    <p className={`text-[11px] ${themeClasses.textMuted}`}>
+                      Não encontrou nas opções acima? Digite qualquer elemento do seu desenho (Ex: Espada Mágica, Moto, Mochila, Óculos...)
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                {/* Nome do Elemento (PT-BR) */}
+                <div className="sm:col-span-5 space-y-1">
+                  <label className="text-xs font-bold">Nome do Elemento (em Português) *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: Espada mágica, Mochila de couro, Carro..."
+                    value={customElementName}
+                    onChange={(e) => setCustomElementName(e.target.value)}
+                    className={`w-full p-2.5 rounded-xl border text-xs ${
+                      theme === 'dark' 
+                        ? 'bg-zinc-900 border-zinc-700 text-zinc-100 placeholder-zinc-500' 
+                        : 'bg-white border-[#d3cbb3] text-[#433422] placeholder-[#8b7e6a]/60'
+                    }`}
+                  />
+                </div>
+
+                {/* Termo em Inglês para Prompt */}
+                <div className="sm:col-span-4 space-y-1">
+                  <label className="text-xs font-bold">Termo em Inglês (Opcional)</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Magic glowing sword, leather backpack..."
+                    value={customElementEnglish}
+                    onChange={(e) => setCustomElementEnglish(e.target.value)}
+                    className={`w-full p-2.5 rounded-xl border text-xs ${
+                      theme === 'dark' 
+                        ? 'bg-zinc-900 border-zinc-700 text-zinc-100 placeholder-zinc-500' 
+                        : 'bg-white border-[#d3cbb3] text-[#433422] placeholder-[#8b7e6a]/60'
+                    }`}
+                  />
+                </div>
+
+                {/* Cor com Seletor Photoshop */}
+                <div className="sm:col-span-3 space-y-1">
+                  <label className="text-xs font-bold">Cor do Elemento</label>
+                  <div
+                    onClick={() => {
+                      openPhotoshopPicker(customElementColor, 'Cor do Elemento Livre', (newHex) => {
+                        setCustomElementColor(newHex);
+                      });
+                    }}
+                    className={`p-2 rounded-xl border flex items-center justify-between gap-2 cursor-pointer transition-all hover:border-indigo-500 ${
+                      theme === 'dark' ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-[#d3cbb3]'
+                    }`}
+                    title="Clique para escolher no Seletor do Photoshop"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-5 h-5 rounded-md border border-black/20 shadow-sm flex items-center justify-center text-white"
+                        style={{ backgroundColor: customElementColor }}
+                      >
+                        <Pipette size={9} />
+                      </div>
+                      <span className="text-xs font-mono font-bold">{customElementColor}</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-indigo-400">Alterar</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-1">
+                <button
+                  type="submit"
+                  className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-white flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95 ${
+                    theme === 'dark' ? 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/20' : 'bg-[#8b5a2b] hover:bg-[#724820] shadow-[#8b5a2b]/20'
+                  }`}
+                >
+                  <Plus size={15} />
+                  <span>Adicionar Elemento ao Prompt</span>
+                </button>
+              </div>
+            </form>
+          </section>
+
+          {/* 5. SEÇÃO: ILUMINAÇÃO, TEMPERATURA & SUPORTE */}
           <section className={`p-6 rounded-3xl border ${themeClasses.card}`}>
             <div className="flex items-center gap-2.5 mb-5">
               <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black ${
                 theme === 'dark' ? 'bg-indigo-600 text-white' : 'bg-[#8b5a2b] text-white'
-              }`}>4</span>
+              }`}>5</span>
               <div>
                 <h2 className="text-base font-bold">Iluminação, Temperatura & Textura de Suporte</h2>
                 <p className={`text-xs ${themeClasses.textMuted}`}>Ajuste a direção das sombras, calor da cena e superfície física do papel.</p>

@@ -98,4 +98,26 @@ O ShotCraft integra chamadas de IA generativa (modelo Gemini) para acelerar e au
 
 *   **Modo Mestre (Análise de Imagem)**: Localizado no passo 0, permite fazer upload de uma imagem técnica. O SDK do Gemini analisa o arquivo e retorna os IDs das opções de lentes, luzes e enquadramentos correspondentes que melhor definem a imagem enviada, preenchendo o construtor automaticamente.
 *   **Refinar Assunto**: Melhora descrições curtas e informais em inglês/português, transformando-as em frases cinematográficas enriquecidas com detalhes estéticos.
+
+---
+
+## 🎨 12. Estúdio do Colorista & Técnicas de Pintura (Aba Colorista)
+
+A aba **Colorista** é um estúdio de colorização e acabamento artístico voltado para pintura de desenhos prontos (line arts em nanquim, esboços a lápis, rascunhos ou traços vetoriais) preservando 100% da anatomia e composição original.
+
+*   **Diagnóstico do Traço & Upload de Line Art**: Identifica a técnica do desenho base (nanquim, lápis 2B, rascunho de sketchbook, traço digital vetorial ou traço de mangá/comics) com área de drag & drop para pré-visualização.
+*   **Técnicas de Pintura & Pigmentos**: Permite escolher entre 16+ técnicas de pintura tradicionais e digitais (aquarela molhado sobre molhado, guache opaco, pintura a óleo impasto, marcador copic, cel shading, concept art digital, aguada de nanquim, pastel seco, giz de cera, aerógrafo vintage, etc.).
+*   **Seletor de Cores Profissional Estilo Photoshop**: Seletor com tela de gradiente 2D de Saturação e Brilho, barra de Matiz (Hue), comparador Nova vs. Atual, suporte à API nativa de **Conta-Gotas (`EyeDropper`)** para capturar qualquer pixel da tela do usuário, e inputs manuais sincronizados em HSB, RGB e HEX.
+*   **Psicologia das Cores & Climas Narrativos**: 14 climas narrativos prontos com regras de distribuição cromática 60-30-10 (Dominante, Secundária e Acento) e controle de intensidade (Vibrante, Equilibrada, Muted, Monocromático).
+*   **Gerenciador de Paletas Personalizadas**: Permite criar paletas com nomes e categorias exclusivas, editar e excluir paletas salvas, e ativá-las diretamente na geração de prompt.
+*   **🎯 Mapeamento de Cores Pontuais por Elemento**: Permite ao usuário designar cores específicas para partes exatas do desenho:
+    *   **Personagem & Anatomia**: Cabelo, tom de pele, olhos/íris, lábios/boca, barba, asas/chifres.
+    *   **Vestuário & Roupas**: Camisa/top, jaqueta/casaco/armadura, vestido/manto, calça/shorts, saia, sapatos/botas, luvas, chapéu/elmo, capa/cachecol.
+    *   **Cenário & Objetos**: Céu/atmosfera, paredes/construções, chão/piso, vegetação/natureza, água/mar/rio, luzes/neon/fogo.
+    *   **Elemento Livre / Customizado**: Campo aberto onde o usuário digita qualquer elemento específico (ex: espada mágica, mochila de couro, óculos) e escolhe a cor no seletor do Photoshop.
+    *   **Sugestões Rápidas de Tons**: Chips clicáveis com cores prontas sugeridas para cada elemento.
+    *   **Injeção Específica no Prompt**: Gera a seção de diretivas estritas `TARGETED ELEMENT COLOR MAPPING (STRICT SPECIFICATIONS)` impedindo que as cores vazem entre regiões diferentes da ilustração.
+*   **Iluminação, Temperatura & Suporte**: Controle de direção da luz, temperatura de cor (quente, fria, dourada, etc.) e simulação de superfícies físicas (papel algodão prensado a frio, papel kraft, tela de linho, prancha bristol ou acabamento digital puro).
+*   **Guias de Aplicação Prática por Plataforma**: Instruções passo a passo integradas com acordeões para Midjourney (`--iw`), Stable Diffusion (ControlNet Lineart/Canny), Fooocus, Forge e ChatGPT/DALL-E 3 / Gemini.
+
 *   **Traduzir Assunto**: Traduz descrições em português para inglês automaticamente, mantendo a semântica voltada para geração de prompts.
