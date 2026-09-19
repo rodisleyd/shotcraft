@@ -1092,6 +1092,7 @@ export function buildColoristPrompt(params: {
   colorIntensity: 'vibrant' | 'balanced' | 'muted' | 'monochrome';
   customPaletteName?: string;
   customPaletteColors?: string[];
+  activeMoodColors?: string[];
   elementColors?: ElementColorAssignment[];
   customNotes?: string;
 }): string {
@@ -1129,9 +1130,14 @@ export function buildColoristPrompt(params: {
     const accent = params.rule603010.accent || params.customPaletteColors[2] || params.customPaletteColors[0];
     colorDirection = `Custom Color Palette: "${params.customPaletteName}" [${params.customPaletteColors.join(', ')}]. Applied strictly using the 60-30-10 color rule: Dominant 60% (${dominant} for background and large masses), Secondary 30% (${secondary} for main forms and clothing), Accent 10% (${accent} for eye-catching focal highlights).`;
   } else if (params.useCustom603010 && params.rule603010.dominant) {
-    colorDirection = `Color Palette (60-30-10 Rule): Dominant 60% (${params.rule603010.dominant} on large areas/background), Secondary 30% (${params.rule603010.secondary} on clothing/mid elements), Accent 10% (${params.rule603010.accent} on focal highlights and eye-catching details). Mood: ${moodObj.prompt}.`;
+    const paletteColorsStr = params.activeMoodColors && params.activeMoodColors.length > 0 ? ` [${params.activeMoodColors.join(', ')}]` : '';
+    colorDirection = `Color Palette (60-30-10 Rule): Dominant 60% (${params.rule603010.dominant} on large areas/background), Secondary 30% (${params.rule603010.secondary} on clothing/mid elements), Accent 10% (${params.rule603010.accent} on focal highlights and eye-catching details). Mood: ${moodObj.name}${paletteColorsStr} - ${moodObj.prompt}.`;
   } else {
-    colorDirection = `Color Palette & Psychology: ${moodObj.prompt}. Featuring a cohesive trio with dominant (${moodObj.rule603010.dominant}), secondary (${moodObj.rule603010.secondary}), and vibrant accent (${moodObj.rule603010.accent}).`;
+    const activeColors = params.activeMoodColors && params.activeMoodColors.length > 0 ? params.activeMoodColors : moodObj.colors;
+    const dominant = params.rule603010.dominant || activeColors[0] || moodObj.rule603010.dominant;
+    const secondary = params.rule603010.secondary || activeColors[1] || moodObj.rule603010.secondary;
+    const accent = params.rule603010.accent || activeColors[2] || moodObj.rule603010.accent;
+    colorDirection = `Color Palette & Psychology: ${moodObj.name} [${activeColors.join(', ')}]. ${moodObj.prompt}. Featuring a cohesive trio with dominant (${dominant}), secondary (${secondary}), and vibrant accent (${accent}).`;
   }
 
   // Bloco de Mapeamento Pontual de Elementos

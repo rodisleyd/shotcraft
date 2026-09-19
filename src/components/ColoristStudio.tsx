@@ -136,10 +136,38 @@ export function ColoristStudio({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Preset Moods with User Customization (Add/Delete/Edit Colors)
+  const [moods, setMoods] = useState<ColorMoodOption[]>(() => {
+    try {
+      const saved = localStorage.getItem('shotcraft_custom_moods');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return COLOR_MOODS.map(defaultMood => {
+            const found = parsed.find((p: ColorMoodOption) => p.id === defaultMood.id);
+            return found ? { ...defaultMood, colors: found.colors } : defaultMood;
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('Error loading custom moods', e);
+    }
+    return COLOR_MOODS;
+  });
+
+  const saveMoodsToStorage = (updatedMoods: ColorMoodOption[]) => {
+    setMoods(updatedMoods);
+    try {
+      localStorage.setItem('shotcraft_custom_moods', JSON.stringify(updatedMoods));
+    } catch (e) {
+      console.warn('Error saving custom moods', e);
+    }
+  };
+
   // Active items helpers
   const activeMood = useMemo(() => {
-    return COLOR_MOODS.find(m => m.id === selectedMoodId) || COLOR_MOODS[0];
-  }, [selectedMoodId]);
+    return moods.find(m => m.id === selectedMoodId) || moods[0];
+  }, [selectedMoodId, moods]);
 
   const activeCustomPalette = useMemo(() => {
     if (!selectedCustomPaletteId) return null;
@@ -158,15 +186,118 @@ export function ColoristStudio({
     setPsPickerOpen(true);
   };
 
+  // Adicionar cor a um clima pré-configurado
+  const handleAddMoodColor = (moodId: string) => {
+    const targetMood = moods.find(m => m.id === moodId);
+    if (!targetMood) return;
+    if (targetMood.colors.length >= 8) {
+      addToast('Máximo de 8 cores por paleta atingido.', 'info');
+      return;
+    }
+    const defaultSuggestions = ['#E67E22', '#1ABC9C', '#9B59B6', '#34495E', '#E74C3C', '#2ECC71', '#F39C12', '#00D2D3'];
+    const nextColor = defaultSuggestions[targetMood.colors.length % defaultSuggestions.length];
+
+    openPhotoshopPicker(nextColor, `Adicionar Nova Cor a "${targetMood.name}"`, (newHex) => {
+      const updated = moods.map(m => {
+        if (m.id === moodId) {
+          return {
+            ...m,
+            colors: [...m.colors, newHex.toUpperCase()]
+          };
+        }
+        return m;
+      });
+      saveMoodsToStorage(updated);
+      addToast(`Cor ${newHex.toUpperCase()} adicionada à paleta "${targetMood.name}"!`, 'success');
+    });
+  };
+
+  // Remover cor de um clima pré-configurado
+  const handleRemoveMoodColor = (moodId: string, colorIndex: number) => {
+    const targetMood = moods.find(m => m.id === moodId);
+    if (!targetMood) return;
+    if (targetMood.colors.length <= 3) {
+      addToast('Uma paleta precisa ter no mínimo 3 cores para a harmonia 60-30-10.', 'info');
+      return;
+    }
+    const removedColor = targetMood.colors[colorIndex];
+    const newColors = targetMood.colors.filter((_, i) => i !== colorIndex);
+    const updated = moods.map(m => {
+      if (m.id === moodId) {
+        return {
+          ...m,
+          colors: newColors
+        };
+      }
+      return m;
+    });
+    saveMoodsToStorage(updated);
+    addToast(`Cor ${removedColor} removida de "${targetMood.name}".`, 'info');
+
+    // Se o 60-30-10 estiver usando as cores do mood (sem custom), atualiza se necessário
+    if (!useCustom603010 && selectedMoodId === moodId) {
+      setCustomDominant(newColors[0]);
+      setCustomSecondary(newColors[1] || newColors[0]);
+      setCustomAccent(newColors[2] || newColors[0]);
+    }
+  };
+
+  // Atualizar cor existente de um clima pré-configurado via Photoshop Picker
+  const handleUpdateMoodColor = (moodId: string, colorIndex: number, newHex: string) => {
+    const targetMood = moods.find(m => m.id === moodId);
+    if (!targetMood) return;
+    const updatedColors = [...targetMood.colors];
+    updatedColors[colorIndex] = newHex.toUpperCase();
+    const updated = moods.map(m => {
+      if (m.id === moodId) {
+        return {
+          ...m,
+          colors: updatedColors
+        };
+      }
+      return m;
+    });
+    saveMoodsToStorage(updated);
+
+    if (!useCustom603010 && selectedMoodId === moodId) {
+      if (colorIndex === 0) setCustomDominant(newHex.toUpperCase());
+      else if (colorIndex === 1) setCustomSecondary(newHex.toUpperCase());
+      else if (colorIndex === 2) setCustomAccent(newHex.toUpperCase());
+    }
+  };
+
+  // Restaurar uma paleta pré-configurada para o padrão de fábrica
+  const handleResetSingleMood = (moodId: string) => {
+    const defaultMood = COLOR_MOODS.find(m => m.id === moodId);
+    if (!defaultMood) return;
+    const updated = moods.map(m => m.id === moodId ? { ...defaultMood } : m);
+    saveMoodsToStorage(updated);
+    if (!useCustom603010 && selectedMoodId === moodId) {
+      setCustomDominant(defaultMood.rule603010.dominant.toUpperCase());
+      setCustomSecondary(defaultMood.rule603010.secondary.toUpperCase());
+      setCustomAccent(defaultMood.rule603010.accent.toUpperCase());
+    }
+    addToast(`Paleta "${defaultMood.name}" restaurada para as cores originais!`, 'success');
+  };
+
+  // Verificar se a paleta foi modificada em relação ao padrão original
+  const isMoodCustomized = (moodId: string) => {
+    const current = moods.find(m => m.id === moodId);
+    const original = COLOR_MOODS.find(m => m.id === moodId);
+    if (!current || !original) return false;
+    if (current.colors.length !== original.colors.length) return true;
+    return current.colors.some((c, i) => c.toLowerCase() !== original.colors[i]?.toLowerCase());
+  };
+
   // Sync colors when selecting mood
   const handleMoodSelect = (mood: ColorMoodOption) => {
     setPaletteType('mood');
     setSelectedMoodId(mood.id);
     setSelectedCustomPaletteId(null);
     if (!useCustom603010) {
-      setCustomDominant(mood.rule603010.dominant.toUpperCase());
-      setCustomSecondary(mood.rule603010.secondary.toUpperCase());
-      setCustomAccent(mood.rule603010.accent.toUpperCase());
+      setCustomDominant((mood.colors[0] || mood.rule603010.dominant).toUpperCase());
+      setCustomSecondary((mood.colors[1] || mood.rule603010.secondary).toUpperCase());
+      setCustomAccent((mood.colors[2] || mood.rule603010.accent).toUpperCase());
     }
   };
 
@@ -336,6 +467,7 @@ export function ColoristStudio({
         accent: customAccent
       },
       colorMoodId: selectedMoodId,
+      activeMoodColors: !isCustom && activeMood ? activeMood.colors : undefined,
       lightingId: selectedLightingId,
       lightingDirectionId,
       lightingTypeId,
@@ -353,6 +485,7 @@ export function ColoristStudio({
     selectedTechniqueId,
     paletteType,
     activeCustomPalette,
+    activeMood,
     selectedMoodId,
     useCustom603010,
     customDominant,
@@ -747,7 +880,7 @@ export function ColoristStudio({
                 }`}
               >
                 <span>🎨</span>
-                <span>Climas & Psicologia ({COLOR_MOODS.length})</span>
+                <span>Climas & Psicologia ({moods.length})</span>
               </button>
 
               <button
@@ -779,44 +912,201 @@ export function ColoristStudio({
 
             {/* CONTEÚDO DA SUB-ABA 1: CLIMAS NARRATIVOS */}
             {paletteTab === 'moods' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 animate-in fade-in duration-200">
-                {COLOR_MOODS.map((mood) => {
-                  const isSelected = paletteType === 'mood' && selectedMoodId === mood.id;
-                  return (
-                    <div
-                      key={mood.id}
-                      onClick={() => handleMoodSelect(mood)}
-                      className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
-                        isSelected
-                          ? themeClasses.optionActive
-                          : themeClasses.option + ' hover:border-[#8b5a2b]/40'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold">{mood.name}</span>
-                        <span className="text-[9px] px-2 py-0.5 rounded-md font-semibold bg-black/10 dark:bg-white/10 opacity-75">
-                          {mood.category}
-                        </span>
+              <div className="space-y-4 mb-6 animate-in fade-in duration-200">
+                {/* Grid de Cards dos Climas */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {moods.map((mood) => {
+                    const isSelected = paletteType === 'mood' && selectedMoodId === mood.id;
+                    const isCustom = isMoodCustomized(mood.id);
+                    return (
+                      <div
+                        key={mood.id}
+                        onClick={() => handleMoodSelect(mood)}
+                        className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                          isSelected
+                            ? themeClasses.optionActive
+                            : themeClasses.option + ' hover:border-[#8b5a2b]/40'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold">{mood.name}</span>
+                            {isCustom && (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                                Editada
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[9px] px-2 py-0.5 rounded-md font-semibold bg-black/10 dark:bg-white/10 opacity-75">
+                            {mood.category}
+                          </span>
+                        </div>
+
+                        {/* Faixa de Cores HEX */}
+                        <div className="flex h-3.5 rounded-lg overflow-hidden gap-1 mb-2">
+                          {mood.colors.map((color, i) => (
+                            <div
+                              key={i}
+                              className="flex-1 transition-transform hover:scale-110"
+                              style={{ backgroundColor: color }}
+                              title={color}
+                            />
+                          ))}
+                        </div>
+
+                        <p className={`text-[11px] ${themeClasses.textMuted} line-clamp-2 leading-tight`}>
+                          {mood.description}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* PAINEL DE CONTROLE & EDIÇÃO DE CORES DA PALETA ATIVA */}
+                {paletteType === 'mood' && activeMood && (
+                  <div className={`p-4 rounded-2xl border transition-all ${
+                    theme === 'dark' 
+                      ? 'bg-zinc-950/80 border-indigo-500/40 shadow-lg shadow-indigo-950/30' 
+                      : 'bg-black/5 border-[#8b5a2b]/40 shadow-sm'
+                  }`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3.5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold uppercase tracking-wider">Amostras da Paleta:</span>
+                          <span className="text-xs font-extrabold text-indigo-400 dark:text-indigo-300">
+                            {activeMood.name}
+                          </span>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                            theme === 'dark' ? 'bg-zinc-800 text-zinc-300' : 'bg-white text-zinc-700 shadow-sm'
+                          }`}>
+                            {activeMood.colors.length} cores
+                          </span>
+                          {isMoodCustomized(activeMood.id) && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                              Personalizada
+                            </span>
+                          )}
+                        </div>
+                        <p className={`text-[11px] ${themeClasses.textMuted} mt-0.5`}>
+                          Clique em uma cor para editar no Seletor Photoshop, exclua pela lixeira ou adicione novas cores.
+                        </p>
                       </div>
 
-                      {/* Faixa de Cores HEX */}
-                      <div className="flex h-3.5 rounded-lg overflow-hidden gap-1 mb-2">
-                        {mood.colors.map((color, i) => (
-                          <div
-                            key={i}
-                            className="flex-1 transition-transform hover:scale-110"
-                            style={{ backgroundColor: color }}
-                            title={color}
-                          />
-                        ))}
-                      </div>
+                      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                        {isMoodCustomized(activeMood.id) && (
+                          <button
+                            type="button"
+                            onClick={() => handleResetSingleMood(activeMood.id)}
+                            className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-amber-400 hover:bg-amber-500/10 border border-amber-500/20 flex items-center gap-1.5 transition-all active:scale-95"
+                            title="Restaurar as cores originais deste clima"
+                          >
+                            <RotateCcw size={12} />
+                            <span>Restaurar Cores</span>
+                          </button>
+                        )}
 
-                      <p className={`text-[11px] ${themeClasses.textMuted} line-clamp-2 leading-tight`}>
-                        {mood.description}
-                      </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onSaveCustomPalette(
+                              `${activeMood.name} (Cópia)`,
+                              [...activeMood.colors],
+                              activeMood.category
+                            );
+                            setPaletteTab('custom');
+                            setPaletteType('custom');
+                          }}
+                          className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-indigo-400 hover:bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-1.5 transition-all active:scale-95"
+                          title="Salvar esta paleta em 'Minhas Paletas'"
+                        >
+                          <Bookmark size={12} />
+                          <span>Salvar como Minha Paleta</span>
+                        </button>
+
+                        {activeMood.colors.length < 8 && (
+                          <button
+                            type="button"
+                            onClick={() => handleAddMoodColor(activeMood.id)}
+                            className="px-3 py-1.5 rounded-xl text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+                          >
+                            <Plus size={13} />
+                            <span>Adicionar Cor</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  );
-                })}
+
+                    {/* Grade de Cores com Ações de Edição e Exclusão */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+                      {activeMood.colors.map((color, idx) => (
+                        <div
+                          key={idx}
+                          className={`p-2 rounded-xl border flex items-center justify-between gap-1.5 transition-all group ${
+                            theme === 'dark' 
+                              ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' 
+                              : 'bg-white border-[#d3cbb3] hover:border-[#8b5a2b]/40 shadow-sm'
+                          }`}
+                        >
+                          {/* Amostra Clicável para Abrir Seletor Photoshop */}
+                          <div
+                            onClick={() => {
+                              openPhotoshopPicker(color, `Editar Amostra ${idx + 1} de "${activeMood.name}"`, (newHex) => {
+                                handleUpdateMoodColor(activeMood.id, idx, newHex);
+                              });
+                            }}
+                            className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer"
+                            title={`Clique para editar com Seletor Photoshop: ${color}`}
+                          >
+                            <div
+                              className="w-6 h-6 rounded-lg border border-black/20 shadow-sm flex-shrink-0 transition-transform group-hover:scale-110 flex items-center justify-center text-white"
+                              style={{ backgroundColor: color }}
+                            >
+                              <Pipette size={10} className="opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]" />
+                            </div>
+                            <span className="text-[11px] font-mono font-bold truncate">
+                              {color}
+                            </span>
+                          </div>
+
+                          {/* Botão de Excluir Cor Individual */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveMoodColor(activeMood.id, idx);
+                            }}
+                            disabled={activeMood.colors.length <= 3}
+                            className={`p-1 rounded-lg transition-all ${
+                              activeMood.colors.length <= 3
+                                ? 'opacity-20 cursor-not-allowed text-zinc-500'
+                                : 'text-rose-400 hover:bg-rose-500/10 opacity-70 group-hover:opacity-100'
+                            }`}
+                            title={activeMood.colors.length <= 3 ? 'Mínimo de 3 cores necessário para a regra 60-30-10' : `Excluir cor ${color}`}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      ))}
+
+                      {/* Botão de Slot Rápido para Adicionar Cor se < 8 */}
+                      {activeMood.colors.length < 8 && (
+                        <button
+                          type="button"
+                          onClick={() => handleAddMoodColor(activeMood.id)}
+                          className={`p-2 rounded-xl border border-dashed flex items-center justify-center gap-1.5 transition-all hover:scale-105 active:scale-95 ${
+                            theme === 'dark'
+                              ? 'border-indigo-500/40 text-indigo-400 hover:bg-indigo-500/10'
+                              : 'border-[#8b5a2b]/40 text-[#8b5a2b] hover:bg-[#8b5a2b]/10'
+                          }`}
+                          title="Adicionar nova amostra de cor a esta paleta"
+                        >
+                          <Plus size={13} />
+                          <span className="text-[11px] font-bold">Nova Cor</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
