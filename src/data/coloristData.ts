@@ -110,37 +110,44 @@ export interface PaperTextureOption {
 export const DRAWING_TYPES: DrawingTypeOption[] = [
   {
     id: 'nanquim',
-    label: 'Nanquim / Tinta Preta Limpa',
+    label: 'Nanquim / Tinta Preta',
     description: 'Line art com contornos pretos firmes e bem definidos.',
-    promptPhrase: 'clean black india ink line art and contours',
+    promptPhrase: 'black india ink line art and contours',
     icon: '✒️'
   },
   {
+    id: 'marcador-organico',
+    label: 'Caneta / Marcador Manual',
+    description: 'Linhas orgânicas à mão livre, marcador ou feltro com traços naturais.',
+    promptPhrase: 'raw freehand pen and marker linework with natural organic strokes and hand-drawn quirks',
+    icon: '🖍️'
+  },
+  {
     id: 'lapis',
-    label: 'Esboço a Lápis / Grafite 2B',
+    label: 'Esboço a Lápis / Grafite',
     description: 'Desenho a grafite com hachuras leves e linhas de construção.',
-    promptPhrase: 'delicate graphite pencil sketch linework and shading',
+    promptPhrase: 'delicate graphite pencil sketch linework and construction lines',
     icon: '✏️'
   },
   {
     id: 'rascunho',
-    label: 'Rascunho Solto / Loose Sketch',
-    description: 'Linhas gestuais, rascunho rápido e orgânico de sketchbook.',
-    promptPhrase: 'expressive gestural raw sketchbook pencil lines',
+    label: 'Rascunho Solto / Wonky Sketch',
+    description: 'Linhas gestuais, imperfeições manuais e rascunho expressivo de sketchbook.',
+    promptPhrase: 'expressive gestural sketchbook sketch with natural hand-drawn wobbles and raw organic imperfections',
     icon: '📝'
   },
   {
     id: 'digital',
-    label: 'Line Art Digital Vetorial',
-    description: 'Traço digital perfeito, espessuras uniformes ou estilizadas.',
-    promptPhrase: 'clean crisp digital vector line art',
+    label: 'Line Art Digital',
+    description: 'Traço digital estilizado, mantendo contornos desenhados pelo autor.',
+    promptPhrase: 'digital line art contours and drawn strokes',
     icon: '💻'
   },
   {
     id: 'manga',
     label: 'Traço de Mangá / Comics',
     description: 'Arte-final dinâmica com variação de espessura (pena G / pincel).',
-    promptPhrase: 'dynamic manga and comic book pen inking lines',
+    promptPhrase: 'dynamic comic and manga inking line art',
     icon: '📖'
   }
 ];
@@ -1136,10 +1143,12 @@ export function buildColoristPrompt(params: {
 
   const notesPart = params.customNotes?.trim() ? ` Additional Colorist Notes: ${params.customNotes.trim()}.` : '';
 
-  return `Edit and colorize the provided image by strictly acting as a master traditional colorist over the original line art.
+  return `Edit and colorize the provided image by strictly acting as a traditional colorist over the original drawing.
 
-CORE DIRECTIVE & PRESERVATION:
-Strictly preserve, maintain, and respect the exact original ${drawingTypeObj.promptPhrase}, contours, hatching, silhouettes, anatomy, and composition intact. It is strictly forbidden to redraw, erase, hallucinate new objects, or alter the original linework. The original drawing serves as the structural skeleton of the artwork.
+CORE DIRECTIVE & STRICT LINE ART FIDELITY (ZERO GEOMETRIC CORRECTION):
+1. ZERO LINE MODIFICATION: Strictly preserve, protect, and maintain the exact original ${drawingTypeObj.promptPhrase}, stroke trajectories, line thickness, contours, hatching, and silhouettes intact pixel-for-pixel.
+2. ZERO GEOMETRIC CORRECTION: Do NOT straighten wavy or curved lines. Do NOT geometrically correct imperfect circles, tilted boxes, or hand-drawn wobbles into perfect geometric 3D shapes. Do NOT auto-align or rectify hand-drawn strokes. All manual quirks, organic imperfections, and hand-drawn irregularities MUST remain 100% untouched exactly as originally drawn.
+3. SUB-LAYER COLOR APPLICATION: All paints, highlights, and shadow fills must sit naturally inside and underneath the existing line work. The original linework serves as the immutable structural skeleton. Do not redraw, overwrite, erase, or replace any line art.
 
 PAINTING TECHNIQUE:
 Apply a ${techniqueObj.prompt}. Color fills must sit naturally within and beneath the line work with ${intensityDescriptor}.
@@ -1151,5 +1160,5 @@ LIGHTING & ATMOSPHERE:
 ${lightingStatement}. ${tempObj.prompt}. Rendered ${paperObj.prompt}.${notesPart}
 
 NEGATIVE RESTRICTIONS:
---no photorealism, 3D CGI render, blurry lineart, erased lines, redrawing the sketch, altered anatomy, missing linework, deformed contours, flat plastic gradient, artifacts, watermark`;
+--no straightening hand-drawn lines, geometric correction, vectorizing rough lines, reshaping wobbly lines into perfect geometry, auto-aligning perspective, modifying original stroke trajectory, redrawing linework, 3D CGI recalculation, photorealism, blurry lineart, erased lines, altered anatomy, missing linework, deformed contours, flat plastic gradient, artifacts, watermark`;
 }
