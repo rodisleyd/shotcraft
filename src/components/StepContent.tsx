@@ -650,8 +650,8 @@ export function StepContent({
               {/* Diretor Master Premium */}
               <div className={`p-6 rounded-3xl border relative overflow-hidden ${
                 theme === 'dark' 
-                  ? 'bg-zinc-900/60 border-amber-500/30' 
-                  : 'bg-white/70 border-amber-500/40 shadow-md'
+                  ? 'bg-zinc-900/80 border-amber-500/30 shadow-xl' 
+                  : 'bg-white/90 border-amber-500/40 shadow-md'
               }`}>
                 {/* Background Glow */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -666,7 +666,7 @@ export function StepContent({
                           Premium
                         </span>
                       </h3>
-                      <p className={`${themeClasses.textMuted} text-xs`}>
+                      <p className={`text-xs mt-0.5 ${theme === 'dark' ? 'text-zinc-300' : 'text-zinc-600'}`}>
                         O Diretor de Fotografia e Arte automatiza todo o setup do app baseado na sua ideia ou imagem de referência.
                       </p>
                     </div>
@@ -674,14 +674,14 @@ export function StepContent({
                 </div>
 
                 {/* Seleção de Modo do Diretor Master */}
-                <div className="flex gap-2 border-b border-zinc-200/40 dark:border-zinc-800/40 pb-2 mb-4">
+                <div className="flex gap-2 border-b border-zinc-200/40 dark:border-zinc-800/60 pb-2 mb-4">
                   <button
                     type="button"
                     onClick={() => setMasterMode('text')}
                     className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
                       masterMode === 'text'
                         ? 'bg-amber-500 text-zinc-950 shadow-sm'
-                        : `${themeClasses.textMuted} hover:text-zinc-200`
+                        : `${theme === 'dark' ? 'text-zinc-300 hover:text-white bg-zinc-800/40' : 'text-zinc-700 hover:text-zinc-950 bg-zinc-100'}`
                     }`}
                   >
                     💡 Descrever Ideia (Texto)
@@ -692,7 +692,7 @@ export function StepContent({
                     className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
                       masterMode === 'image'
                         ? 'bg-amber-500 text-zinc-950 shadow-sm'
-                        : `${themeClasses.textMuted} hover:text-zinc-200`
+                        : `${theme === 'dark' ? 'text-zinc-300 hover:text-white bg-zinc-800/40' : 'text-zinc-700 hover:text-zinc-950 bg-zinc-100'}`
                     }`}
                   >
                     📸 Imagem de Referência (Modo Mestre)
@@ -702,9 +702,9 @@ export function StepContent({
                 {masterMode === 'text' ? (
                   // Aba Texto (Premium)
                   !isPremium ? (
-                    <div className="relative p-6 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/30 flex flex-col items-center gap-4 text-center">
-                      <p className={`text-xs max-w-md ${themeClasses.textMuted}`}>
-                        Escreva um conceito simples (como "guerreiro medieval na neve") e o Especialista Master configurará todo o aplicativo (câmera, lente, iluminação, paleta 60-30-10, estilos e texturas) de forma otimizada para você, além de explicar detalhadamente cada decisão.
+                    <div className="relative p-6 rounded-2xl border border-amber-500/25 bg-zinc-950/80 dark:bg-zinc-950/90 shadow-inner flex flex-col items-center gap-4 text-center">
+                      <p className="text-xs sm:text-sm max-w-lg text-zinc-200 dark:text-zinc-100 font-medium leading-relaxed">
+                        Escreva um conceito simples (como <span className="text-amber-400 font-bold">"guerreiro medieval na neve"</span>) e o <strong className="text-white font-bold">Especialista Master</strong> configurará todo o aplicativo (câmera, lente, iluminação, paleta 60-30-10, estilos e texturas) de forma otimizada para você, além de explicar detalhadamente cada decisão.
                       </p>
                       <button
                         onClick={() => setShowPremiumUpgradeModal(true)}
