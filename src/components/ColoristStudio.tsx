@@ -33,8 +33,13 @@ import {
   Shirt,
   User,
   Trees,
-  PlusCircle
+  PlusCircle,
+  Camera,
+  Link2,
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
+import { extractPaletteFromImage } from '../services/colorExtractor';
 import { Theme, UserAccount, ColorPaletteOption } from '../types';
 import {
   DRAWING_TYPES,
@@ -87,11 +92,20 @@ export function ColoristStudio({
   const [techniqueCategory, setTechniqueCategory] = useState<string>('Todos');
   const [colorIntensity, setColorIntensity] = useState<'vibrant' | 'balanced' | 'muted' | 'monochrome'>('balanced');
   
-  // Palette View Mode: 'moods' | 'custom' | 'creator'
-  const [paletteTab, setPaletteTab] = useState<'moods' | 'custom' | 'creator'>('moods');
+  // Palette View Mode: 'moods' | 'custom' | 'extractor' | 'creator'
+  const [paletteTab, setPaletteTab] = useState<'moods' | 'custom' | 'extractor' | 'creator'>('moods');
   const [paletteType, setPaletteType] = useState<'mood' | 'custom'>('mood');
   const [selectedMoodId, setSelectedMoodId] = useState<string>('drama-melancolia');
   const [selectedCustomPaletteId, setSelectedCustomPaletteId] = useState<string | null>(null);
+
+  // Image Color Extractor State (Máx 16 cores)
+  const [extractorImage, setExtractorImage] = useState<string | null>(null);
+  const [extractorUrl, setExtractorUrl] = useState<string>('');
+  const [extractorCount, setExtractorCount] = useState<number>(8);
+  const [isExtracting, setIsExtracting] = useState<boolean>(false);
+  const [extractedColors, setExtractedColors] = useState<string[]>([]);
+  const [extractedPaletteName, setExtractedPaletteName] = useState<string>('Paleta Extraída');
+  const extractorFileInputRef = useRef<HTMLInputElement>(null);
 
   // Custom 60-30-10 rule states
   const [useCustom603010, setUseCustom603010] = useState<boolean>(false);
@@ -170,9 +184,17 @@ export function ColoristStudio({
   }, [selectedMoodId, moods]);
 
   const activeCustomPalette = useMemo(() => {
+    if (selectedCustomPaletteId === 'extracted-temp') {
+      return {
+        id: 'extracted-temp',
+        name: extractedPaletteName || 'Paleta Extraída',
+        colors: extractedColors,
+        category: 'Extraídas de Imagens'
+      };
+    }
     if (!selectedCustomPaletteId) return null;
     return customPalettes.find(p => p.id === selectedCustomPaletteId) || null;
-  }, [selectedCustomPaletteId, customPalettes]);
+  }, [selectedCustomPaletteId, customPalettes, extractedColors, extractedPaletteName]);
 
   const activeTechnique = useMemo(() => {
     return PAINTING_TECHNIQUES.find(t => t.id === selectedTechniqueId) || PAINTING_TECHNIQUES[0];
@@ -379,6 +401,137 @@ export function ColoristStudio({
       return;
     }
     setCreatorColors(creatorColors.filter((_, i) => i !== index));
+  };
+
+  // --- Handlers de Extração de Paleta de Imagem (Máx 16 cores) ---
+  const handleExtractFromFile = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      addToast('Por favor selecione um arquivo de imagem válido (PNG, JPG, WebP).', 'error');
+      return;
+    }
+    setIsExtracting(true);
+    try {
+      const colors = await extractPaletteFromImage(file, extractorCount);
+      if (!colors || colors.length === 0) {
+        throw new Error('Não foi possível extrair cores desta imagem.');
+      }
+      const previewUrl = URL.createObjectURL(file);
+      setExtractorImage(previewUrl);
+      setExtractedColors(colors);
+      const cleanFileName = file.name.replace(/\.[^/.]+$/, "").slice(0, 25);
+      setExtractedPaletteName(`Paleta - ${cleanFileName || 'Foto'}`);
+      addToast(`${colors.length} cores extraídas com sucesso da imagem!`, 'success');
+    } catch (err: any) {
+      console.error(err);
+      addToast(err?.message || 'Erro ao processar e extrair cores da imagem.', 'error');
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const handleExtractFromUrl = async () => {
+    if (!extractorUrl.trim()) {
+      addToast('Por favor insira uma URL de imagem válida.', 'error');
+      return;
+    }
+    setIsExtracting(true);
+    try {
+      const colors = await extractPaletteFromImage(extractorUrl.trim(), extractorCount);
+      if (!colors || colors.length === 0) {
+        throw new Error('Não foi possível extrair cores da URL informada.');
+      }
+      setExtractorImage(extractorUrl.trim());
+      setExtractedColors(colors);
+      setExtractedPaletteName('Paleta da Web');
+      addToast(`${colors.length} cores extraídas com sucesso do link!`, 'success');
+    } catch (err: any) {
+      console.error(err);
+      addToast(err?.message || 'Erro ao carregar ou extrair cores do link informado.', 'error');
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const handleReextractWithCount = async (newCount: number) => {
+    setExtractorCount(newCount);
+    if (!extractorImage) return;
+    setIsExtracting(true);
+    try {
+      const colors = await extractPaletteFromImage(extractorImage, newCount);
+      setExtractedColors(colors);
+      addToast(`Paleta recalculada com ${colors.length} cores!`, 'info');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const handleUseExtractedPalette = () => {
+    if (extractedColors.length === 0) return;
+    setPaletteType('custom');
+    setSelectedCustomPaletteId('extracted-temp');
+    if (!useCustom603010 && extractedColors.length >= 3) {
+      setCustomDominant(extractedColors[0]);
+      setCustomSecondary(extractedColors[1] || extractedColors[0]);
+      setCustomAccent(extractedColors[2] || extractedColors[0]);
+    }
+    addToast(`Paleta "${extractedPaletteName}" aplicada ao prompt!`, 'success');
+  };
+
+  const handleSaveExtractedPalette = () => {
+    if (extractedColors.length < 3) {
+      addToast('A paleta precisa ter pelo menos 3 cores para ser salva.', 'error');
+      return;
+    }
+    const name = extractedPaletteName.trim() || 'Paleta Extraída';
+    onSaveCustomPalette(name, extractedColors, 'Extraídas de Imagens');
+    setPaletteTab('custom');
+    setPaletteType('custom');
+  };
+
+  const handleEditExtractedInCreator = () => {
+    setEditingPaletteId(null);
+    setCreatorName(extractedPaletteName.trim() || 'Paleta Extraída');
+    setCreatorCategory('Extraídas de Imagens');
+    setCreatorColors([...extractedColors]);
+    setPaletteTab('creator');
+  };
+
+  const handleUpdateExtractedColor = (index: number, newHex: string) => {
+    const updated = [...extractedColors];
+    updated[index] = newHex.toUpperCase();
+    setExtractedColors(updated);
+  };
+
+  const handleRemoveExtractedColor = (index: number) => {
+    if (extractedColors.length <= 3) {
+      addToast('A paleta precisa ter no mínimo 3 cores para a regra 60-30-10.', 'info');
+      return;
+    }
+    setExtractedColors(extractedColors.filter((_, i) => i !== index));
+  };
+
+  const handleAddExtractedColor = () => {
+    if (extractedColors.length >= 16) {
+      addToast('Limite máximo de 16 cores por paleta atingido.', 'info');
+      return;
+    }
+    openPhotoshopPicker('#EFA549', 'Adicionar Nova Cor à Paleta Extraída', (newHex) => {
+      setExtractedColors([...extractedColors, newHex.toUpperCase()]);
+      addToast(`Cor ${newHex.toUpperCase()} adicionada à paleta!`, 'success');
+    });
+  };
+
+  const handleClearExtracted = () => {
+    setExtractorImage(null);
+    setExtractorUrl('');
+    setExtractedColors([]);
+    if (selectedCustomPaletteId === 'extracted-temp') {
+      setSelectedCustomPaletteId(null);
+      setPaletteType('mood');
+    }
+    addToast('Extrator de imagem limpo.', 'info');
   };
 
   // Sync paper suggestion when technique changes
@@ -868,45 +1021,61 @@ export function ColoristStudio({
               </div>
             </div>
 
-            {/* Sub-Abas: Climas Narrativos vs. Minhas Paletas vs. Criar Paleta */}
-            <div className="flex items-center gap-2 mb-5 p-1 rounded-2xl border bg-black/5 dark:bg-zinc-950/60 border-black/5 dark:border-zinc-800/80">
+            {/* Sub-Abas: Climas Narrativos vs. Minhas Paletas vs. Extrair de Imagem vs. Criar Paleta */}
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 mb-5 p-1 rounded-2xl border bg-black/5 dark:bg-zinc-950/60 border-black/5 dark:border-zinc-800/80">
               <button
                 type="button"
                 onClick={() => setPaletteTab('moods')}
-                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                   paletteTab === 'moods'
                     ? theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'bg-[#8b5a2b] text-white shadow-md'
                     : 'opacity-70 hover:opacity-100'
                 }`}
               >
                 <span>🎨</span>
-                <span>Climas & Psicologia ({moods.length})</span>
+                <span>Climas ({moods.length})</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setPaletteTab('custom')}
-                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                   paletteTab === 'custom'
                     ? theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'bg-[#8b5a2b] text-white shadow-md'
                     : 'opacity-70 hover:opacity-100'
                 }`}
               >
                 <Bookmark size={13} />
-                <span>Minhas Paletas ({customPalettes.length})</span>
+                <span>Salvas ({customPalettes.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaletteTab('extractor')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  paletteTab === 'extractor'
+                    ? theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'bg-[#8b5a2b] text-white shadow-md'
+                    : 'opacity-70 hover:opacity-100 text-amber-500 dark:text-amber-400 font-extrabold'
+                }`}
+              >
+                <Camera size={13} />
+                <span>Extrair de Imagem</span>
+                {extractedColors.length > 0 && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={handleStartCreatePalette}
-                className={`py-2 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                   paletteTab === 'creator'
                     ? theme === 'dark' ? 'bg-emerald-600 text-white shadow-md' : 'bg-emerald-700 text-white shadow-md'
                     : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'
                 }`}
               >
                 <Plus size={14} />
-                <span>Nova Paleta</span>
+                <span>Nova</span>
               </button>
             </div>
 
@@ -1219,6 +1388,329 @@ export function ColoristStudio({
                         </div>
                       );
                     })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* CONTEÚDO DA SUB-ABA: EXTRATOR DE CORES DE IMAGEM (UPLOAD OU LINK - ATÉ 16 CORES) */}
+            {paletteTab === 'extractor' && (
+              <div className="p-5 rounded-2xl border bg-black/5 dark:bg-zinc-950/60 border-black/10 dark:border-zinc-800 space-y-5 mb-6 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500">
+                      <Camera size={18} />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                        Extrair Paleta de Cores de Imagem
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">
+                          Até 16 Cores
+                        </span>
+                      </h3>
+                      <p className={`text-[11px] ${themeClasses.textMuted}`}>
+                        Faça upload de uma foto ou cole o link de uma imagem da internet para extrair as cores dominantes.
+                      </p>
+                    </div>
+                  </div>
+                  {extractedColors.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleClearExtracted}
+                      className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 font-bold transition-colors"
+                      title="Limpar imagem e paleta"
+                    >
+                      <Trash2 size={13} />
+                      <span>Limpar</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Seletor de Quantidade de Cores Alvo (3 a 16) */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-black/5 dark:bg-zinc-900/60 border border-black/5 dark:border-zinc-800">
+                  <div className="flex items-center gap-2">
+                    <Sliders size={14} className="text-amber-500" />
+                    <span className="text-xs font-bold">Quantidade de Cores a Extrair:</span>
+                    <span className="text-xs font-mono font-black text-amber-500">
+                      {extractorCount} cores
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {[4, 6, 8, 10, 12, 16].map(count => (
+                      <button
+                        key={count}
+                        type="button"
+                        onClick={() => handleReextractWithCount(count)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all ${
+                          extractorCount === count
+                            ? theme === 'dark' ? 'bg-amber-500 text-zinc-950 font-black shadow-sm' : 'bg-[#8b5a2b] text-white shadow-sm'
+                            : theme === 'dark' ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-white text-zinc-600 hover:text-zinc-900 border border-black/5'
+                        }`}
+                      >
+                        {count}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Métodos de Inserção: Upload de Arquivo & Campo de Link/URL */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                  {/* Método 1: Upload / Drag & Drop */}
+                  <div
+                    onClick={() => extractorFileInputRef.current?.click()}
+                    className={`p-4 rounded-2xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center text-center gap-2 min-h-[110px] ${
+                      theme === 'dark' 
+                        ? 'border-zinc-800 hover:border-amber-500/50 hover:bg-amber-500/5' 
+                        : 'border-[#d3cbb3] hover:border-[#8b5a2b]/50 hover:bg-black/5'
+                    }`}
+                  >
+                    <input
+                      ref={extractorFileInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/jpg"
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          handleExtractFromFile(e.target.files[0]);
+                        }
+                      }}
+                    />
+                    <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500">
+                      <Upload size={18} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold">Anexar Arquivo de Imagem</p>
+                      <p className={`text-[10px] ${themeClasses.textMuted}`}>Arraste e solte ou clique para selecionar (PNG, JPG, WebP)</p>
+                    </div>
+                  </div>
+
+                  {/* Método 2: Inserir Link / URL da Imagem */}
+                  <div className={`p-4 rounded-2xl border flex flex-col justify-between gap-2.5 ${
+                    theme === 'dark' ? 'bg-zinc-900/60 border-zinc-800' : 'bg-white border-[#d3cbb3]'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <Link2 size={16} className="text-indigo-400" />
+                      <span className="text-xs font-bold">Inserir Link da Imagem (Web):</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        placeholder="https://exemplo.com/imagem.jpg"
+                        value={extractorUrl}
+                        onChange={(e) => setExtractorUrl(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleExtractFromUrl();
+                          }
+                        }}
+                        className={`flex-1 px-3 py-2 rounded-xl border text-xs outline-none ${
+                          theme === 'dark' 
+                            ? 'bg-zinc-950 border-zinc-700 text-zinc-100 placeholder-zinc-500 focus:border-indigo-500' 
+                            : 'bg-black/5 border-[#d3cbb3] text-[#433422] placeholder-[#8b7e6a]/60 focus:border-[#8b5a2b]'
+                        }`}
+                        disabled={isExtracting}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleExtractFromUrl}
+                        disabled={isExtracting || !extractorUrl.trim()}
+                        className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 transition-all flex items-center gap-1.5 shadow-md active:scale-95"
+                      >
+                        {isExtracting ? (
+                          <Loader2 size={14} className="animate-spin" />
+                        ) : (
+                          <Sparkles size={14} />
+                        )}
+                        <span>Extrair</span>
+                      </button>
+                    </div>
+                    <p className={`text-[10px] ${themeClasses.textMuted}`}>
+                      Suporta links públicos de imagens com bypass automático de CORS.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Feedback de Carregamento / Extração */}
+                {isExtracting && (
+                  <div className="p-6 rounded-2xl border border-amber-500/30 bg-amber-500/5 flex flex-col items-center justify-center gap-2 text-center animate-pulse">
+                    <Loader2 size={24} className="animate-spin text-amber-500" />
+                    <p className="text-xs font-bold text-amber-400">Analisando pixels da imagem e calculando paleta dominante...</p>
+                  </div>
+                )}
+
+                {/* RESULTADO DA EXTRAÇÃO */}
+                {!isExtracting && extractedColors.length > 0 && (
+                  <div className="space-y-4 pt-4 border-t border-black/10 dark:border-zinc-800 animate-in fade-in duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Preview da Imagem de Origem */}
+                      {extractorImage && (
+                        <div className="space-y-1.5">
+                          <span className="text-xs font-bold block">Imagem de Referência:</span>
+                          <div className="relative group rounded-xl overflow-hidden border border-black/10 dark:border-zinc-800 bg-black/20 max-h-[140px] flex items-center justify-center">
+                            <img
+                              src={extractorImage}
+                              alt="Referência da Paleta"
+                              className="w-full h-[140px] object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setZoomModalImage(extractorImage)}
+                              className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity"
+                              title="Ampliar Imagem"
+                            >
+                              <Maximize2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Configuração do Nome e Resumo */}
+                      <div className={`space-y-2 ${extractorImage ? 'md:col-span-2' : 'md:col-span-3'}`}>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold flex items-center justify-between">
+                            <span>Nome da Paleta Extraída *</span>
+                            <span className={`text-[10px] ${themeClasses.textMuted}`}>{extractedColors.length} cores geradas</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={extractedPaletteName}
+                            onChange={(e) => setExtractedPaletteName(e.target.value)}
+                            placeholder="Nome para esta paleta..."
+                            className={`w-full p-2.5 rounded-xl border text-xs ${
+                              theme === 'dark' 
+                                ? 'bg-zinc-900 border-zinc-700 text-zinc-100' 
+                                : 'bg-white border-[#d3cbb3] text-[#433422]'
+                            }`}
+                          />
+                        </div>
+
+                        {/* Faixa Contínua de Cores */}
+                        <div className="space-y-1">
+                          <span className="text-[11px] font-semibold opacity-80">Faixa Contínua:</span>
+                          <div className="flex h-7 rounded-xl overflow-hidden shadow-inner border border-black/10 dark:border-white/10">
+                            {extractedColors.map((color, i) => (
+                              <div
+                                key={i}
+                                className="flex-1 transition-transform hover:scale-105 cursor-pointer flex items-center justify-center"
+                                style={{ backgroundColor: color }}
+                                title={`${color} (Clique para editar)`}
+                                onClick={() => {
+                                  openPhotoshopPicker(color, `Editar Amostra ${i + 1}`, (newHex) => {
+                                    handleUpdateExtractedColor(i, newHex);
+                                  });
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Grade de Amostras de Cores com Seletor e Exclusão */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-bold">Amostras Extraídas (Clique para editar com Seletor Photoshop):</label>
+                        {extractedColors.length < 16 && (
+                          <button
+                            type="button"
+                            onClick={handleAddExtractedColor}
+                            className="text-xs font-bold text-amber-500 hover:text-amber-400 flex items-center gap-1"
+                          >
+                            <Plus size={13} />
+                            Adicionar Cor
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2">
+                        {extractedColors.map((color, idx) => (
+                          <div
+                            key={idx}
+                            className={`p-2 rounded-xl border flex flex-col items-center gap-1.5 transition-all group ${
+                              theme === 'dark' 
+                                ? 'bg-zinc-900 border-zinc-800 hover:border-amber-500/50' 
+                                : 'bg-white border-[#d3cbb3] hover:border-[#8b5a2b]/50 shadow-sm'
+                            }`}
+                          >
+                            <div
+                              onClick={() => {
+                                openPhotoshopPicker(color, `Editar Amostra ${idx + 1}`, (newHex) => {
+                                  handleUpdateExtractedColor(idx, newHex);
+                                });
+                              }}
+                              className="w-full h-8 rounded-lg border border-black/20 shadow-sm flex items-center justify-center cursor-pointer transition-transform group-hover:scale-105"
+                              style={{ backgroundColor: color }}
+                              title={`Editar ${color}`}
+                            >
+                              <Pipette size={12} className="text-white opacity-0 group-hover:opacity-100 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" />
+                            </div>
+
+                            <div className="flex items-center justify-between w-full px-0.5">
+                              <span
+                                className="text-[10px] font-mono font-bold truncate cursor-pointer hover:underline"
+                                title="Clique para copiar"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(color);
+                                  addToast(`Cor ${color} copiada!`, 'info');
+                                }}
+                              >
+                                {color}
+                              </span>
+                              {extractedColors.length > 3 && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveExtractedColor(idx)}
+                                  className="p-0.5 text-rose-400 hover:text-rose-300 opacity-60 group-hover:opacity-100 transition-opacity"
+                                  title="Remover cor"
+                                >
+                                  <Trash2 size={11} />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Barra de Ações: Usar no Prompt, Salvar, Editar no Criador */}
+                    <div className="flex flex-wrap items-center justify-end gap-2.5 pt-3 border-t border-black/10 dark:border-zinc-800">
+                      <button
+                        type="button"
+                        onClick={handleEditExtractedInCreator}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${
+                          theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:bg-zinc-700' : 'bg-white border-[#d3cbb3] text-[#8b7e6a] hover:bg-black/5'
+                        }`}
+                        title="Abrir no editor manual para ajustes avançados"
+                      >
+                        <Edit2 size={13} />
+                        <span>Editar no Criador</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleSaveExtractedPalette}
+                        className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+                        title="Salvar permanentemente em Minhas Paletas"
+                      >
+                        <Bookmark size={13} />
+                        <span>Salvar em Minhas Paletas</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleUseExtractedPalette}
+                        className={`px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 shadow-md ${
+                          selectedCustomPaletteId === 'extracted-temp'
+                            ? 'bg-amber-400 text-zinc-950 ring-2 ring-amber-400/50'
+                            : 'bg-amber-500 hover:bg-amber-400 text-zinc-950'
+                        }`}
+                        title="Aplicar imediatamente esta paleta no prompt do colorista"
+                      >
+                        <Sparkles size={14} />
+                        <span>{selectedCustomPaletteId === 'extracted-temp' ? 'Ativa no Prompt ✨' : 'Usar Paleta no Prompt'}</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
