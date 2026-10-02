@@ -681,6 +681,15 @@ export const STYLES: Option[] = [
     subCategory: '15. Tipografia & Texturas de Texto', 
     image: '/images/styles/tipo-veludo-rosa.png' 
   },
+
+  // 16. Padrões
+  {
+    id: 'op-art-linhas-verticais',
+    label: 'Op-Art (Linhas Verticais)',
+    prompt: 'High-contrast black and white Op-Art, composed entirely of continuous vertical parallel lines. Varying thickness of the black stripes over a white background creates 3D shapes and shading of an abstract silhouette. No grays, only pure black and pure white. Clean graphic style, sharp edges with variable line-weight, minimalist and kinetic art aesthetic.',
+    category: 'style',
+    subCategory: '16. Padrões'
+  },
 ];
 
 export const PAPERS: Option[] = [
