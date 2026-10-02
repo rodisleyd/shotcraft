@@ -690,6 +690,13 @@ export const STYLES: Option[] = [
     category: 'style',
     subCategory: '16. Padrões'
   },
+  {
+    id: 'gravura-linocut-hachuras',
+    label: 'Gravura / Linocut (Hachuras Paralelas)',
+    prompt: 'High-contrast woodcut and linocut engraving art style, strictly monochrome black and white. Graphic art style composed entirely of fine parallel hatching lines, dense cross-hatching, and contour lines defining shapes, shadows, and volume. No grayscales, only stark contrast between rich black ink and clean white paper. Retro vintage book illustration aesthetic, clean vertical line art, detailed line-shading.',
+    category: 'style',
+    subCategory: '16. Padrões'
+  },
 ];
 
 export const PAPERS: Option[] = [
