@@ -697,6 +697,20 @@ export const STYLES: Option[] = [
     category: 'style',
     subCategory: '16. Padrões'
   },
+  {
+    id: 'scratchboard-nanquim-hachuras',
+    label: 'Scratchboard / Nanquim (Hachuras Densas)',
+    prompt: 'Pen and ink illustration style with dense cross-hatching, featuring intense, raw black ink lines. Woodcut and scratchboard aesthetic with dramatic high contrast. Rough, expressive hand-drawn linework of varying weights creating deep shadows and rich textures. Off-white textured cream paper background, monochromatic high-contrast black and white.',
+    category: 'style',
+    subCategory: '16. Padrões'
+  },
+  {
+    id: 'noir-ink-wash-hachuras',
+    label: 'Noir Ink Wash (Nanquim & Hachuras)',
+    prompt: 'Heavy pen and ink wash illustration of a rainy city street at night. Graphic novel noir style, expressive manga sketch aesthetic. Dense cross-hatching, solid blocks of deep black ink, high-contrast chiaroscuro. Raw, quick brushstrokes using dark indigo and black ink on textured off-white paper. Gritty ink textures, wet splatters, dynamic sketchy outlines.',
+    category: 'style',
+    subCategory: '16. Padrões'
+  },
 ];
 
 export const PAPERS: Option[] = [
