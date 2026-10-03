@@ -4,7 +4,7 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette, Search, Filter, ArrowUpDown, Tag, Lock, Info } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette, Search, Filter, ArrowUpDown, Tag, Lock, Info, Sparkles, Lightbulb, SlidersHorizontal, CheckCheck } from "lucide-react";
 import { Option, Step, SelectionState, ColorPaletteOption, CharacterLockState } from "../types";
 import { STYLES, PAPERS, COLOR_PALETTES, VISUAL_TAGS, LUTS, GRADING_TECHNIQUES } from "../data/constants";
 import React, { useState, useEffect, useMemo } from "react";
@@ -1808,8 +1808,60 @@ export function StepContent({
                 )}
 
                 {colorMode === 'techniques' && (
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
+                  <div className="space-y-5">
+                    {/* Header informativo com estatísticas e ações */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                          <SlidersHorizontal size={18} />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                            Técnicas Avançadas de Color Grading
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#8b5a2b] text-white">
+                              {selections.gradingTechniques?.length || 0} ativas
+                            </span>
+                          </h4>
+                          <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
+                            Simule fluxos profissionais do DaVinci Resolve para elevar a latitude, textura analógica e fidelidade visual do seu prompt.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 self-end sm:self-center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const allIds = GRADING_TECHNIQUES.map(t => t.id);
+                            const hasAll = allIds.every(id => selections.gradingTechniques?.includes(id));
+                            setSelections((prev: any) => ({
+                              ...prev,
+                              gradingTechniques: hasAll ? [] : allIds
+                            }));
+                          }}
+                          className="px-3 py-1.5 rounded-xl border border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300 transition-colors font-bold text-xs flex items-center gap-1.5"
+                        >
+                          <CheckCheck size={14} />
+                          {GRADING_TECHNIQUES.every(t => selections.gradingTechniques?.includes(t.id)) ? 'Desmarcar Todas' : 'Selecionar Todas'}
+                        </button>
+
+                        {selections.gradingTechniques?.length > 0 && (
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              setSelections((prev: any) => ({ ...prev, gradingTechniques: [] }));
+                            }}
+                            className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:bg-rose-500/10 hover:text-rose-500 transition-colors font-bold text-xs flex items-center gap-1"
+                          >
+                            <X size={13} />
+                            Limpar
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Grid de Cards de Técnicas */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[460px] overflow-y-auto pr-1.5 custom-scrollbar">
                       {GRADING_TECHNIQUES.map((tech) => {
                         const isSelected = selections.gradingTechniques?.includes(tech.id);
                         return (
@@ -1824,46 +1876,70 @@ export function StepContent({
                                 return { ...prev, gradingTechniques: nextTech };
                               });
                             }}
-                            className={`p-4 rounded-3xl border text-left cursor-pointer transition-all flex flex-col gap-2 group relative overflow-hidden ${
+                            className={`p-4.5 rounded-3xl border text-left cursor-pointer transition-all flex flex-col justify-between gap-3 group relative overflow-hidden ${
                               isSelected
-                                ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/10'
-                                : themeClasses.option + ' hover:border-[#8b5a2b]/40'
+                                ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/15 shadow-md shadow-[#8b5a2b]/5'
+                                : themeClasses.option + ' hover:border-[#8b5a2b]/40 hover:shadow-sm'
                             }`}
                           >
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <h3 className="font-bold text-sm flex items-center gap-2">
-                                  {tech.label}
-                                </h3>
-                                <p className="text-[10px] leading-tight opacity-60 mt-1">{tech.description}</p>
+                            {/* Cabeçalho do Card: Tag + Título + Status */}
+                            <div className="space-y-1.5">
+                              <div className="flex justify-between items-start gap-2">
+                                <div className="space-y-1 flex-1">
+                                  {tech.tag && (
+                                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20">
+                                      {tech.tag}
+                                    </span>
+                                  )}
+                                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                                    {tech.label}
+                                  </h3>
+                                </div>
+                                <div className={`p-1.5 rounded-full border transition-all shrink-0 ${
+                                  isSelected 
+                                    ? 'bg-[#8b5a2b] text-white border-transparent shadow-sm' 
+                                    : 'text-transparent border-zinc-400 dark:border-zinc-700 group-hover:border-[#8b5a2b]/60'
+                                }`}>
+                                  <Check size={12} strokeWidth={3} />
+                                </div>
                               </div>
-                              <div className={`p-1 rounded-full border transition-all ${
-                                isSelected 
-                                  ? 'bg-[#8b5a2b] text-white border-transparent' 
-                                  : 'text-transparent border-zinc-400 dark:border-zinc-700'
-                              }`}>
-                                <Check size={12} />
+
+                              {/* Para que serve */}
+                              <div className="pt-1">
+                                <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 mb-0.5">
+                                  <Sparkles size={11} className="text-amber-500" />
+                                  Para que serve:
+                                </span>
+                                <p className="text-xs leading-relaxed text-zinc-700 dark:text-zinc-300 font-medium">
+                                  {tech.description}
+                                </p>
                               </div>
                             </div>
-                            <span className="text-[9px] font-mono opacity-50 truncate max-w-xs block pt-1 border-t border-black/5 dark:border-white/5">{tech.prompt}</span>
+
+                            {/* Exemplo Prático */}
+                            {tech.example && (
+                              <div className="p-3 rounded-2xl bg-amber-500/5 dark:bg-amber-400/5 border border-amber-500/15 dark:border-amber-400/10 space-y-1">
+                                <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                                  <Lightbulb size={12} className="text-amber-500 shrink-0" />
+                                  Exemplo prático:
+                                </span>
+                                <p className="text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-400">
+                                  {tech.example}
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Prompt Técnico Injetado */}
+                            <div className="pt-2 border-t border-black/5 dark:border-white/5 flex items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                              <span className="text-[9px] font-mono text-zinc-500 dark:text-zinc-400 truncate block">
+                                <strong className="text-[8px] font-sans font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mr-1">Prompt:</strong>
+                                {tech.prompt}
+                              </span>
+                            </div>
                           </div>
                         );
                       })}
                     </div>
-
-                    {selections.gradingTechniques?.length > 0 && (
-                      <div className="flex">
-                        <button 
-                          type="button"
-                          onClick={() => {
-                            setSelections((prev: any) => ({ ...prev, gradingTechniques: [] }));
-                          }}
-                          className="px-6 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:bg-rose-500/10 hover:text-rose-500 transition-colors font-bold text-xs"
-                        >
-                          Limpar Técnicas Selecionadas
-                        </button>
-                      </div>
-                    )}
                   </div>
                 )}
 

@@ -1601,49 +1601,63 @@ export const GRADING_TECHNIQUES: Option[] = [
     id: 'cst-transform',
     label: 'Color Space Transform (CST)',
     prompt: 'processed with DaVinci Resolve Color Space Transform (CST), accurate gamut mapping and input display color space conversion',
-    description: 'Conversão técnica e científica de espaços de cor (ex: LOG para Rec.709) sem perdas de tons.',
+    description: 'Converte as cores da sua câmera para o padrão de exibição correto (como telas de TV e celular).',
+    example: 'Câmeras profissionais gravam em perfil LOG (uma imagem desbotada e cinzenta para guardar mais detalhes de luz e sombra). O CST converte esse perfil cinzento diretamente para o padrão Rec.709 (cores normais e vívidas) sem estragar a qualidade nem perder informação.',
+    tag: 'Conversão de Espaço',
     category: 'grading_technique'
   },
   {
     id: 'hdr-wheels',
     label: 'HDR Color Wheels',
     prompt: 'finely graded with DaVinci Resolve HDR color wheels, precise luminance zoning control over shadows, highlights, and midtones',
-    description: 'Ajuste cirúrgico de brilho e matiz usando as novas rodas HDR (Black, Dark, Shadow, Light, Highlight, Specular).',
+    description: 'Permite fazer ajustes cirúrgicos de luz e cor em zonas muito específicas da imagem.',
+    example: 'As rodas de cor tradicionais só dividem a imagem em sombras, tons médios e luzes. As rodas HDR dividem em áreas muito mais precisas (Black, Dark, Shadow, Light, Highlight, Specular). Isso permite alterar apenas o brilho do reflexo de uma lâmpada sem afetar o resto da cena.',
+    tag: 'Ajuste Zonal HDR',
     category: 'grading_technique'
   },
   {
     id: 'qualifiers-masking',
     label: 'Qualifiers & Masking (Grading Seletivo)',
     prompt: 'color qualified and tracked mask isolation, selective color grading, professional target skin tones tracking',
-    description: 'Mascaramento e isolamento de cores específicas (ex: manter apenas os tons de pele quentes e dessaturar o fundo).',
+    description: 'Isola uma cor ou um elemento específico da cena para que você possa alterá-lo sem mexer no restante.',
+    example: 'Você quer deixar o tom de pele de uma pessoa mais aquecido e natural, mas quer deixar o fundo da imagem mais frio e azulado. Com essa ferramenta, você "seleciona" apenas a pele da pessoa e faz a alteração necessária sem afetar o cenário.',
+    tag: 'Grading Seletivo',
     category: 'grading_technique'
   },
   {
     id: 'film-emulation',
     label: 'Film Halation Emulation',
     prompt: 'emulated film halation look, glowing red edges around bright light zones, retro chemical film simulation',
-    description: 'Simulação química analógica que cria um brilho avermelhado suave nas bordas de alta exposição de luz.',
+    description: 'Simula o efeito físico/químico das películas antigas de cinema de rolo.',
+    example: 'Em filmes antigos gravados em película, luzes muito fortes criavam um leve brilho/halo avermelhado ao redor das bordas iluminadas. Essa função recria esse "brilho avermelhado suave" nas áreas de alta iluminação para dar um visual retrô e orgânico.',
+    tag: 'Emulação Química',
     category: 'grading_technique'
   },
   {
     id: 'film-grain-resolve',
     label: 'Film Grain Emulation',
     prompt: 'authentic film grain texture integration, natural organic film noise, physical 35mm film stock simulation',
-    description: 'Adiciona granulação orgânica de película física de cinema 35mm para quebrar a textura digital limpa.',
+    description: 'Adiciona textura de granulado de filme de cinema (como o de 35mm) à imagem digital.',
+    example: 'Câmeras digitais modernas geram imagens extremamente "limpas" e "perfeitas", o que às vezes passa uma sensação artificial ou de vídeo caseiro. O granulado orgânico quebra essa textura digital lisa e dá o peso estético característico do cinema clássico.',
+    tag: 'Textura Analógica',
     category: 'grading_technique'
   },
   {
     id: 'power-grade',
     label: 'Power Grades (Resolve)',
     prompt: 'applied professional Hollywood industry-standard Power Grade node tree, complex multi-node color pipeline grading',
-    description: 'Estrutura profissional de nós interligados do Resolve para criar uma atmosfera de cinema de alto nível.',
+    description: 'Funciona como uma estrutura profissional de "predefinições" ou "fórmulas" de cor prontas e reutilizáveis.',
+    example: 'Em vez de ser apenas um filtro simples (como um LUT), o Power Grade é um mapa de nós (nodes) completo que organiza o tratamento de imagem em etapas. Ele permite aplicar a estética visual de Hollywood a um projeto mantendo total controle para ajustar cada detalhe separadamente.',
+    tag: 'Nós & Pipeline Hollywood',
     category: 'grading_technique'
   },
   {
     id: 'dctl-shifters',
     label: 'DCTL Color Shifters',
     prompt: 'mathematical DCTL color space transformations, high-fidelity custom color shifting, professional grade precision',
-    description: 'Transformadores matemáticos via código para realizar ajustes e distorções cromáticas perfeitas.',
+    description: 'Transformadores matemáticos via código para realizar ajustes e distorções cromáticas perfeitas com precisão científica.',
+    example: 'Permite manipular matiz, densidade e saturação de forma contínua sem quebras de gradiente (banding), calculadas diretamente em espaço de cor matemático de alta precisão.',
+    tag: 'Matemática de Cor',
     category: 'grading_technique'
   }
 ];

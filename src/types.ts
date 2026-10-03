@@ -16,6 +16,9 @@ export interface Option {
   category: string;
   subCategory?: string;
   image?: string; // Para preview futuro
+  example?: string;
+  purpose?: string;
+  tag?: string;
 }
 
 export interface SelectionState {
