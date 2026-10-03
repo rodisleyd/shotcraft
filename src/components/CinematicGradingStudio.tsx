@@ -92,7 +92,6 @@ export function CinematicGradingStudio({
         ...current,
         ...updates,
         enabled: true,
-        // Se estiver alterando propriedades manuais e não definindo um activeLookId explícito, marca como customizado
         isCustomized: updates.activeLookId !== undefined ? false : true,
         activeLookId: updates.activeLookId !== undefined ? updates.activeLookId : undefined
       };
@@ -201,6 +200,14 @@ export function CinematicGradingStudio({
     setTimeout(() => setCopiedPrompt(false), 2000);
   };
 
+  // Helper de classes ativas de alto contraste
+  const getPillActiveClass = (isActive: boolean) => {
+    if (!isActive) return themeClasses.option + ' hover:border-[#8b5a2b]/40';
+    return theme === 'dark'
+      ? 'bg-indigo-600 border-indigo-400 text-white font-bold shadow-md ring-2 ring-indigo-400/40'
+      : 'bg-[#8b5a2b] border-[#704823] text-white font-bold shadow-md ring-2 ring-[#8b5a2b]/40';
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Top Banner de Direção Visual & Color Grading */}
@@ -262,7 +269,7 @@ export function CinematicGradingStudio({
             onClick={() => setSubTab('looks')}
             className={`py-2 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${
               subTab === 'looks'
-                ? themeClasses.optionActive + ' shadow-md'
+                ? (theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'bg-[#8b5a2b] text-white shadow-md')
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
@@ -275,7 +282,7 @@ export function CinematicGradingStudio({
             onClick={() => setSubTab('sculpting')}
             className={`py-2 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${
               subTab === 'sculpting'
-                ? themeClasses.optionActive + ' shadow-md'
+                ? (theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'bg-[#8b5a2b] text-white shadow-md')
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
@@ -288,7 +295,7 @@ export function CinematicGradingStudio({
             onClick={() => setSubTab('selective')}
             className={`py-2 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${
               subTab === 'selective'
-                ? themeClasses.optionActive + ' shadow-md'
+                ? (theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'bg-[#8b5a2b] text-white shadow-md')
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
@@ -301,7 +308,7 @@ export function CinematicGradingStudio({
             onClick={() => setSubTab('film')}
             className={`py-2 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${
               subTab === 'film'
-                ? themeClasses.optionActive + ' shadow-md'
+                ? (theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'bg-[#8b5a2b] text-white shadow-md')
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
@@ -314,7 +321,7 @@ export function CinematicGradingStudio({
             onClick={() => setSubTab('builder')}
             className={`py-2 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${
               subTab === 'builder'
-                ? themeClasses.optionActive + ' shadow-md'
+                ? (theme === 'dark' ? 'bg-indigo-600 text-white shadow-md' : 'bg-[#8b5a2b] text-white shadow-md')
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
@@ -351,42 +358,70 @@ export function CinematicGradingStudio({
                 <div
                   key={preset.id}
                   onClick={() => handleApplyPreset(preset)}
-                  className={`p-4.5 rounded-3xl border text-left cursor-pointer transition-all flex flex-col justify-between gap-3 group relative overflow-hidden ${
+                  className={`p-5 rounded-3xl border text-left cursor-pointer transition-all flex flex-col justify-between gap-3.5 group relative overflow-hidden ${
                     isSelected
-                      ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/20 shadow-lg'
-                      : themeClasses.option + ' hover:border-[#8b5a2b]/50 hover:shadow-md'
+                      ? (theme === 'dark'
+                          ? 'bg-gradient-to-br from-indigo-950/80 via-zinc-900 to-indigo-950/50 border-indigo-400 ring-2 ring-indigo-500/60 shadow-xl shadow-indigo-950/50'
+                          : 'bg-gradient-to-br from-amber-50 via-white to-amber-100/60 border-[#8b5a2b] ring-2 ring-[#8b5a2b]/40 shadow-md')
+                      : (theme === 'dark'
+                          ? 'bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/80 shadow-sm'
+                          : 'bg-white/80 border-zinc-200 hover:border-[#8b5a2b]/50 hover:bg-white shadow-sm')
                   }`}
                 >
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     <div className="flex justify-between items-start gap-2">
                       <div className="space-y-1">
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20">
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase border ${
+                          isSelected
+                            ? (theme === 'dark' ? 'bg-indigo-500/30 text-indigo-200 border-indigo-400/50' : 'bg-[#8b5a2b]/20 text-[#8b5a2b] border-[#8b5a2b]/40')
+                            : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20'
+                        }`}>
                           {preset.badge}
                         </span>
-                        <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                        <h4 className={`font-black text-base tracking-tight flex items-center gap-2 ${
+                          isSelected
+                            ? (theme === 'dark' ? 'text-indigo-200' : 'text-[#8b5a2b]')
+                            : 'text-zinc-900 dark:text-zinc-100'
+                        }`}>
                           {preset.name}
                         </h4>
                       </div>
                       <div className={`p-1.5 rounded-full border transition-all shrink-0 ${
                         isSelected
-                          ? 'bg-[#8b5a2b] text-white border-transparent'
+                          ? (theme === 'dark' ? 'bg-indigo-500 text-white border-indigo-400 shadow-md' : 'bg-[#8b5a2b] text-white border-transparent shadow-sm')
                           : 'text-transparent border-zinc-400 dark:border-zinc-700 group-hover:border-[#8b5a2b]'
                       }`}>
                         <Check size={12} strokeWidth={3} />
                       </div>
                     </div>
 
-                    <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 leading-snug">
+                    <p className={`text-xs font-bold leading-snug ${
+                      isSelected
+                        ? (theme === 'dark' ? 'text-white' : 'text-zinc-900')
+                        : 'text-zinc-800 dark:text-zinc-200'
+                    }`}>
                       {preset.tagline}
                     </p>
-                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                    <p className={`text-[11px] leading-relaxed ${
+                      isSelected
+                        ? (theme === 'dark' ? 'text-zinc-300' : 'text-zinc-700')
+                        : 'text-zinc-600 dark:text-zinc-400'
+                    }`}>
                       {preset.description}
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between gap-2">
-                    <span className="text-[9px] font-mono text-zinc-500 dark:text-zinc-400 truncate block">
-                      <strong className="text-[8px] font-sans font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mr-1">Prompt:</strong>
+                  <div className={`pt-2.5 border-t flex items-center justify-between gap-2 ${
+                    isSelected
+                      ? (theme === 'dark' ? 'border-indigo-500/30 text-indigo-200' : 'border-[#8b5a2b]/20 text-zinc-800')
+                      : 'border-black/5 dark:border-white/5 text-zinc-500 dark:text-zinc-400'
+                  }`}>
+                    <span className="text-[9px] font-mono truncate block">
+                      <strong className={`text-[8px] font-sans font-black uppercase tracking-wider mr-1.5 ${
+                        isSelected ? (theme === 'dark' ? 'text-indigo-300' : 'text-[#8b5a2b]') : 'text-amber-600 dark:text-amber-400'
+                      }`}>
+                        PROMPT:
+                      </strong>
                       {preset.promptSignature}
                     </span>
                   </div>
@@ -411,13 +446,13 @@ export function CinematicGradingStudio({
                       onClick={() => handleApplySavedLook(look)}
                       className={`p-3.5 rounded-2xl border text-left cursor-pointer transition-all flex items-center justify-between gap-2 ${
                         isSelected
-                          ? themeClasses.optionActive + ' ring-2 ring-[#8b5a2b]'
-                          : themeClasses.option + ' hover:border-[#8b5a2b]/40'
+                          ? (theme === 'dark' ? 'bg-indigo-950/80 border-indigo-400 text-white ring-2 ring-indigo-500/50' : 'bg-amber-100/80 border-[#8b5a2b] ring-2 ring-[#8b5a2b]/40')
+                          : (theme === 'dark' ? 'bg-zinc-900/50 border-zinc-800 hover:border-zinc-700' : 'bg-white border-zinc-200 hover:border-[#8b5a2b]/40')
                       }`}
                     >
                       <div className="truncate">
-                        <h6 className="font-bold text-xs truncate">{look.name}</h6>
-                        <span className="text-[10px] opacity-60">Custom Look</span>
+                        <h6 className={`font-bold text-xs truncate ${isSelected ? (theme === 'dark' ? 'text-indigo-200' : 'text-[#8b5a2b]') : 'text-zinc-900 dark:text-zinc-100'}`}>{look.name}</h6>
+                        <span className="text-[10px] opacity-70">Custom Look</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <button
@@ -429,7 +464,7 @@ export function CinematicGradingStudio({
                           <Trash2 size={13} />
                         </button>
                         <div className={`p-1 rounded-full border ${
-                          isSelected ? 'bg-[#8b5a2b] text-white border-transparent' : 'border-zinc-500 text-transparent'
+                          isSelected ? (theme === 'dark' ? 'bg-indigo-500 text-white border-transparent' : 'bg-[#8b5a2b] text-white border-transparent') : 'border-zinc-500 text-transparent'
                         }`}>
                           <Check size={10} />
                         </div>
@@ -468,21 +503,20 @@ export function CinematicGradingStudio({
                   Perfil de Entrada (Camera / Sensor Input):
                 </label>
                 <div className="grid grid-cols-1 gap-1.5">
-                  {COLOR_SCIENCE_INPUTS.map(inp => (
-                    <button
-                      key={inp.id}
-                      type="button"
-                      onClick={() => updateGrading({ colorScienceInput: inp.id })}
-                      className={`px-3 py-2 rounded-xl text-left text-xs transition-all border ${
-                        currentGrading.colorScienceInput === inp.id
-                          ? themeClasses.optionActive + ' font-bold ring-2 ring-[#8b5a2b]/30'
-                          : themeClasses.option + ' hover:border-[#8b5a2b]/30'
-                      }`}
-                    >
-                      <div className="font-bold">{inp.label}</div>
-                      <div className="text-[10px] opacity-60">{inp.desc}</div>
-                    </button>
-                  ))}
+                  {COLOR_SCIENCE_INPUTS.map(inp => {
+                    const isSelected = currentGrading.colorScienceInput === inp.id;
+                    return (
+                      <button
+                        key={inp.id}
+                        type="button"
+                        onClick={() => updateGrading({ colorScienceInput: inp.id })}
+                        className={`px-3 py-2 rounded-xl text-left text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                      >
+                        <div className="font-bold">{inp.label}</div>
+                        <div className={`text-[10px] ${isSelected ? 'text-indigo-100 dark:text-white/90 font-medium' : 'opacity-60'}`}>{inp.desc}</div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -491,21 +525,20 @@ export function CinematicGradingStudio({
                   Perfil de Saída (Look de Exibição / Output Look):
                 </label>
                 <div className="grid grid-cols-1 gap-1.5">
-                  {COLOR_SCIENCE_OUTPUTS.map(out => (
-                    <button
-                      key={out.id}
-                      type="button"
-                      onClick={() => updateGrading({ colorScienceOutput: out.id })}
-                      className={`px-3 py-2 rounded-xl text-left text-xs transition-all border ${
-                        currentGrading.colorScienceOutput === out.id
-                          ? themeClasses.optionActive + ' font-bold ring-2 ring-[#8b5a2b]/30'
-                          : themeClasses.option + ' hover:border-[#8b5a2b]/30'
-                      }`}
-                    >
-                      <div className="font-bold">{out.label}</div>
-                      <div className="text-[10px] opacity-60">{out.desc}</div>
-                    </button>
-                  ))}
+                  {COLOR_SCIENCE_OUTPUTS.map(out => {
+                    const isSelected = currentGrading.colorScienceOutput === out.id;
+                    return (
+                      <button
+                        key={out.id}
+                        type="button"
+                        onClick={() => updateGrading({ colorScienceOutput: out.id })}
+                        className={`px-3 py-2 rounded-xl text-left text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                      >
+                        <div className="font-bold">{out.label}</div>
+                        <div className={`text-[10px] ${isSelected ? 'text-indigo-100 dark:text-white/90 font-medium' : 'opacity-60'}`}>{out.desc}</div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -522,20 +555,19 @@ export function CinematicGradingStudio({
                   Curva de Contraste:
                 </label>
                 <div className="grid grid-cols-3 gap-1.5">
-                  {CONTRAST_OPTIONS.map(c => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => updateGrading({ contrast: c.id })}
-                      className={`p-2 rounded-xl text-center text-xs transition-all border ${
-                        currentGrading.contrast === c.id
-                          ? themeClasses.optionActive + ' font-bold ring-2 ring-[#8b5a2b]/30'
-                          : themeClasses.option
-                      }`}
-                    >
-                      {c.label}
-                    </button>
-                  ))}
+                  {CONTRAST_OPTIONS.map(c => {
+                    const isSelected = currentGrading.contrast === c.id;
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => updateGrading({ contrast: c.id })}
+                        className={`p-2 rounded-xl text-center text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                      >
+                        {c.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -545,21 +577,20 @@ export function CinematicGradingStudio({
                   Nível de Pretos (Black Level / Sombras):
                 </label>
                 <div className="grid grid-cols-2 gap-1.5">
-                  {BLACK_LEVEL_OPTIONS.map(b => (
-                    <button
-                      key={b.id}
-                      type="button"
-                      onClick={() => updateGrading({ blackLevel: b.id })}
-                      className={`p-2.5 rounded-xl text-left text-xs transition-all border ${
-                        currentGrading.blackLevel === b.id
-                          ? themeClasses.optionActive + ' font-bold ring-2 ring-[#8b5a2b]/30'
-                          : themeClasses.option
-                      }`}
-                    >
-                      <div className="font-bold">{b.label}</div>
-                      <div className="text-[10px] opacity-60">{b.desc}</div>
-                    </button>
-                  ))}
+                  {BLACK_LEVEL_OPTIONS.map(b => {
+                    const isSelected = currentGrading.blackLevel === b.id;
+                    return (
+                      <button
+                        key={b.id}
+                        type="button"
+                        onClick={() => updateGrading({ blackLevel: b.id })}
+                        className={`p-2.5 rounded-xl text-left text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                      >
+                        <div className="font-bold">{b.label}</div>
+                        <div className={`text-[10px] ${isSelected ? 'text-indigo-100 dark:text-white/90 font-medium' : 'opacity-60'}`}>{b.desc}</div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -569,21 +600,20 @@ export function CinematicGradingStudio({
                   Highlight Roll-off (Transição de Altas Luzes):
                 </label>
                 <div className="grid grid-cols-2 gap-1.5">
-                  {HIGHLIGHT_ROLLOFF_OPTIONS.map(h => (
-                    <button
-                      key={h.id}
-                      type="button"
-                      onClick={() => updateGrading({ highlightRollOff: h.id })}
-                      className={`p-2.5 rounded-xl text-left text-xs transition-all border ${
-                        currentGrading.highlightRollOff === h.id
-                          ? themeClasses.optionActive + ' font-bold ring-2 ring-[#8b5a2b]/30'
-                          : themeClasses.option
-                      }`}
-                    >
-                      <div className="font-bold">{h.label}</div>
-                      <div className="text-[10px] opacity-60">{h.desc}</div>
-                    </button>
-                  ))}
+                  {HIGHLIGHT_ROLLOFF_OPTIONS.map(h => {
+                    const isSelected = currentGrading.highlightRollOff === h.id;
+                    return (
+                      <button
+                        key={h.id}
+                        type="button"
+                        onClick={() => updateGrading({ highlightRollOff: h.id })}
+                        className={`p-2.5 rounded-xl text-left text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                      >
+                        <div className="font-bold">{h.label}</div>
+                        <div className={`text-[10px] ${isSelected ? 'text-indigo-100 dark:text-white/90 font-medium' : 'opacity-60'}`}>{h.desc}</div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -593,42 +623,40 @@ export function CinematicGradingStudio({
                   Tonalidade de Sombras (Shadow Tint):
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
-                  {SHADOW_TONE_OPTIONS.map(s => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => updateGrading({ shadowTone: s.id })}
-                      className={`p-2 rounded-xl text-center text-xs transition-all border flex flex-col items-center gap-1.5 ${
-                        currentGrading.shadowTone === s.id
-                          ? themeClasses.optionActive + ' font-bold ring-2 ring-[#8b5a2b]/30'
-                          : themeClasses.option
-                      }`}
-                    >
-                      <span className="w-4 h-4 rounded-full border border-black/20" style={{ backgroundColor: s.color }} />
-                      <span className="text-[10px]">{s.label}</span>
-                    </button>
-                  ))}
+                  {SHADOW_TONE_OPTIONS.map(s => {
+                    const isSelected = currentGrading.shadowTone === s.id;
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => updateGrading({ shadowTone: s.id })}
+                        className={`p-2 rounded-xl text-center text-xs transition-all border flex flex-col items-center gap-1.5 ${getPillActiveClass(isSelected)}`}
+                      >
+                        <span className="w-4 h-4 rounded-full border border-black/20" style={{ backgroundColor: s.color }} />
+                        <span className="text-[10px]">{s.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
 
                 <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 block pt-1">
                   Tonalidade de Realces (Highlight Tint):
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                  {HIGHLIGHT_TONE_OPTIONS.map(h => (
-                    <button
-                      key={h.id}
-                      type="button"
-                      onClick={() => updateGrading({ highlightTone: h.id })}
-                      className={`p-2 rounded-xl text-center text-xs transition-all border flex flex-col items-center gap-1.5 ${
-                        currentGrading.highlightTone === h.id
-                          ? themeClasses.optionActive + ' font-bold ring-2 ring-[#8b5a2b]/30'
-                          : themeClasses.option
-                      }`}
-                    >
-                      <span className="w-4 h-4 rounded-full border border-black/20" style={{ backgroundColor: h.color }} />
-                      <span className="text-[10px]">{h.label}</span>
-                    </button>
-                  ))}
+                  {HIGHLIGHT_TONE_OPTIONS.map(h => {
+                    const isSelected = currentGrading.highlightTone === h.id;
+                    return (
+                      <button
+                        key={h.id}
+                        type="button"
+                        onClick={() => updateGrading({ highlightTone: h.id })}
+                        className={`p-2 rounded-xl text-center text-xs transition-all border flex flex-col items-center gap-1.5 ${getPillActiveClass(isSelected)}`}
+                      >
+                        <span className="w-4 h-4 rounded-full border border-black/20" style={{ backgroundColor: h.color }} />
+                        <span className="text-[10px]">{h.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -655,7 +683,7 @@ export function CinematicGradingStudio({
               onClick={() => updateGrading({ isolateSubject: !currentGrading.isolateSubject })}
               className={`px-4 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-2 border shadow-sm ${
                 currentGrading.isolateSubject
-                  ? 'bg-[#8b5a2b] text-white border-transparent'
+                  ? (theme === 'dark' ? 'bg-indigo-600 border-indigo-400 text-white shadow-md' : 'bg-[#8b5a2b] border-[#704823] text-white shadow-md')
                   : 'bg-white/60 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300'
               }`}
             >
@@ -672,21 +700,20 @@ export function CinematicGradingStudio({
                 <h5 className="font-bold text-xs uppercase tracking-wider">Tom de Pele (Skin Tones)</h5>
               </div>
               <div className="space-y-1.5">
-                {SKIN_TONE_OPTIONS.map(s => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => updateGrading({ skinTone: s.id })}
-                    className={`w-full p-2.5 rounded-xl text-left text-xs transition-all border ${
-                      currentGrading.skinTone === s.id
-                        ? themeClasses.optionActive + ' font-bold ring-2 ring-[#8b5a2b]/30'
-                        : themeClasses.option
-                    }`}
-                  >
-                    <div className="font-bold">{s.label}</div>
-                    <div className="text-[10px] opacity-60">{s.desc}</div>
-                  </button>
-                ))}
+                {SKIN_TONE_OPTIONS.map(s => {
+                  const isSelected = currentGrading.skinTone === s.id;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => updateGrading({ skinTone: s.id })}
+                      className={`w-full p-2.5 rounded-xl text-left text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                    >
+                      <div className="font-bold">{s.label}</div>
+                      <div className={`text-[10px] ${isSelected ? 'text-indigo-100 dark:text-white/90 font-medium' : 'opacity-60'}`}>{s.desc}</div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -697,21 +724,20 @@ export function CinematicGradingStudio({
                 <h5 className="font-bold text-xs uppercase tracking-wider">Céu & Atmosfera (Sky Tone)</h5>
               </div>
               <div className="space-y-1.5">
-                {SKY_TONE_OPTIONS.map(s => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => updateGrading({ skyTone: s.id })}
-                    className={`w-full p-2.5 rounded-xl text-left text-xs transition-all border ${
-                      currentGrading.skyTone === s.id
-                        ? themeClasses.optionActive + ' font-bold ring-2 ring-[#8b5a2b]/30'
-                        : themeClasses.option
-                    }`}
-                  >
-                    <div className="font-bold">{s.label}</div>
-                    <div className="text-[10px] opacity-60">{s.desc}</div>
-                  </button>
-                ))}
+                {SKY_TONE_OPTIONS.map(s => {
+                  const isSelected = currentGrading.skyTone === s.id;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => updateGrading({ skyTone: s.id })}
+                      className={`w-full p-2.5 rounded-xl text-left text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                    >
+                      <div className="font-bold">{s.label}</div>
+                      <div className={`text-[10px] ${isSelected ? 'text-indigo-100 dark:text-white/90 font-medium' : 'opacity-60'}`}>{s.desc}</div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -722,21 +748,20 @@ export function CinematicGradingStudio({
                 <h5 className="font-bold text-xs uppercase tracking-wider">Vegetação & Folhagens</h5>
               </div>
               <div className="space-y-1.5">
-                {VEGETATION_TONE_OPTIONS.map(v => (
-                  <button
-                    key={v.id}
-                    type="button"
-                    onClick={() => updateGrading({ vegetationTone: v.id })}
-                    className={`w-full p-2.5 rounded-xl text-left text-xs transition-all border ${
-                      currentGrading.vegetationTone === v.id
-                        ? themeClasses.optionActive + ' font-bold ring-2 ring-[#8b5a2b]/30'
-                        : themeClasses.option
-                    }`}
-                  >
-                    <div className="font-bold">{v.label}</div>
-                    <div className="text-[10px] opacity-60">{v.desc}</div>
-                  </button>
-                ))}
+                {VEGETATION_TONE_OPTIONS.map(v => {
+                  const isSelected = currentGrading.vegetationTone === v.id;
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => updateGrading({ vegetationTone: v.id })}
+                      className={`w-full p-2.5 rounded-xl text-left text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                    >
+                      <div className="font-bold">{v.label}</div>
+                      <div className={`text-[10px] ${isSelected ? 'text-indigo-100 dark:text-white/90 font-medium' : 'opacity-60'}`}>{v.desc}</div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -784,20 +809,19 @@ export function CinematicGradingStudio({
                       Intensidade do Halation:
                     </label>
                     <div className="grid grid-cols-3 gap-1.5">
-                      {(['subtle', 'medium', 'strong'] as const).map(intensity => (
-                        <button
-                          key={intensity}
-                          type="button"
-                          onClick={() => updateGrading({ halationIntensity: intensity })}
-                          className={`p-2 rounded-xl text-center text-xs transition-all border ${
-                            currentGrading.halationIntensity === intensity
-                              ? themeClasses.optionActive + ' font-bold'
-                              : themeClasses.option
-                          }`}
-                        >
-                          {intensity === 'subtle' ? 'Sutil' : intensity === 'medium' ? 'Médio' : 'Forte'}
-                        </button>
-                      ))}
+                      {(['subtle', 'medium', 'strong'] as const).map(intensity => {
+                        const isSelected = currentGrading.halationIntensity === intensity;
+                        return (
+                          <button
+                            key={intensity}
+                            type="button"
+                            onClick={() => updateGrading({ halationIntensity: intensity })}
+                            className={`p-2 rounded-xl text-center text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                          >
+                            {intensity === 'subtle' ? 'Sutil' : intensity === 'medium' ? 'Médio' : 'Forte'}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -810,20 +834,19 @@ export function CinematicGradingStudio({
                         { id: 'red', label: 'Vermelho Puro' },
                         { id: 'red-orange', label: 'Laranja-Vermelho' },
                         { id: 'amber', label: 'Âmbar Quente' }
-                      ].map(c => (
-                        <button
-                          key={c.id}
-                          type="button"
-                          onClick={() => updateGrading({ halationColor: c.id as any })}
-                          className={`p-2 rounded-xl text-center text-xs transition-all border ${
-                            currentGrading.halationColor === c.id
-                              ? themeClasses.optionActive + ' font-bold'
-                              : themeClasses.option
-                          }`}
-                        >
-                          {c.label}
-                        </button>
-                      ))}
+                      ].map(c => {
+                        const isSelected = currentGrading.halationColor === c.id;
+                        return (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => updateGrading({ halationColor: c.id as any })}
+                            className={`p-2 rounded-xl text-center text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                          >
+                            {c.label}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -832,20 +855,19 @@ export function CinematicGradingStudio({
                       Espalhamento Óptico (Spread):
                     </label>
                     <div className="grid grid-cols-3 gap-1.5">
-                      {(['tight', 'medium', 'soft'] as const).map(spread => (
-                        <button
-                          key={spread}
-                          type="button"
-                          onClick={() => updateGrading({ halationSpread: spread })}
-                          className={`p-2 rounded-xl text-center text-xs transition-all border ${
-                            currentGrading.halationSpread === spread
-                              ? themeClasses.optionActive + ' font-bold'
-                              : themeClasses.option
-                          }`}
-                        >
-                          {spread === 'tight' ? 'Concentrado' : spread === 'medium' ? 'Médio' : 'Suave / Difuso'}
-                        </button>
-                      ))}
+                      {(['tight', 'medium', 'soft'] as const).map(spread => {
+                        const isSelected = currentGrading.halationSpread === spread;
+                        return (
+                          <button
+                            key={spread}
+                            type="button"
+                            onClick={() => updateGrading({ halationSpread: spread })}
+                            className={`p-2 rounded-xl text-center text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                          >
+                            {spread === 'tight' ? 'Concentrado' : spread === 'medium' ? 'Médio' : 'Suave / Difuso'}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -879,20 +901,19 @@ export function CinematicGradingStudio({
                       Formato de Película (Gauge):
                     </label>
                     <div className="grid grid-cols-2 gap-1.5">
-                      {FILM_FORMAT_OPTIONS.map(f => (
-                        <button
-                          key={f.id}
-                          type="button"
-                          onClick={() => updateGrading({ filmFormat: f.id as any })}
-                          className={`p-2 rounded-xl text-left text-xs transition-all border ${
-                            currentGrading.filmFormat === f.id
-                              ? themeClasses.optionActive + ' font-bold'
-                              : themeClasses.option
-                          }`}
-                        >
-                          {f.label}
-                        </button>
-                      ))}
+                      {FILM_FORMAT_OPTIONS.map(f => {
+                        const isSelected = currentGrading.filmFormat === f.id;
+                        return (
+                          <button
+                            key={f.id}
+                            type="button"
+                            onClick={() => updateGrading({ filmFormat: f.id as any })}
+                            className={`p-2 rounded-xl text-left text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                          >
+                            {f.label}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -905,20 +926,19 @@ export function CinematicGradingStudio({
                         { id: 'clean', label: 'Limpo / Fino' },
                         { id: 'organic', label: 'Orgânico 35mm' },
                         { id: 'vintage', label: 'Vintage 16mm' }
-                      ].map(ch => (
-                        <button
-                          key={ch.id}
-                          type="button"
-                          onClick={() => updateGrading({ grainCharacter: ch.id as any })}
-                          className={`p-2 rounded-xl text-center text-xs transition-all border ${
-                            currentGrading.grainCharacter === ch.id
-                              ? themeClasses.optionActive + ' font-bold'
-                              : themeClasses.option
-                          }`}
-                        >
-                          {ch.label}
-                        </button>
-                      ))}
+                      ].map(ch => {
+                        const isSelected = currentGrading.grainCharacter === ch.id;
+                        return (
+                          <button
+                            key={ch.id}
+                            type="button"
+                            onClick={() => updateGrading({ grainCharacter: ch.id as any })}
+                            className={`p-2 rounded-xl text-center text-xs transition-all border ${getPillActiveClass(isSelected)}`}
+                          >
+                            {ch.label}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -958,20 +978,19 @@ export function CinematicGradingStudio({
                 { id: 'flux', label: 'Flux.1' },
                 { id: 'nano-banana', label: 'Nano Banana / Imagen' },
                 { id: 'dalle', label: 'DALL-E 3' }
-              ].map(ai => (
-                <button
-                  key={ai.id}
-                  type="button"
-                  onClick={() => updateGrading({ targetAI: ai.id })}
-                  className={`p-2 rounded-xl text-center text-xs font-bold transition-all border ${
-                    (currentGrading.targetAI || 'general') === ai.id
-                      ? themeClasses.optionActive + ' ring-2 ring-[#8b5a2b]/30'
-                      : themeClasses.option
-                  }`}
-                >
-                  {ai.label}
-                </button>
-              ))}
+              ].map(ai => {
+                const isSelected = (currentGrading.targetAI || 'general') === ai.id;
+                return (
+                  <button
+                    key={ai.id}
+                    type="button"
+                    onClick={() => updateGrading({ targetAI: ai.id })}
+                    className={`p-2.5 rounded-xl text-center text-xs font-bold transition-all border ${getPillActiveClass(isSelected)}`}
+                  >
+                    {ai.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

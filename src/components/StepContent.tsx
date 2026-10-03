@@ -1900,29 +1900,41 @@ export function StepContent({
                                 return { ...prev, gradingTechniques: nextTech };
                               });
                             }}
-                            className={`p-4.5 rounded-3xl border text-left cursor-pointer transition-all flex flex-col justify-between gap-3 group relative overflow-hidden ${
+                            className={`p-5 rounded-3xl border text-left cursor-pointer transition-all flex flex-col justify-between gap-3.5 group relative overflow-hidden ${
                               isSelected
-                                ? themeClasses.optionActive + ' ring-4 ring-[#8b5a2b]/15 shadow-md shadow-[#8b5a2b]/5'
-                                : themeClasses.option + ' hover:border-[#8b5a2b]/40 hover:shadow-sm'
+                                ? (theme === 'dark'
+                                    ? 'bg-gradient-to-br from-indigo-950/80 via-zinc-900 to-indigo-950/50 border-indigo-400 ring-2 ring-indigo-500/60 shadow-xl shadow-indigo-950/50'
+                                    : 'bg-gradient-to-br from-amber-50 via-white to-amber-100/60 border-[#8b5a2b] ring-2 ring-[#8b5a2b]/40 shadow-md')
+                                : (theme === 'dark'
+                                    ? 'bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/80 shadow-sm'
+                                    : 'bg-white/80 border-zinc-200 hover:border-[#8b5a2b]/50 hover:bg-white shadow-sm')
                             }`}
                           >
                             {/* Cabeçalho do Card: Tag + Título + Status */}
-                            <div className="space-y-1.5">
+                            <div className="space-y-2">
                               <div className="flex justify-between items-start gap-2">
                                 <div className="space-y-1 flex-1">
                                   {tech.tag && (
-                                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20">
+                                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase border ${
+                                      isSelected
+                                        ? (theme === 'dark' ? 'bg-indigo-500/30 text-indigo-200 border-indigo-400/50' : 'bg-[#8b5a2b]/20 text-[#8b5a2b] border-[#8b5a2b]/40')
+                                        : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20'
+                                    }`}>
                                       {tech.tag}
                                     </span>
                                   )}
-                                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                                  <h3 className={`font-black text-sm tracking-tight flex items-center gap-2 ${
+                                    isSelected
+                                      ? (theme === 'dark' ? 'text-indigo-200' : 'text-[#8b5a2b]')
+                                      : 'text-zinc-900 dark:text-zinc-100'
+                                  }`}>
                                     {tech.label}
                                   </h3>
                                 </div>
                                 <div className={`p-1.5 rounded-full border transition-all shrink-0 ${
                                   isSelected 
-                                    ? 'bg-[#8b5a2b] text-white border-transparent shadow-sm' 
-                                    : 'text-transparent border-zinc-400 dark:border-zinc-700 group-hover:border-[#8b5a2b]/60'
+                                    ? (theme === 'dark' ? 'bg-indigo-500 text-white border-indigo-400 shadow-md' : 'bg-[#8b5a2b] text-white border-transparent shadow-sm')
+                                    : 'text-transparent border-zinc-400 dark:border-zinc-700 group-hover:border-[#8b5a2b]'
                                 }`}>
                                   <Check size={12} strokeWidth={3} />
                                 </div>
@@ -1930,11 +1942,15 @@ export function StepContent({
 
                               {/* Para que serve */}
                               <div className="pt-1">
-                                <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 mb-0.5">
+                                <span className={`text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 mb-0.5 ${
+                                  isSelected ? (theme === 'dark' ? 'text-indigo-300' : 'text-[#8b5a2b]') : 'text-zinc-500 dark:text-zinc-400'
+                                }`}>
                                   <Sparkles size={11} className="text-amber-500" />
                                   Para que serve:
                                 </span>
-                                <p className="text-xs leading-relaxed text-zinc-700 dark:text-zinc-300 font-medium">
+                                <p className={`text-xs leading-relaxed font-medium ${
+                                  isSelected ? (theme === 'dark' ? 'text-zinc-200' : 'text-zinc-800') : 'text-zinc-700 dark:text-zinc-300'
+                                }`}>
                                   {tech.description}
                                 </p>
                               </div>
@@ -1942,21 +1958,33 @@ export function StepContent({
 
                             {/* Exemplo Prático */}
                             {tech.example && (
-                              <div className="p-3 rounded-2xl bg-amber-500/5 dark:bg-amber-400/5 border border-amber-500/15 dark:border-amber-400/10 space-y-1">
-                                <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                              <div className={`p-3 rounded-2xl border space-y-1 ${
+                                isSelected
+                                  ? (theme === 'dark' ? 'bg-black/40 border-indigo-500/30 text-zinc-200' : 'bg-amber-100/70 border-[#8b5a2b]/30 text-zinc-900')
+                                  : (theme === 'dark' ? 'bg-amber-400/5 border-amber-400/10 text-zinc-400' : 'bg-amber-500/5 border-amber-500/15 text-zinc-600')
+                              }`}>
+                                <span className={`text-[10px] font-bold flex items-center gap-1.5 ${
+                                  isSelected ? (theme === 'dark' ? 'text-amber-300' : 'text-[#8b5a2b]') : 'text-amber-700 dark:text-amber-300'
+                                }`}>
                                   <Lightbulb size={12} className="text-amber-500 shrink-0" />
                                   Exemplo prático:
                                 </span>
-                                <p className="text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-400">
+                                <p className="text-[11px] leading-relaxed">
                                   {tech.example}
                                 </p>
                               </div>
                             )}
 
                             {/* Prompt Técnico Injetado */}
-                            <div className="pt-2 border-t border-black/5 dark:border-white/5 flex items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
-                              <span className="text-[9px] font-mono text-zinc-500 dark:text-zinc-400 truncate block">
-                                <strong className="text-[8px] font-sans font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mr-1">Prompt:</strong>
+                            <div className={`pt-2 border-t flex items-center gap-1.5 ${
+                              isSelected
+                                ? (theme === 'dark' ? 'border-indigo-500/30 text-indigo-200' : 'border-[#8b5a2b]/20 text-zinc-800')
+                                : 'border-black/5 dark:border-white/5 text-zinc-500 dark:text-zinc-400'
+                            }`}>
+                              <span className="text-[9px] font-mono truncate block">
+                                <strong className={`text-[8px] font-sans font-bold uppercase tracking-wider mr-1 ${
+                                  isSelected ? (theme === 'dark' ? 'text-indigo-300' : 'text-[#8b5a2b]') : 'text-amber-600 dark:text-amber-400'
+                                }`}>Prompt:</strong>
                                 {tech.prompt}
                               </span>
                             </div>
