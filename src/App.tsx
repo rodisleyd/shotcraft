@@ -41,6 +41,7 @@ import { buildCharacterBlueprintPrompt, DEFAULT_CHARACTER_LOCK_STATE } from './d
 // Services
 import { dataService } from './services/dataService';
 import { fetchImageAsDataUrl } from './services/imageService';
+import { buildCinematicGradingPrompt } from './services/cinematicGradingEngine';
 
 // Components
 import { Header } from './components/Header';
@@ -701,6 +702,11 @@ export default function App() {
     if (selections.lutId) {
       const lutPrompt = LUTS.find(o => o.id === selections.lutId)?.prompt;
       if (lutPrompt) parts.push(lutPrompt);
+    }
+
+    if (selections.cinematicGrading && selections.cinematicGrading.enabled) {
+      const gradingPrompt = buildCinematicGradingPrompt(selections.cinematicGrading, selections.cinematicGrading.targetAI || 'general');
+      if (gradingPrompt) parts.push(gradingPrompt);
     }
 
     if (selections.gradingTechniques && selections.gradingTechniques.length > 0) {

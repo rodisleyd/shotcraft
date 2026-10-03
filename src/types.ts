@@ -21,6 +21,48 @@ export interface Option {
   tag?: string;
 }
 
+export interface SavedLook {
+  id: string;
+  name: string;
+  category?: string;
+  description?: string;
+  settings: Partial<CinematicGradingState>;
+  createdAt?: number;
+}
+
+export interface CinematicGradingState {
+  enabled: boolean;
+  activeLookId?: string;
+  isCustomized?: boolean;
+  targetAI?: string;
+  // Nível 2: Color Science & Tonality
+  colorScienceInput?: string;
+  colorScienceOutput?: string;
+  contrast?: string;
+  blackLevel?: string;
+  highlightRollOff?: string;
+  saturation?: string;
+  // Tonal Sculpting (HDR Zones)
+  shadowTone?: string;
+  highlightTone?: string;
+  specularHighlight?: string;
+  // Nível 2: Selective Grading
+  isolateSubject?: boolean;
+  skinTone?: string;
+  skyTone?: string;
+  vegetationTone?: string;
+  // Nível 3: Film Character & Emulation
+  halationEnabled?: boolean;
+  halationIntensity?: 'subtle' | 'medium' | 'strong';
+  halationColor?: 'red' | 'amber' | 'orange' | 'red-orange';
+  halationSpread?: 'tight' | 'medium' | 'soft';
+  filmGrainEnabled?: boolean;
+  filmFormat?: '8mm' | '16mm' | '35mm' | '65mm' | 'off';
+  grainSize?: 'fine' | 'medium' | 'coarse';
+  grainIntensity?: 'subtle' | 'medium' | 'heavy';
+  grainCharacter?: 'clean' | 'organic' | 'vintage' | 'rough';
+}
+
 export interface SelectionState {
   framing: string;
   angle: string;
@@ -36,6 +78,7 @@ export interface SelectionState {
   colorPaletteId: string;
   lutId?: string;
   gradingTechniques: string[];
+  cinematicGrading?: CinematicGradingState;
   useColorRule603010?: boolean;
   colorRule603010?: {
     dominant: string;

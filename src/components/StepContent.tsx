@@ -4,12 +4,13 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette, Search, Filter, ArrowUpDown, Tag, Lock, Info, Sparkles, Lightbulb, SlidersHorizontal, CheckCheck } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette, Search, Filter, ArrowUpDown, Tag, Lock, Info, Sparkles, Lightbulb, SlidersHorizontal, CheckCheck, Clapperboard } from "lucide-react";
 import { Option, Step, SelectionState, ColorPaletteOption, CharacterLockState } from "../types";
 import { STYLES, PAPERS, COLOR_PALETTES, VISUAL_TAGS, LUTS, GRADING_TECHNIQUES } from "../data/constants";
 import React, { useState, useEffect, useMemo } from "react";
 import { fetchImageAsDataUrl } from "../services/imageService";
 import { ColorPickerModal } from "./ColorPickerModal";
+import { CinematicGradingStudio } from "./CinematicGradingStudio";
 
 interface StepContentProps {
   activeStep: number;
@@ -221,7 +222,7 @@ export function StepContent({
     }
   }, [activeStep]);
 
-  const [colorMode, setColorMode] = useState<'extract' | 'presets' | 'luts' | 'techniques'>('extract');
+  const [colorMode, setColorMode] = useState<'cinematic' | 'extract' | 'presets' | 'luts' | 'techniques'>('cinematic');
   const [isExtractingColors, setIsExtractingColors] = useState(false);
   const [tempImageSrc, setTempImageSrc] = useState<string | null>(null);
   const [colorCount, setColorCount] = useState<number>(5);
@@ -1125,22 +1126,34 @@ export function StepContent({
                 </div>
 
                 {/* Tabs */}
-                <div className="flex flex-wrap gap-2 p-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl max-w-2xl">
+                <div className="flex flex-wrap gap-2 p-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl max-w-4xl">
+                  <button
+                    type="button"
+                    onClick={() => setColorMode('cinematic')}
+                    className={`flex-1 min-w-[140px] py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 ${
+                      colorMode === 'cinematic'
+                        ? themeClasses.optionActive + ' shadow-md'
+                        : 'opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    <Clapperboard size={14} className="text-amber-500" />
+                    <span>Direção & Grading</span>
+                  </button>
                   <button
                     type="button"
                     onClick={() => setColorMode('extract')}
-                    className={`flex-1 py-2 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+                    className={`flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
                       colorMode === 'extract'
                         ? themeClasses.optionActive + ' shadow-md'
                         : 'opacity-60 hover:opacity-100'
                     }`}
                   >
-                    Extrair
+                    Extrair Cores
                   </button>
                   <button
                     type="button"
                     onClick={() => setColorMode('presets')}
-                    className={`flex-1 py-2 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+                    className={`flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
                       colorMode === 'presets'
                         ? themeClasses.optionActive + ' shadow-md'
                         : 'opacity-60 hover:opacity-100'
@@ -1151,7 +1164,7 @@ export function StepContent({
                   <button
                     type="button"
                     onClick={() => setColorMode('luts')}
-                    className={`flex-1 py-2 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+                    className={`flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
                       colorMode === 'luts'
                         ? themeClasses.optionActive + ' shadow-md'
                         : 'opacity-60 hover:opacity-100'
@@ -1162,15 +1175,26 @@ export function StepContent({
                   <button
                     type="button"
                     onClick={() => setColorMode('techniques')}
-                    className={`flex-1 py-2 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+                    className={`flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${
                       colorMode === 'techniques'
                         ? themeClasses.optionActive + ' shadow-md'
                         : 'opacity-60 hover:opacity-100'
                     }`}
                   >
-                    Técnicas de Grading
+                    Guia de Técnicas
                   </button>
                 </div>
+
+                {/* Cinematic Grading & Visual Direction Studio */}
+                {colorMode === 'cinematic' && (
+                  <CinematicGradingStudio
+                    selections={selections}
+                    setSelections={setSelections}
+                    theme={theme}
+                    themeClasses={themeClasses}
+                    addToast={addToast}
+                  />
+                )}
 
                 {/* Extract Tab Content */}
                 {colorMode === 'extract' && (
