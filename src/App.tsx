@@ -102,7 +102,7 @@ export default function App() {
 
   const [currentTab, setCurrentTab] = useState<NavigationTab>('builder');
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
-  const [subject, setSubject] = useState<string>('A mysterious detective standing in the rain');
+  const [subject, setSubject] = useState<string>('');
   const [characterLock, setCharacterLock] = useState<CharacterLockState>(DEFAULT_CHARACTER_LOCK_STATE);
   const [negativePrompt, setNegativePrompt] = useState<string>('');
   const [mode, setMode] = useState<ShotMode>('cinematic');
@@ -613,7 +613,7 @@ export default function App() {
   };
 
   const handleReset = () => {
-    setSubject('A mysterious detective standing in the rain');
+    setSubject('');
     setCharacterLock(DEFAULT_CHARACTER_LOCK_STATE);
     setNegativePrompt('');
     setSelections({

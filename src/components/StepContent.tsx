@@ -479,8 +479,8 @@ export function StepContent({
                 <textarea 
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Ex: A young detective sitting alone in a crowded bar..."
-                  className={`w-full h-48 rounded-2xl p-6 transition-all text-lg resize-none border outline-none focus:ring-2 focus:ring-[#8b5a2b]/20 ${themeClasses.input}`}
+                  placeholder="Ex: A mysterious detective standing in the rain at midnight, holding a lantern..."
+                  className={`w-full h-48 rounded-2xl p-6 transition-all text-lg resize-none border outline-none focus:ring-2 focus:ring-[#8b5a2b]/20 placeholder:text-zinc-500/60 dark:placeholder:text-zinc-600/60 ${themeClasses.input}`}
                 />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <button 
