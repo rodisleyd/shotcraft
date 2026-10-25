@@ -36,7 +36,7 @@ import {
   PRESETS, AUTO_COMBINATIONS, LUTS, GRADING_TECHNIQUES,
   INITIAL_GALLERY
 } from './data/constants';
-import { buildCharacterBlueprintPrompt, DEFAULT_CHARACTER_LOCK_STATE } from './data/characterConsistency';
+import { buildCharacterBlueprintPrompt, getCharacterNegativePrompt, DEFAULT_CHARACTER_LOCK_STATE } from './data/characterConsistency';
 
 // Services
 import { dataService } from './services/dataService';
@@ -654,89 +654,106 @@ export default function App() {
   };
 
   const finalPrompt = useMemo(() => {
-    const parts = [];
+    const sceneParts = [];
 
-    if (characterLock.enabled) {
-      const blueprintProtocol = buildCharacterBlueprintPrompt(characterLock);
-      if (blueprintProtocol) parts.push(blueprintProtocol);
-    }
-
-    if (subject) parts.push(subject);
+    if (subject) sceneParts.push(subject);
 
     const framing = SHOT_TYPES.find(o => o.id === selections.framing)?.prompt;
-    if (framing) parts.push(framing);
+    if (framing) sceneParts.push(framing);
 
     const angle = ANGLES.find(o => o.id === selections.angle)?.prompt;
-    if (angle) parts.push(angle);
+    if (angle) sceneParts.push(angle);
 
     const perspective = PERSPECTIVES.find(o => o.id === selections.perspective)?.prompt;
-    if (perspective) parts.push(perspective);
+    if (perspective) sceneParts.push(perspective);
 
     const lens = LENSES.find(o => o.id === selections.lens)?.prompt;
-    if (lens) parts.push(lens);
+    if (lens) sceneParts.push(lens);
 
     const lighting = LIGHTING.find(o => o.id === selections.lighting)?.prompt;
-    if (lighting) parts.push(lighting);
+    if (lighting) sceneParts.push(lighting);
 
     const env = ENVIRONMENTS.find(o => o.id === selections.environment)?.prompt;
-    if (env) parts.push(env);
+    if (env) sceneParts.push(env);
 
     selections.style.forEach(id => {
       const prompt = STYLES.find(o => o.id === id)?.prompt;
-      if (prompt) parts.push(prompt);
+      if (prompt) sceneParts.push(prompt);
     });
 
     if (selections.paper) {
       const paperPrompt = PAPERS.find(o => o.id === selections.paper)?.prompt;
-      if (paperPrompt) parts.push(paperPrompt);
+      if (paperPrompt) sceneParts.push(paperPrompt);
     }
 
     if (selections.colorPalette && selections.colorPalette.length > 0) {
       if (selections.useColorRule603010 && selections.colorRule603010?.dominant && selections.colorRule603010?.secondary && selections.colorRule603010?.accent) {
-        parts.push(`using 60-30-10 color rule hierarchy (Dominant Color 60%: ${selections.colorRule603010.dominant}, Secondary Color 30%: ${selections.colorRule603010.secondary}, Accent Color 10%: ${selections.colorRule603010.accent}). The dominant color dominates the environment and mood. The secondary color supports secondary elements and characters. The accent color is strictly reserved for key focal points to guide the viewer's eye. Avoid equal color distribution`);
+        sceneParts.push(`using 60-30-10 color rule hierarchy (Dominant Color 60%: ${selections.colorRule603010.dominant}, Secondary Color 30%: ${selections.colorRule603010.secondary}, Accent Color 10%: ${selections.colorRule603010.accent}). The dominant color dominates the environment and mood. The secondary color supports secondary elements and characters. The accent color is strictly reserved for key focal points to guide the viewer's eye. Avoid equal color distribution`);
       } else {
-        parts.push(`using color palette reference (${selections.colorPalette.join(', ')})`);
+        sceneParts.push(`using color palette reference (${selections.colorPalette.join(', ')})`);
       }
     }
 
     if (selections.lutId) {
       const lutPrompt = LUTS.find(o => o.id === selections.lutId)?.prompt;
-      if (lutPrompt) parts.push(lutPrompt);
+      if (lutPrompt) sceneParts.push(lutPrompt);
     }
 
     if (selections.cinematicGrading && selections.cinematicGrading.enabled) {
       const gradingPrompt = buildCinematicGradingPrompt(selections.cinematicGrading, selections.cinematicGrading.targetAI || 'general');
-      if (gradingPrompt) parts.push(gradingPrompt);
+      if (gradingPrompt) sceneParts.push(gradingPrompt);
     }
 
     if (selections.gradingTechniques && selections.gradingTechniques.length > 0) {
       selections.gradingTechniques.forEach(id => {
         const techPrompt = GRADING_TECHNIQUES.find(o => o.id === id)?.prompt;
-        if (techPrompt) parts.push(techPrompt);
+        if (techPrompt) sceneParts.push(techPrompt);
       });
     }
 
-    if (mode === 'storyboard') parts.push("professional storyboard sketch, black and white pencil lines, compositional notes, rough sketches");
-    else if (mode === 'cinematic') parts.push("cinematic color grading, professional cinematography, technical realism");
-    else if (mode === 'illustration') parts.push("artistic hand-crafted illustration, distinct aesthetic");
+    if (mode === 'storyboard') sceneParts.push("professional storyboard sketch, black and white pencil lines, compositional notes, rough sketches");
+    else if (mode === 'cinematic') sceneParts.push("cinematic color grading, professional cinematography, technical realism");
+    else if (mode === 'illustration') sceneParts.push("artistic hand-crafted illustration, distinct aesthetic");
 
     selections.detail.forEach(id => {
       const prompt = DETAILS.find(o => o.id === id)?.prompt;
-      if (prompt) parts.push(prompt);
+      if (prompt) sceneParts.push(prompt);
     });
 
     if (selections.aspect === 'custom') {
-      parts.push(`--ar ${customAspect}`);
+      sceneParts.push(`--ar ${customAspect}`);
     } else {
       const aspect = ASPECT_RATIOS.find(o => o.id === selections.aspect)?.prompt;
-      if (aspect) parts.push(aspect);
+      if (aspect) sceneParts.push(aspect);
     }
 
-    if (negativePrompt) {
-      parts.push(`--no ${negativePrompt}`);
+    // Unir termos negativos existentes com a proteção anatômica do blueprint
+    const negativeTerms = [];
+    if (negativePrompt) negativeTerms.push(negativePrompt);
+    if (characterLock.enabled) {
+      const characterNeg = getCharacterNegativePrompt(characterLock);
+      if (characterNeg) negativeTerms.push(characterNeg);
     }
 
-    return parts.filter(Boolean).join(', ');
+    if (negativeTerms.length > 0) {
+      sceneParts.push(`--no ${negativeTerms.join(', ')}`);
+    }
+
+    const sceneString = sceneParts.filter(Boolean).join(', ');
+
+    if (characterLock.enabled) {
+      const blueprintProtocol = buildCharacterBlueprintPrompt(characterLock);
+      if (blueprintProtocol) {
+        // No Midjourney o blueprintProtocol já inclui flags e tags integradas na sintaxe do MJ
+        if (characterLock.targetAI === 'midjourney') {
+          return `${blueprintProtocol}, ${sceneString}`;
+        }
+        // Para Nano Banana, FLUX, DALL-E e Geral, isolar com quebra de bloco para dar autoridade absoluta de atenção ao modelo
+        return `${blueprintProtocol}\n\n[SCENE EXECUTION]:\n${sceneString}`;
+      }
+    }
+
+    return sceneString;
   }, [subject, selections, mode, customAspect, negativePrompt, characterLock]);
 
   const fallbackCopyTextToClipboard = (text: string) => {

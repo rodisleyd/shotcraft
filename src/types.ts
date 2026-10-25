@@ -87,11 +87,18 @@ export interface SelectionState {
   };
 }
 
+export type CharacterTargetAI = 'general' | 'midjourney' | 'flux' | 'nano-banana' | 'dalle';
+
 export interface CharacterLockState {
   enabled: boolean;
   characterName: string;
   fidelity: 'strict' | 'balanced';
   distinctiveFeatures?: string;
+  targetAI?: CharacterTargetAI;
+  blueprintUrl?: string;
+  baseOutfit?: string;
+  physicalTraits?: string;
+  protectAnatomyNegative?: boolean;
 }
 
 export interface UserPreset {

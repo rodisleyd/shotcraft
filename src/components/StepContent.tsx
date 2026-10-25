@@ -4,9 +4,10 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette, Search, Filter, ArrowUpDown, Tag, Lock, Info, Sparkles, Lightbulb, SlidersHorizontal, CheckCheck, Clapperboard } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, Wand2, ChevronDown, Upload, Image as ImageIcon, Loader2, Languages, Trash2, X, Copy, ZoomIn, Pipette, Search, Filter, ArrowUpDown, Tag, Lock, Info, Sparkles, Lightbulb, SlidersHorizontal, CheckCheck, Clapperboard, ShieldCheck, Link2 } from "lucide-react";
 import { Option, Step, SelectionState, ColorPaletteOption, CharacterLockState } from "../types";
 import { STYLES, PAPERS, COLOR_PALETTES, VISUAL_TAGS, LUTS, GRADING_TECHNIQUES } from "../data/constants";
+import { CHARACTER_TARGET_AIS } from "../data/characterConsistency";
 import React, { useState, useEffect, useMemo } from "react";
 import { fetchImageAsDataUrl } from "../services/imageService";
 import { ColorPickerModal } from "./ColorPickerModal";
@@ -566,6 +567,46 @@ export function StepContent({
                 {/* Controles expandidos quando ativado */}
                 {characterLock?.enabled && (
                   <div className="space-y-4 pt-4 border-t border-cyan-500/20 animate-in fade-in slide-in-from-top-2 duration-200">
+                    
+                    {/* Seletor de Motor / IA Alvo */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-xs font-bold uppercase tracking-wider opacity-90 flex items-center gap-1.5 text-cyan-400">
+                          <Sparkles size={13} />
+                          Motor de IA Alvo (Otimização Semântica)
+                        </label>
+                        <span className="text-[10px] text-zinc-400 font-mono">
+                          {CHARACTER_TARGET_AIS.find(a => a.id === (characterLock.targetAI || 'general'))?.desc}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                        {CHARACTER_TARGET_AIS.map(ai => {
+                          const isSelected = (characterLock.targetAI || 'general') === ai.id;
+                          return (
+                            <button
+                              key={ai.id}
+                              type="button"
+                              onClick={() => setCharacterLock?.(prev => ({ ...prev, targetAI: ai.id }))}
+                              className={`p-2.5 rounded-xl text-left transition-all border relative flex flex-col justify-between ${
+                                isSelected
+                                  ? 'bg-cyan-500 text-zinc-950 border-cyan-300 shadow-md shadow-cyan-500/20 font-bold'
+                                  : theme === 'dark'
+                                    ? 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 text-zinc-300'
+                                    : 'bg-white border-zinc-200 hover:border-zinc-300 text-zinc-700'
+                              }`}
+                            >
+                              <div className="text-xs leading-tight mb-1">{ai.label}</div>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono uppercase tracking-wider self-start ${
+                                isSelected ? 'bg-zinc-950/20 text-zinc-950 font-bold' : 'bg-cyan-500/10 text-cyan-400'
+                              }`}>
+                                {ai.badge}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Nome do Personagem */}
                       <div>
@@ -618,10 +659,58 @@ export function StepContent({
                       </div>
                     </div>
 
+                    {/* URL da Imagem da Prancha (especialmente útil para Midjourney --cref ou referências web) */}
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 opacity-80 flex items-center justify-between">
+                        <span className="flex items-center gap-1">
+                          <Link2 size={13} className="text-cyan-400" />
+                          Link / URL da Imagem da Prancha (opcional)
+                        </span>
+                        <span className="text-[10px] text-zinc-400 font-normal lowercase">Gera automaticamente flag no Midjourney (--cref)</span>
+                      </label>
+                      <input
+                        type="url"
+                        value={characterLock.blueprintUrl || ''}
+                        onChange={(e) => setCharacterLock?.(prev => ({ ...prev, blueprintUrl: e.target.value }))}
+                        placeholder="https://cdn.midjourney.com/... ou link de sua imagem hospedada"
+                        className={`w-full px-4 py-2.5 rounded-xl border outline-none text-xs font-mono ${themeClasses.input} focus:ring-2 focus:ring-cyan-500/30`}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Traços Físicos e Anatômicos Base */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 opacity-80">
+                          Anatomia Base (Idade / Etnia / Cabelo)
+                        </label>
+                        <input
+                          type="text"
+                          value={characterLock.physicalTraits || ''}
+                          onChange={(e) => setCharacterLock?.(prev => ({ ...prev, physicalTraits: e.target.value }))}
+                          placeholder="Ex: 30yo latino male, sharp jawline, messy dark hair..."
+                          className={`w-full px-4 py-2.5 rounded-xl border outline-none text-xs ${themeClasses.input} focus:ring-2 focus:ring-cyan-500/30`}
+                        />
+                      </div>
+
+                      {/* Traje / Roupa Base */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 opacity-80">
+                          Vestimenta / Figurino Padrão (opcional)
+                        </label>
+                        <input
+                          type="text"
+                          value={characterLock.baseOutfit || ''}
+                          onChange={(e) => setCharacterLock?.(prev => ({ ...prev, baseOutfit: e.target.value }))}
+                          placeholder="Ex: vintage leather trench coat, turtleneck sweater..."
+                          className={`w-full px-4 py-2.5 rounded-xl border outline-none text-xs ${themeClasses.input} focus:ring-2 focus:ring-cyan-500/30`}
+                        />
+                      </div>
+                    </div>
+
                     {/* Traços Obrigatórios / Distinctive Features */}
                     <div>
                       <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 opacity-80">
-                        Traços Obrigatórios a Preservar (opcional)
+                        Marcas Distintas Obrigatórias (opcional)
                       </label>
                       <input
                         type="text"
@@ -632,16 +721,38 @@ export function StepContent({
                       />
                     </div>
 
+                    {/* Trava de Proteção Anatômica no Prompt Negativo */}
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-cyan-950/20 border border-cyan-500/20">
+                      <div className="flex items-center gap-2">
+                        <ShieldCheck size={16} className="text-cyan-400" />
+                        <div>
+                          <span className="text-xs font-bold block text-zinc-200">
+                            Blindagem Anatômica no Prompt Negativo
+                          </span>
+                          <span className="text-[10px] text-zinc-400 block">
+                            Injeta termos como <code>--no altered face, deformed facial bones, morphed identity</code>
+                          </span>
+                        </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={characterLock.protectAnatomyNegative !== false}
+                        onChange={(e) => setCharacterLock?.(prev => ({ ...prev, protectAnatomyNegative: e.target.checked }))}
+                        className="w-4 h-4 rounded text-cyan-500 accent-cyan-500 cursor-pointer"
+                      />
+                    </div>
+
                     {/* Guia Rápido de Uso nos Geradores */}
                     <div className="p-3.5 rounded-2xl bg-cyan-950/20 border border-cyan-500/20 text-xs space-y-2">
                       <div className="flex items-center gap-1.5 font-bold text-cyan-400">
                         <Info size={14} />
-                        <span>Como usar a Prancha nos Geradores de Imagem:</span>
+                        <span>Instruções Rápidas por Gerador:</span>
                       </div>
                       <ul className="list-disc list-inside text-[11px] text-zinc-300 space-y-1 opacity-90 leading-relaxed">
-                        <li><strong>Midjourney:</strong> Anexe o link da prancha no prompt ou utilize como referência com <code className="text-cyan-300 font-mono">--cref &lt;URL&gt;</code>.</li>
-                        <li><strong>FLUX / Stable Diffusion / Fooocus:</strong> Coloque a prancha no campo de <em>Image Prompt / IP-Adapter</em> e use o prompt do ShotCraft como prompt positivo.</li>
-                        <li><strong>ChatGPT / DALL-E:</strong> Basta fazer upload da sua prancha no chat e colar o prompt completo gerado pelo ShotCraft.</li>
+                        <li><strong>Nano Banana / Imagen:</strong> Anexe a prancha de construção no campo de imagem de referência e use o prompt do ShotCraft.</li>
+                        <li><strong>Midjourney:</strong> Cole a URL da prancha acima para injetar <code className="text-cyan-300 font-mono">--cref &lt;URL&gt; --cw 100</code> no prompt final.</li>
+                        <li><strong>FLUX / Stable Diffusion:</strong> Utilize a prancha no campo de <em>IP-Adapter / ControlNet Reference</em> junto ao prompt positivo.</li>
+                        <li><strong>ChatGPT / DALL-E:</strong> Faça upload da prancha no chat e envie com o prompt completo.</li>
                       </ul>
                     </div>
                   </div>

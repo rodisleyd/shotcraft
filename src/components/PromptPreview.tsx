@@ -55,9 +55,14 @@ export function PromptPreview({
             <Lock size={13} className="text-cyan-400" />
             <span>Character Blueprint: <strong className="text-cyan-300">{characterLock.characterName || 'Ativo'}</strong></span>
           </div>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono uppercase tracking-wider font-bold">
-            {characterLock.fidelity}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-200 font-mono uppercase tracking-wider font-bold">
+              {characterLock.targetAI === 'nano-banana' ? 'Nano Banana' : (characterLock.targetAI || 'Universal')}
+            </span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-400/30 text-cyan-100 font-mono uppercase tracking-wider font-bold">
+              {characterLock.fidelity}
+            </span>
+          </div>
         </div>
       )}
 
