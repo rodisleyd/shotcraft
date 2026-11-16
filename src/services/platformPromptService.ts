@@ -58,8 +58,8 @@ export const TARGET_PLATFORMS: PlatformConfig[] = [
   },
   {
     id: 'dalle',
-    name: 'ChatGPT / DALL-E',
-    shortName: 'GPT Imagens',
+    name: 'ChatGPT / DALL-E 3',
+    shortName: 'ChatGPT / DALL-E',
     badge: 'DALL-E 3',
     description: 'Narrativa descritiva contínua sem comandos técnicos de terminal',
     tips: 'Evita parâmetros como --ar que confundem o ChatGPT; gera uma descrição cinematográfica rica em prosa.'
@@ -75,7 +75,7 @@ export const TARGET_PLATFORMS: PlatformConfig[] = [
   {
     id: 'stable-diffusion',
     name: 'Stable Diffusion',
-    shortName: 'SDXL / A1111',
+    shortName: 'Stable Diffusion',
     badge: 'SDXL / Comfy',
     description: 'Tags com ponderação de peso e campo de Prompt Negativo dedicado',
     tips: 'Utiliza sintaxe com pesos (termo:1.2) e disponibiliza um Negative Prompt dedicado para copiar e colar.',

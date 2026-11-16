@@ -61,12 +61,12 @@ export function PromptPreview({
   const currentConfig = TARGET_PLATFORMS.find(p => p.id === selectedPlatform) || TARGET_PLATFORMS[0];
 
   const renderPlatformIcon = (id: TargetPlatform, active: boolean) => {
-    const size = 15;
+    const size = 13;
     switch (id) {
       case 'generic':
         return <Globe size={size} className={active ? 'text-white' : 'text-sky-400'} />;
       case 'nano-banana':
-        return <span className="text-sm leading-none select-none">🍌</span>;
+        return <span className="text-xs leading-none select-none">🍌</span>;
       case 'midjourney':
         return <Compass size={size} className={active ? 'text-white' : 'text-indigo-400'} />;
       case 'dalle':
@@ -85,7 +85,7 @@ export function PromptPreview({
   };
 
   return (
-    <div className={`border rounded-3xl p-6 sm:p-8 transition-colors ${themeClasses.card} shadow-xl`}>
+    <div className={`border rounded-3xl p-5 sm:p-6 transition-colors ${themeClasses.card} shadow-xl`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
@@ -105,7 +105,7 @@ export function PromptPreview({
 
       {/* Character Lock Banner (se ativo) */}
       {characterLock?.enabled && (
-        <div className="mb-4 flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold">
+        <div className="mb-4 flex items-center justify-between px-3.5 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold">
           <div className="flex items-center gap-2">
             <Lock size={13} className="text-cyan-400 shrink-0" />
             <span className="truncate">Blueprint: <strong className="text-cyan-300">{characterLock.characterName || 'Ativo'}</strong></span>
@@ -123,18 +123,18 @@ export function PromptPreview({
 
       {/* Seletor de Plataforma de IA */}
       <div className="mb-5">
-        <div className="flex items-center justify-between mb-2.5">
+        <div className="flex items-center justify-between mb-2">
           <span className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 opacity-80 ${themeClasses.textMuted}`}>
             <SlidersHorizontal size={13} className={themeClasses.accentText} />
-            Escolha o Gerador de Destino:
+            Gerador de Destino:
           </span>
-          <span className="text-[10px] px-2 py-0.5 rounded-md font-mono font-semibold bg-zinc-500/10 text-zinc-400">
+          <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-zinc-500/10 text-zinc-400 border border-zinc-700/30">
             {currentConfig.badge}
           </span>
         </div>
 
-        {/* Botões das plataformas */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {/* Botões das plataformas estilo Chips / Tags fluidas */}
+        <div className="flex flex-wrap gap-1.5">
           {TARGET_PLATFORMS.map((platform) => {
             const isActive = selectedPlatform === platform.id;
             return (
@@ -142,19 +142,17 @@ export function PromptPreview({
                 key={platform.id}
                 onClick={() => setSelectedPlatform(platform.id)}
                 type="button"
-                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium border transition-all text-left ${
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium border transition-all duration-150 whitespace-nowrap select-none active:scale-95 ${
                   isActive
-                    ? `${themeClasses.accent} text-white shadow-md scale-[1.02] border-transparent font-bold`
-                    : `border-zinc-700/40 hover:border-zinc-500/60 ${themeClasses.card} opacity-80 hover:opacity-100`
+                    ? `${themeClasses.accent} text-white shadow-sm font-bold border-transparent ring-1 ring-white/20 scale-[1.02]`
+                    : `border-zinc-800/80 hover:border-zinc-700 bg-zinc-900/40 hover:bg-zinc-800/60 ${themeClasses.textMuted} hover:text-zinc-100`
                 }`}
                 title={platform.description}
               >
-                <div className="shrink-0 flex items-center justify-center w-5 h-5">
+                <span className="shrink-0 flex items-center justify-center">
                   {renderPlatformIcon(platform.id, isActive)}
-                </div>
-                <div className="truncate leading-tight">
-                  <div className="truncate text-[11px]">{platform.shortName}</div>
-                </div>
+                </span>
+                <span>{platform.shortName}</span>
               </button>
             );
           })}
