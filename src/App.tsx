@@ -27,7 +27,7 @@ import {
 import { GoogleGenAI } from "@google/genai";
 
 // Types
-import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step, ColorPaletteOption, UserAccount, GalleryItem, CharacterLockState, NavigationTab } from './types';
+import { ShotMode, Theme, SelectionState, UserPreset, HistoryItem, ToastType, Step, ColorPaletteOption, UserAccount, GalleryItem, CharacterLockState, NavigationTab, TargetPlatform } from './types';
 
 // Constants
 import {
@@ -42,6 +42,7 @@ import { buildCharacterBlueprintPrompt, getCharacterNegativePrompt, DEFAULT_CHAR
 import { dataService } from './services/dataService';
 import { fetchImageAsDataUrl } from './services/imageService';
 import { buildCinematicGradingPrompt } from './services/cinematicGradingEngine';
+import { buildPlatformPrompt, TARGET_PLATFORMS } from './services/platformPromptService';
 
 // Components
 import { Header } from './components/Header';
@@ -131,6 +132,8 @@ export default function App() {
   });
   const [customAspect, setCustomAspect] = useState('2:1');
   const [copied, setCopied] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState<TargetPlatform>('generic');
+  const [copiedNegative, setCopiedNegative] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [userPresets, setUserPresets] = useState<UserPreset[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -642,119 +645,31 @@ export default function App() {
     addToast('Todas as configurações foram resetadas.', 'info');
   };
 
-  const addToHistory = (prompt: string) => {
+  const addToHistory = (prompt: string, platform?: TargetPlatform) => {
     const item: HistoryItem = {
       id: Date.now().toString(),
       timestamp: Date.now(),
       prompt,
       subject,
-      negativePrompt
+      negativePrompt,
+      platform
     };
     setHistory(prev => [item, ...prev].slice(0, 20));
   };
 
-  const finalPrompt = useMemo(() => {
-    const sceneParts = [];
-
-    if (subject) sceneParts.push(subject);
-
-    const framing = SHOT_TYPES.find(o => o.id === selections.framing)?.prompt;
-    if (framing) sceneParts.push(framing);
-
-    const angle = ANGLES.find(o => o.id === selections.angle)?.prompt;
-    if (angle) sceneParts.push(angle);
-
-    const perspective = PERSPECTIVES.find(o => o.id === selections.perspective)?.prompt;
-    if (perspective) sceneParts.push(perspective);
-
-    const lens = LENSES.find(o => o.id === selections.lens)?.prompt;
-    if (lens) sceneParts.push(lens);
-
-    const lighting = LIGHTING.find(o => o.id === selections.lighting)?.prompt;
-    if (lighting) sceneParts.push(lighting);
-
-    const env = ENVIRONMENTS.find(o => o.id === selections.environment)?.prompt;
-    if (env) sceneParts.push(env);
-
-    selections.style.forEach(id => {
-      const prompt = STYLES.find(o => o.id === id)?.prompt;
-      if (prompt) sceneParts.push(prompt);
+  const platformOutput = useMemo(() => {
+    return buildPlatformPrompt({
+      subject,
+      selections,
+      mode,
+      customAspect,
+      negativePrompt,
+      characterLock,
+      platform: selectedPlatform
     });
+  }, [subject, selections, mode, customAspect, negativePrompt, characterLock, selectedPlatform]);
 
-    if (selections.paper) {
-      const paperPrompt = PAPERS.find(o => o.id === selections.paper)?.prompt;
-      if (paperPrompt) sceneParts.push(paperPrompt);
-    }
-
-    if (selections.colorPalette && selections.colorPalette.length > 0) {
-      if (selections.useColorRule603010 && selections.colorRule603010?.dominant && selections.colorRule603010?.secondary && selections.colorRule603010?.accent) {
-        sceneParts.push(`using 60-30-10 color rule hierarchy (Dominant Color 60%: ${selections.colorRule603010.dominant}, Secondary Color 30%: ${selections.colorRule603010.secondary}, Accent Color 10%: ${selections.colorRule603010.accent}). The dominant color dominates the environment and mood. The secondary color supports secondary elements and characters. The accent color is strictly reserved for key focal points to guide the viewer's eye. Avoid equal color distribution`);
-      } else {
-        sceneParts.push(`using color palette reference (${selections.colorPalette.join(', ')})`);
-      }
-    }
-
-    if (selections.lutId) {
-      const lutPrompt = LUTS.find(o => o.id === selections.lutId)?.prompt;
-      if (lutPrompt) sceneParts.push(lutPrompt);
-    }
-
-    if (selections.cinematicGrading && selections.cinematicGrading.enabled) {
-      const gradingPrompt = buildCinematicGradingPrompt(selections.cinematicGrading, selections.cinematicGrading.targetAI || 'general');
-      if (gradingPrompt) sceneParts.push(gradingPrompt);
-    }
-
-    if (selections.gradingTechniques && selections.gradingTechniques.length > 0) {
-      selections.gradingTechniques.forEach(id => {
-        const techPrompt = GRADING_TECHNIQUES.find(o => o.id === id)?.prompt;
-        if (techPrompt) sceneParts.push(techPrompt);
-      });
-    }
-
-    if (mode === 'storyboard') sceneParts.push("professional storyboard sketch, black and white pencil lines, compositional notes, rough sketches");
-    else if (mode === 'cinematic') sceneParts.push("cinematic color grading, professional cinematography, technical realism");
-    else if (mode === 'illustration') sceneParts.push("artistic hand-crafted illustration, distinct aesthetic");
-
-    selections.detail.forEach(id => {
-      const prompt = DETAILS.find(o => o.id === id)?.prompt;
-      if (prompt) sceneParts.push(prompt);
-    });
-
-    if (selections.aspect === 'custom') {
-      sceneParts.push(`--ar ${customAspect}`);
-    } else {
-      const aspect = ASPECT_RATIOS.find(o => o.id === selections.aspect)?.prompt;
-      if (aspect) sceneParts.push(aspect);
-    }
-
-    // Unir termos negativos existentes com a proteção anatômica do blueprint
-    const negativeTerms = [];
-    if (negativePrompt) negativeTerms.push(negativePrompt);
-    if (characterLock.enabled) {
-      const characterNeg = getCharacterNegativePrompt(characterLock);
-      if (characterNeg) negativeTerms.push(characterNeg);
-    }
-
-    if (negativeTerms.length > 0) {
-      sceneParts.push(`--no ${negativeTerms.join(', ')}`);
-    }
-
-    const sceneString = sceneParts.filter(Boolean).join(', ');
-
-    if (characterLock.enabled) {
-      const blueprintProtocol = buildCharacterBlueprintPrompt(characterLock);
-      if (blueprintProtocol) {
-        // No Midjourney o blueprintProtocol já inclui flags e tags integradas na sintaxe do MJ
-        if (characterLock.targetAI === 'midjourney') {
-          return `${blueprintProtocol}, ${sceneString}`;
-        }
-        // Para Nano Banana, FLUX, DALL-E e Geral, isolar com quebra de bloco para dar autoridade absoluta de atenção ao modelo
-        return `${blueprintProtocol}\n\n[SCENE EXECUTION]:\n${sceneString}`;
-      }
-    }
-
-    return sceneString;
-  }, [subject, selections, mode, customAspect, negativePrompt, characterLock]);
+  const finalPrompt = platformOutput.prompt;
 
   const fallbackCopyTextToClipboard = (text: string) => {
     try {
@@ -799,9 +714,30 @@ export default function App() {
 
     doCopy();
     setCopied(true);
-    addToHistory(finalPrompt);
-    addToast('Prompt copiado e salvo no histórico! 🪙 1 crédito consumido.', 'success');
+    addToHistory(finalPrompt, selectedPlatform);
+    const platformName = TARGET_PLATFORMS.find(p => p.id === selectedPlatform)?.shortName || 'gerador';
+    addToast(`Prompt copiado para ${platformName}! 🪙 1 crédito consumido.`, 'success');
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const copyNegativeToClipboard = () => {
+    if (!platformOutput.negativePrompt) return;
+    const doCopy = async () => {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(platformOutput.negativePrompt!);
+        } else {
+          fallbackCopyTextToClipboard(platformOutput.negativePrompt!);
+        }
+      } catch (err) {
+        fallbackCopyTextToClipboard(platformOutput.negativePrompt!);
+      }
+    };
+
+    doCopy();
+    setCopiedNegative(true);
+    addToast('Prompt negativo copiado!', 'success');
+    setTimeout(() => setCopiedNegative(false), 2000);
   };
 
   // --- Theme classes ---
@@ -951,6 +887,11 @@ export default function App() {
                 newPresetName={newPresetName} setNewPresetName={setNewPresetName}
                 handleSavePreset={handleSavePreset} themeClasses={themeClasses}
                 characterLock={characterLock}
+                selectedPlatform={selectedPlatform}
+                setSelectedPlatform={setSelectedPlatform}
+                platformOutput={platformOutput}
+                copyNegativeToClipboard={copyNegativeToClipboard}
+                copiedNegative={copiedNegative}
               />
 
               <UserPresets

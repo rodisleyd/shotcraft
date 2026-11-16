@@ -87,6 +87,16 @@ export interface SelectionState {
   };
 }
 
+export type TargetPlatform = 
+  | 'generic' 
+  | 'nano-banana' 
+  | 'midjourney' 
+  | 'dalle' 
+  | 'flux' 
+  | 'stable-diffusion' 
+  | 'leonardo' 
+  | 'ideogram';
+
 export type CharacterTargetAI = 'general' | 'midjourney' | 'flux' | 'nano-banana' | 'dalle';
 
 export interface CharacterLockState {
@@ -114,6 +124,7 @@ export interface HistoryItem {
   prompt: string;
   subject: string;
   negativePrompt?: string;
+  platform?: TargetPlatform;
 }
 
 export interface Step {

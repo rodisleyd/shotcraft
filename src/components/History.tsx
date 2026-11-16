@@ -43,6 +43,11 @@ export function History({ history, loadFromHistory, removeFromHistory, clearHist
               <div className="flex items-center gap-2 text-[10px] opacity-60">
                 <Clock size={12} />
                 {new Date(item.timestamp).toLocaleString()}
+                {item.platform && (
+                  <span className="px-2 py-0.5 rounded-md font-mono text-[9px] uppercase font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    {item.platform}
+                  </span>
+                )}
               </div>
               <button 
                 onClick={(e) => {
