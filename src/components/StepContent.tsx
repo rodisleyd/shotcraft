@@ -472,7 +472,7 @@ export function StepContent({
           {activeStep === 0 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold mb-2">O que vamos filmar?</h2>
+                <h2 className="text-2xl font-bold mb-2">O que vamos Criar?</h2>
                 <p className={`${themeClasses.textMuted} text-sm`}>Descreva o sujeito e a ação principal da cena.</p>
               </div>
               <div className="space-y-4">
